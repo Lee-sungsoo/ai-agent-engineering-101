@@ -55,7 +55,7 @@ NOTICE = (
 
 _parser = argparse.ArgumentParser()
 _parser.add_argument("--port", type=int, default=8001)
-PORT = _parser.parse_args().port
+PORT = _parser.parse_known_args()[0].port  # known args only, so importing stays safe
 BASE = f"http://127.0.0.1:{PORT}"
 ADMIN_TOKEN = os.environ.get("MARKET_ADMIN_TOKEN", "")
 
@@ -292,7 +292,9 @@ def refuse(negotiation_id: str, note: str = "") -> str:
 
 # ---- admin routes: plain HTTP for the runner, not MCP tools ----
 def _admin_ok(request: Request) -> bool:
-    return secrets.compare_digest(request.headers.get("x-admin-token", ""), ADMIN_TOKEN)
+    return bool(ADMIN_TOKEN) and secrets.compare_digest(
+        request.headers.get("x-admin-token", ""), ADMIN_TOKEN
+    )
 
 
 def _denied() -> JSONResponse:
