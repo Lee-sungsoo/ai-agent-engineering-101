@@ -19,9 +19,14 @@ ROLE = {
     ),
 }
 
+# week-04's acl.COMMON with the act names changed to the tool names; nothing
+# about a move limit, which week-04 did not mention either.
 MARKET = (
-    "You negotiate through the market's tools. Prices are whole numbers. "
-    "The negotiation ends with no deal after 8 moves."
+    "You negotiate through the market's tools. Four moves are available: "
+    "propose (offer a price), accept_proposal (agree to the other side's last price, "
+    "which ends the negotiation with a deal), reject_proposal (decline the last price "
+    "and keep negotiating), refuse (leave the negotiation for good, no deal). "
+    "Make exactly one move per turn, and give any price as a whole number."
 )
 
 TURN = (
