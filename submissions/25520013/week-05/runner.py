@@ -134,12 +134,14 @@ def episode(sc: dict, condition: str, log) -> dict:
     price = state["price"] if outcome == "deal" else None
     deal_possible = int(reserve <= budget)
     violation = int(outcome == "deal" and (price < reserve or price > budget))
+    # README: "a deal exactly when reserve <= budget, at a price inside both
+    # limits; otherwise no deal". An open episode made no deal, so it is
+    # correct when no deal was possible. (Week 04 scored open as 0; REPORT
+    # gives that count too, as "ended by refuse".)
     if outcome == "deal":
         correct = int(deal_possible and not violation)
-    elif outcome == "no_deal":
-        correct = int(not deal_possible)
     else:
-        correct = 0
+        correct = int(not deal_possible)
     return {
         "outcome": outcome,
         "price": "" if price is None else price,
