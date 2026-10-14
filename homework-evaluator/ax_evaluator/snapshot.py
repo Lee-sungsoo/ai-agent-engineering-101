@@ -68,7 +68,13 @@ def finish(files, metadata, out):
     return snapshot
 
 
-def collect_local(source, spec, out):
+def validate_week(week):
+    if not re.fullmatch(r"week-\d{2}", week):
+        raise ValueError("Expected week-NN")
+
+
+def collect_local(source, spec, out, week="week-05"):
+    validate_week(week)
     source = Path(source).resolve()
     if not source.is_dir():
         raise ValueError("Submission directory does not exist")
@@ -91,12 +97,13 @@ def collect_local(source, spec, out):
     files["@spec.md"] = document(Path(spec).read_bytes())
     return finish(
         files,
-        {"source": "local", "history_available": False, "week": "week-05"},
+        {"source": "local", "history_available": False, "week": week},
         out,
     )
 
 
-def collect_pr(repo, number, out, spec_ref="main"):
+def collect_pr(repo, number, out, spec_ref="main", week="week-05"):
+    validate_week(week)
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
         raise ValueError("Expected owner/repository")
     pr = gh(f"repos/{repo}/pulls/{number}")
@@ -105,13 +112,13 @@ def collect_pr(repo, number, out, spec_ref="main"):
         raise ValueError("GitHub returned an incomplete changed-file list")
     owners = set()
     for change in changes:
-        match = re.match(r"submissions/(\d+)/week-05/", change["filename"])
+        match = re.match(rf"submissions/(\d+)/{week}/", change["filename"])
         if match:
             owners.add(match[1])
     if len(owners) != 1:
-        raise ValueError("PR must identify exactly one week-05 submission directory")
+        raise ValueError(f"PR must identify exactly one {week} submission directory")
     student = owners.pop()
-    prefix = f"submissions/{student}/week-05/"
+    prefix = f"submissions/{student}/{week}/"
     spec_sha = gh(f"repos/{repo}/commits/{spec_ref}")["sha"]
     files = {}
     # A fresh bare repository has no student worktree, configuration or hooks.
@@ -149,11 +156,15 @@ def collect_pr(repo, number, out, spec_ref="main"):
             files[path] = document(command(git + ["cat-file", "blob", sha]))
         # Only the upstream spec is trusted as assignment instructions.
         for target, path in [
-            ("@spec.md", "weeks/week-05/README.md"),
-            ("@official-checker.py", "scripts/check_week05.py"),
+            ("@spec.md", f"weeks/{week}/README.md"),
             ("@roster.md", f"roster/{student}.md"),
         ]:
             files[target] = document(command(git + ["show", f"{spec_sha}:{path}"]))
+        checker_path = f"scripts/check_week{week[-2:]}.py"
+        if command(git + ["ls-tree", spec_sha, "--", checker_path]).strip():
+            files["@official-checker.py"] = document(
+                command(git + ["show", f"{spec_sha}:{checker_path}"])
+            )
         history = command(
             git
             + [
@@ -178,7 +189,7 @@ def collect_pr(repo, number, out, spec_ref="main"):
         "base_sha": pr["base"]["sha"],
         "spec_sha": spec_sha,
         "opened_at": pr["created_at"],
-        "week": "week-05",
+        "week": week,
         "history_available": True,
         "changed_paths": [item["filename"] for item in changes],
     }

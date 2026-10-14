@@ -4,6 +4,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from .comments import publish
+from .policy import apply_policy, interview
 from .providers import judge
 from .review import ROOT, finalize, prepare, validate_review
 from .snapshot import collect_local, collect_pr, verify_snapshot
@@ -15,17 +17,23 @@ def main(argv=None):
         description="AX week 5 evidence-based review harness"
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    setup = commands.add_parser(
+        "interview", help="Save optional bonus rules for a cohort"
+    )
+    setup.add_argument("--out", type=Path, required=True)
     local = commands.add_parser(
         "collect-local", help="Snapshot local files without executing them"
     )
     local.add_argument("source", type=Path)
     local.add_argument("--spec", type=Path, required=True)
     local.add_argument("--out", type=Path, required=True)
+    local.add_argument("--week", default="week-05")
     remote = commands.add_parser("collect-pr", help="Read a week 5 PR from GitHub")
     remote.add_argument("number", type=int)
     remote.add_argument("--repo", default="Q00/ai-agent-engineering-101")
     remote.add_argument("--spec-ref", default="main")
     remote.add_argument("--out", type=Path, required=True)
+    remote.add_argument("--week", default="week-05")
     prep = commands.add_parser(
         "prepare",
         help="Run deterministic checks and create review packet; no model call",
@@ -35,6 +43,9 @@ def main(argv=None):
     prep.add_argument("--out", type=Path, required=True)
     prep.add_argument("--max-chars", type=int, default=180_000)
     prep.add_argument("--per-file-chars", type=int, default=12_000)
+    prep.add_argument(
+        "--policy", type=Path, help="Saved interview policy; otherwise interview now"
+    )
     call = commands.add_parser(
         "judge",
         help="Call a model explicitly; may send evidence externally and incur cost",
@@ -55,6 +66,11 @@ def main(argv=None):
     final.add_argument("run", type=Path)
     final.add_argument("response", type=Path)
     final.add_argument("--out", type=Path, required=True)
+    posting = commands.add_parser(
+        "publish", help="Preview a PR comment; --write explicitly posts it"
+    )
+    posting.add_argument("run", type=Path)
+    posting.add_argument("--write", action="store_true")
     evidence = commands.add_parser(
         "evidence", help="Read exact source lines from a snapshot"
     )
@@ -64,20 +80,30 @@ def main(argv=None):
     evidence.add_argument("--end", type=int)
     args = parser.parse_args(argv)
     try:
-        if args.command == "collect-local":
-            result = collect_local(args.source, args.spec, args.out)
+        if args.command == "interview":
+            write_new(args.out, interview())
+            print(f"Saved bonus policy: {args.out}")
+        elif args.command == "publish":
+            print(canonical(publish(args.run, write=args.write)))
+        elif args.command == "collect-local":
+            result = collect_local(args.source, args.spec, args.out, week=args.week)
             print(f"snapshot {result['id']}")
         elif args.command == "collect-pr":
             if args.number <= 0:
                 raise ValueError("PR number must be positive")
-            result = collect_pr(args.repo, args.number, args.out, args.spec_ref)
+            result = collect_pr(
+                args.repo, args.number, args.out, args.spec_ref, week=args.week
+            )
             print(f"snapshot {result['id']} ({len(result['files'])} files)")
         elif args.command == "prepare":
             if args.max_chars <= 0 or args.per_file_chars <= 0:
                 raise ValueError("Evidence limits must be positive")
             bundle = prepare(
                 read_json(args.snapshot),
-                read_json(args.rubric),
+                apply_policy(
+                    read_json(args.rubric),
+                    read_json(args.policy) if args.policy else interview(),
+                ),
                 args.out,
                 args.max_chars,
                 args.per_file_chars,
@@ -134,7 +160,7 @@ def main(argv=None):
                 raise ValueError("Invalid line range")
             for number in range(args.start, end + 1):
                 print(f"{number}: {lines[number - 1]}")
-    except (ValueError, OSError, KeyError) as error:
+    except (ValueError, OSError, KeyError, EOFError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
     return 0

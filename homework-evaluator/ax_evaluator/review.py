@@ -4,6 +4,8 @@ from pathlib import Path
 
 from . import __version__
 from .checks import check
+from .comments import write_comment
+from .policy import bonus_points, validate_policy
 from .snapshot import verify_snapshot
 from .storage import canonical, digest, read_json, validate_refs, write_new
 
@@ -11,23 +13,35 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def validate_rubric(rubric):
-    if rubric["week"] != "week-05":
-        raise ValueError("Only week-05 checks are implemented")
-    if rubric["open_non_deal"] not in {"pending", "correct", "incorrect"}:
-        raise ValueError("Invalid open_non_deal policy")
-    if type(rubric["bonus_cap"]) is not int or rubric["bonus_cap"] < 0:
-        raise ValueError("bonus_cap must be a nonnegative integer")
-    reference = read_json(ROOT / "rubrics/week05.json")
-    expected = {
-        item["id"]: (item["mode"], item["category"]) for item in reference["items"]
-    }
-    actual = {item["id"]: (item["mode"], item["category"]) for item in rubric["items"]}
-    if expected != actual or len(actual) != len(rubric["items"]):
-        raise ValueError(
-            "Changing checklist IDs/modes requires corresponding checker changes"
-        )
+    validate_policy(rubric["bonus_policy"])
+    if rubric.get("checker") not in {"week05", "review-only"}:
+        raise ValueError("checker must be week05 or review-only")
+    items = rubric["items"]
+    if not items or len({i["id"] for i in items}) != len(items):
+        raise ValueError("Rubric needs distinct criteria")
+    for item in items:
+        if item["mode"] not in {"auto", "review"}:
+            raise ValueError("Invalid criterion mode")
+        for key in ("id", "title", "category", "rule", "pass_rule", "fail_rule"):
+            if not isinstance(item.get(key), str) or not item[key].strip():
+                raise ValueError(f"Criterion needs {key}")
+    if rubric["checker"] == "review-only":
+        if any(i["mode"] != "review" for i in items):
+            raise ValueError("review-only has no automatic checks")
+    else:
+        if rubric["week"] != "week-05":
+            raise ValueError("week05 checker requires week-05")
+        if rubric["open_non_deal"] not in {"pending", "correct", "incorrect"}:
+            raise ValueError("Invalid open_non_deal policy")
+        reference = read_json(ROOT / "rubrics/week05.json")
+        expected = {i["id"]: (i["mode"], i["category"]) for i in reference["items"]}
+        actual = {i["id"]: (i["mode"], i["category"]) for i in items}
+        if expected != actual:
+            raise ValueError(
+                "Changing auto checklist IDs/modes requires checker changes"
+            )
     if rubric["base_point_per_item"] != 1:
-        raise ValueError("This version awards exactly one point per passed base item")
+        raise ValueError("One point per passed base item is supported")
 
 
 def excerpt_documents(snapshot, max_chars=180_000, per_file=12_000):
@@ -143,6 +157,37 @@ def response_schema(ids):
             "feedback",
         ],
     }
+    for entry in (item, bonus):
+        entry["properties"].update(
+            {
+                "severity": {
+                    "type": "string",
+                    "enum": ["none", "minor", "material", "critical"],
+                },
+                "rerun": {
+                    "type": "string",
+                    "enum": ["not-needed", "needed", "unknown"],
+                },
+            }
+        )
+        entry["required"] += ["severity", "rerun"]
+    item["properties"].update(
+        {
+            "deduction_reason": {"type": "string"},
+            "pending_reason": {
+                "type": "string",
+                "enum": ["", "policy", "evidence", "not-reviewed"],
+            },
+        }
+    )
+    item["required"] += ["deduction_reason", "pending_reason"]
+    bonus["properties"].update(
+        {
+            "criterion_id": {"type": "string"},
+            "contribution_key": {"type": "string"},
+        }
+    )
+    bonus["required"] += ["criterion_id", "contribution_key"]
     return {
         "type": "object",
         "additionalProperties": False,
@@ -159,7 +204,25 @@ def response_schema(ids):
 def build_bundle(snapshot, rubric, max_chars=180_000, per_file=12_000):
     verify_snapshot(snapshot)
     validate_rubric(rubric)
-    checks = check(snapshot, rubric)
+    if snapshot["metadata"].get("week", rubric["week"]) != rubric["week"]:
+        raise ValueError("Snapshot and rubric week differ")
+    checks = (
+        check(snapshot, rubric)
+        if rubric["checker"] == "week05"
+        else {
+            "items": {
+                i["id"]: {
+                    "status": "pending",
+                    "reason": "미검토",
+                    "evidence": [],
+                    "origin": "code",
+                }
+                for i in rubric["items"]
+            },
+            "aggregates": {},
+            "log_comparison": {},
+        }
+    )
     docs, coverage = excerpt_documents(snapshot, max_chars, per_file)
     ids = [item["id"] for item in rubric["items"] if item["mode"] == "review"]
     bundle = {
@@ -218,6 +281,10 @@ def template_for(bundle):
                 "evidence": [],
                 "feedback_type": "confirmation",
                 "feedback": "근거 검토 필요",
+                "severity": "none",
+                "rerun": "unknown",
+                "deduction_reason": "",
+                "pending_reason": "not-reviewed",
             }
             for item in bundle["rubric"]["items"]
             if item["mode"] == "review"
@@ -247,7 +314,18 @@ def validate_review(review, bundle, snapshot):
     }
     seen = set()
     for item in review["items"]:
-        fields = {"id", "status", "reason", "evidence", "feedback_type", "feedback"}
+        fields = {
+            "id",
+            "status",
+            "reason",
+            "evidence",
+            "feedback_type",
+            "feedback",
+            "severity",
+            "rerun",
+            "deduction_reason",
+            "pending_reason",
+        }
         if not isinstance(item, dict) or set(item) != fields:
             raise ValueError("Invalid review item fields")
         if item["id"] not in expected or item["id"] in seen:
@@ -272,10 +350,27 @@ def validate_review(review, bundle, snapshot):
             raise ValueError("A failed requirement needs a revision request")
         if item["status"] == "pending" and item["feedback_type"] != "confirmation":
             raise ValueError("A pending decision must remain confirmation-needed")
+        validate_impact(item)
+        if item["pending_reason"] not in {"", "policy", "evidence", "not-reviewed"}:
+            raise ValueError("Invalid pending_reason")
+        if (item["status"] == "pending") != bool(item["pending_reason"]):
+            raise ValueError("Only pending decisions need a pending_reason")
+        if not isinstance(item["deduction_reason"], str):
+            raise ValueError("deduction_reason must be text")
+        if item["status"] == "fail":
+            if (
+                item["severity"] not in {"material", "critical"}
+                or not item["deduction_reason"].strip()
+            ):
+                raise ValueError("A deduction needs a material defect and its impact")
+        elif item["deduction_reason"]:
+            raise ValueError("Do not deduct from pass or pending items")
         validate_visible_evidence(item, bundle, snapshot)
     if seen != expected:
         raise ValueError("Every review-mode criterion must have a decision")
-    bonus_ids, titles = set(), set()
+    bonus_ids, titles, contribution_keys, criterion_ids = set(), set(), set(), set()
+    policy = bundle["rubric"]["bonus_policy"]
+    explicit = {c["id"] for c in policy["explicit_criteria"]}
     for bonus in review["bonuses"]:
         if not isinstance(bonus, dict) or set(bonus) != {
             "id",
@@ -287,6 +382,10 @@ def validate_review(review, bundle, snapshot):
             "evidence",
             "feedback_type",
             "feedback",
+            "severity",
+            "rerun",
+            "criterion_id",
+            "contribution_key",
         }:
             raise ValueError("Invalid bonus fields")
         for key in (
@@ -315,7 +414,38 @@ def validate_review(review, bundle, snapshot):
             "none",
         }:
             raise ValueError("Invalid bonus feedback type")
+        validate_impact(bonus)
+        criterion = bonus["criterion_id"]
+        if not isinstance(criterion, str) or (criterion and criterion not in explicit):
+            raise ValueError("Unknown explicit bonus criterion")
+        if criterion:
+            if criterion in criterion_ids:
+                raise ValueError("An explicit bonus criterion is assessed once")
+            criterion_ids.add(criterion)
+        elif not policy["open_ended"]:
+            raise ValueError("Open-ended bonuses are disabled")
+        key = bonus["contribution_key"]
+        if not isinstance(key, str) or not key.strip():
+            raise ValueError("Bonus needs a semantic contribution_key")
+        key = " ".join(key.casefold().split())
+        if bonus["status"] == "pass":
+            if key in contribution_keys:
+                raise ValueError(
+                    "Same contribution cannot earn explicit and open bonus twice"
+                )
+            contribution_keys.add(key)
         validate_visible_evidence(bonus, bundle, snapshot)
+    if review["bonus_review_complete"] and criterion_ids != explicit:
+        raise ValueError("Every explicit bonus criterion must be assessed")
+
+
+def validate_impact(finding):
+    if finding["severity"] not in {"none", "minor", "material", "critical"}:
+        raise ValueError("Invalid severity")
+    if finding["rerun"] not in {"not-needed", "needed", "unknown"}:
+        raise ValueError("Invalid rerun decision")
+    if finding["feedback_type"] == "revision" and finding["severity"] == "none":
+        raise ValueError("Revision needs a severity")
 
 
 def validate_visible_evidence(item, bundle, snapshot):
@@ -337,8 +467,11 @@ def score(bundle, review=None):
     passed = sum(item["status"] == "pass" for item in items.values())
     pending = sum(item["status"] == "pending" for item in items.values())
     bonus = review["bonuses"] if review else []
-    cap = bundle["rubric"]["bonus_cap"]
-    awarded = min(cap, sum(item["status"] == "pass" for item in bonus))
+    policy = bundle["rubric"]["bonus_policy"]
+    cap = policy["cap"]
+    bonus = [{**item, "points": bonus_points(item, policy)} for item in bonus]
+    total_bonus = sum(item["points"] for item in bonus)
+    awarded = min(cap, total_bonus) if cap is not None else total_bonus
     return {
         "status": "draft-for-human-review",
         "items": items,
@@ -358,18 +491,20 @@ def score(bundle, review=None):
 
 
 def render(report, bundle):
+    cap = report["bonus_cap"] if report["bonus_cap"] is not None else "없음"
     lines = [
-        "# AX week 5 평가 초안",
+        f"# AX {bundle['rubric']['week']} 평가 초안",
         "",
         "사람 검토용 비공식 체크리스트 점수입니다. "
         "공식 재현성·해석 50:50 성적이 아닙니다.",
         "학생 프로그램과 모델 실험을 실행하지 않았습니다.",
         "",
-        f"- 기본: **{report['base_earned']}/{report['base_max']}점**, "
+        f"- 확인된 기본점수: **{report['base_earned']}점** / "
+        f"전체 {report['base_max']}항목, "
         f"보류 {report['base_pending']}항목",
         f"- 기본점수 확정 가능 범위: {report['base_possible_range'][0]}"
         f"–{report['base_possible_range'][1]}",
-        f"- 가산: **{report['bonus_earned']}점** / 상한 {report['bonus_cap']}점; "
+        f"- 제안 가산: **{report['bonus_earned']}점** / 상한 {cap}; "
         f"추가 시도 검토 완료: {report['bonus_review_complete']}",
         f"- 평가 입력: `{bundle['id']}`",
         "",
@@ -402,8 +537,26 @@ def render(report, bundle):
             "none": "참고",
         }[kind]
         lines += ["", f"**{label}:** {finding.get('feedback', finding['reason'])}"]
+        if finding.get("deduction_reason"):
+            lines += ["", "감점 이유: " + finding["deduction_reason"]]
         for ref in finding["evidence"]:
             lines.append(f"- 근거: `{ref['path']}:{ref['start']}-{ref['end']}`")
+    comparison = bundle["checks"].get("log_comparison", {})
+    if comparison:
+        lines += [
+            "",
+            "## 로그·CSV 자동 대조",
+            "",
+            f"일치 {len(comparison['matched_csv_lines'])}건, "
+            f"불일치 {len(comparison['mismatches'])}건, "
+            f"대응 불명 {len(comparison['unmatched_csv_lines'])}건. "
+            "불일치는 재채점 설명과 함께 검토하며 자동 감점하지 않습니다.",
+        ]
+        for mismatch in comparison["mismatches"]:
+            ref = mismatch["log"]["evidence"]
+            lines.append(
+                f"- CSV {mismatch['csv_line']}행 ↔ {ref['path']}:{ref['start']}"
+            )
     lines += [
         "",
         "## 추가 시도",
@@ -456,6 +609,7 @@ def prepare(snapshot, rubric, out, max_chars=180_000, per_file=12_000):
     write_new(out / "prompt.txt", prompt_for(bundle))
     write_new(out / "evaluation.json", report)
     write_new(out / "feedback.md", render(report, bundle))
+    write_comment(out, report, bundle, snapshot)
     return bundle
 
 
@@ -476,5 +630,6 @@ def finalize(run_dir, response, out):
     write_new(out / "review.json", response)
     write_new(out / "evaluation.json", report)
     write_new(out / "feedback.md", render(report, bundle))
+    write_comment(out, report, bundle, snapshot)
     write_new(out / "coverage.json", bundle["coverage"])
     return report

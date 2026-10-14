@@ -21,6 +21,7 @@ from ax_evaluator.storage import digest, read_json
 def review_fixture():
     snapshot, _, rubric = fixture()
     snapshot["id"] = digest(snapshot)
+    rubric["bonus_policy"]["cap"] = 3
     bundle = build_bundle(snapshot, rubric)
     review = template_for(bundle)
     return snapshot, bundle, review
@@ -59,6 +60,7 @@ class ReviewTest(unittest.TestCase):
         snapshot, bundle, review = review_fixture()
         item = review["items"][0]
         item["status"] = "pass"
+        item["pending_reason"] = ""
         item["evidence"] = [{"path": "REPORT.md", "start": 100, "end": 100}]
         with self.assertRaises(ValueError):
             validate_review(review, bundle, snapshot)
@@ -73,11 +75,18 @@ class ReviewTest(unittest.TestCase):
         item.update(
             status="fail",
             feedback_type="revision",
+            severity="material",
+            deduction_reason="Core requirement missing",
+            pending_reason="",
             evidence=[{"path": "REPORT.md", "start": 1, "end": 1}],
         )
         review["bonuses"] = [
             {
                 "id": f"B{index}",
+                "criterion_id": "",
+                "contribution_key": f"extra-{index}",
+                "severity": "none",
+                "rerun": "not-needed",
                 "title": f"contribution {index}",
                 "status": "pass",
                 "contribution": "a distinct additional question",
@@ -99,6 +108,10 @@ class ReviewTest(unittest.TestCase):
         snapshot, bundle, review = review_fixture()
         bonus = {
             "id": "B1",
+            "criterion_id": "",
+            "contribution_key": "same",
+            "severity": "none",
+            "rerun": "unknown",
             "title": "same",
             "status": "pending",
             "contribution": "x",

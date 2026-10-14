@@ -15,6 +15,11 @@ Do not invent new grading requirements from style preferences or SDK conventions
 1. Collect a PR with `uv run python -m ax_evaluator collect-pr`, or use `collect-local`.
 2. Run `prepare` to generate deterministic checks, a bounded evidence packet,
    coverage inventory and a response template. Inspect omissions before judging.
+   At the start, interview the grader for optional explicit bonus criteria using
+   `interview`; reuse its saved policy across a cohort with `prepare --policy`.
+   Without a saved policy, `prepare` asks the interview itself. Do not infer
+   grader policy from student submissions. Meaningful extras remain eligible
+   even when no explicit bonus criteria exist.
 3. Review every review-mode criterion, with `pass`, `fail` or `pending` and exact
    source line references. Consult full snapshot evidence when preparing a larger
    packet; never cite a line the current packet does not contain.
@@ -53,6 +58,16 @@ can arise anywhere, including mandatory code, calculations and interpretation.
 ## Feedback and points
 
 - Every base item: pass = 1, fail = 0, pending = unassigned. No invented half points.
+- Judge `pass_rule` and `fail_rule`, not perfection. A supported main conclusion
+  can pass while a local overstatement receives revision feedback. Use `severity`
+  (none/minor/material/critical) separately from the score. Minor wording or style
+  issues never justify fail. Every fail needs `deduction_reason` explaining which
+  core requirement is materially unmet and why the defect matters. Do not deduct
+  twice for the same defect under different criteria.
+- For pending use `pending_reason`: policy (grader decision), evidence (insufficient
+  evidence), or not-reviewed. Do not label unreviewed work as a policy question.
+  `rerun` is needed/not-needed/unknown: distinguish rerunning student experiments
+  from editing a report or locally testing a small code correction.
 - `revision`: a concrete error or unmet requirement, with evidence and a correction.
 - `suggestion`: optional improvement, without turning it into a mandatory condition.
 - `confirmation`: evidence insufficient for a decision; explain what is needed.
@@ -62,15 +77,32 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   contribution once, not once per file, feature or paragraph. Absent extras do not
   reduce the base score. Apply the rubric's configurable cap; do not let bonuses
   cancel revision requests. `bonus_review_complete=false` if coverage is incomplete.
+- `bonus_policy.explicit_criteria` supplies optional named rules and point weights.
+  Assess each once; `criterion_id` is that rule ID, or an empty string for a
+  meaningful open-ended contribution. Code computes points, never the model.
+  The same contribution cannot earn both explicit and open-ended points: use the
+  same `contribution_key` for the same semantic contribution, even when titles
+  differ. Select the best matching explicit rule first. Other distinct extras
+  remain eligible. No bonus criteria and no extras means zero, never a deduction.
+  For an explicit criterion not met, cite the inspected evidence and record fail;
+  absence of an optional feature is not a student revision request.
 - A defect in optional work belongs in its limitations/revision feedback and does
   not remove base points unless it undermines a base requirement too.
 - Write concise Korean feedback. Keep all results marked as human-review drafts.
+- `feedback` should be student-ready: supported strength, concrete consequence,
+  requested correction. Keep minor details in `reason`. The deterministic
+  `pr-comment.md` renderer selects major revision feedback and omits minor issues,
+  grader policy questions and provisional points. Preserve all major revisions;
+  do not bury an important defect to meet a length target. Put optional-work
+  corrections in the bonus entry, not in a base deduction.
 
 ## Execution boundaries
 
 `prepare`, `evidence`, `import-review` and `finalize` are offline. `collect-pr` reads
 GitHub. `judge` explicitly invokes the selected model and may send the evidence
 packet off-machine or incur charges. Use it only when that model call is authorized.
-Never call student servers, run their tests, execute their README commands, post
-comments, push or merge as part of grading. Local model endpoints need to be running
+Never call student servers, run their tests, execute their README commands, push
+or merge as part of grading. Posting is a separate explicit operation:
+`publish` previews offline; only `publish --write` sends a comment, and only when
+the user has authorized posting. Grading does not authorize posting. Local model endpoints need to be running
 already; the evaluator does not start or install model servers.
