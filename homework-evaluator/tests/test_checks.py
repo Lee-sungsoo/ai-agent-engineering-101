@@ -214,6 +214,15 @@ class ChecksTest(unittest.TestCase):
         snapshot["files"]["server.py"] = document(b"\xff\xfe")
         self.assertEqual(check(snapshot, rubric)["items"]["F01"]["status"], "pending")
 
+    def test_optional_broken_source_does_not_fail_minimum_source_requirement(self):
+        snapshot, _, rubric = fixture()
+        snapshot["files"]["extra/broken.py"] = document(b"def broken(:")
+        result = check(snapshot, rubric)["items"]["F01"]
+        self.assertEqual(result["status"], "pass")
+        self.assertIn("extra/broken.py", result["reason"])
+        snapshot["files"]["server.py"] = document(b"def broken(:")
+        self.assertEqual(check(snapshot, rubric)["items"]["F01"]["status"], "fail")
+
 
 class SnapshotTest(unittest.TestCase):
     def test_local_snapshot_does_not_execute_and_detects_tampering(self):

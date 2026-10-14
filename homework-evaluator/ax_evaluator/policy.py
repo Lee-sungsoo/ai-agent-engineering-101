@@ -8,8 +8,8 @@ def validate_policy(policy):
         raise ValueError("Unexpected bonus policy fields")
     if type(policy["open_ended"]) is not bool:
         raise ValueError("open_ended must be boolean")
-    if type(policy["open_points"]) is not int or policy["open_points"] < 1:
-        raise ValueError("open_points must be a positive integer")
+    if type(policy["open_points"]) is not int or policy["open_points"] != 1:
+        raise ValueError("Every bonus contribution must be worth exactly 1 point")
     cap = policy["cap"]
     if cap is not None and (type(cap) is not int or cap < 0):
         raise ValueError("cap must be null or a nonnegative integer")
@@ -27,8 +27,8 @@ def validate_policy(policy):
         if criterion["id"] in seen:
             raise ValueError("Duplicate bonus criterion ID")
         seen.add(criterion["id"])
-        if type(criterion["points"]) is not int or criterion["points"] < 1:
-            raise ValueError("Bonus criterion points must be positive integers")
+        if type(criterion["points"]) is not int or criterion["points"] != 1:
+            raise ValueError("Every bonus criterion must be worth exactly 1 point")
 
 
 def interview(ask=input):
@@ -43,9 +43,8 @@ def interview(ask=input):
             if not title:
                 break
             rule = ask("충족 조건과 필요한 검증 근거: ").strip()
-            points = int(ask("배점 [1]: ").strip() or "1")
             criteria.append(
-                dict(id=f"E{len(criteria) + 1}", title=title, rule=rule, points=points)
+                dict(id=f"E{len(criteria) + 1}", title=title, rule=rule, points=1)
             )
         if not criteria:
             raise ValueError("Explicit criteria selected but none entered")

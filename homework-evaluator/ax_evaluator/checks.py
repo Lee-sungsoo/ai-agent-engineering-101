@@ -125,13 +125,16 @@ def check(snapshot, rubric):
         except (SyntaxError, ValueError, RecursionError):
             bad_sources.append(path)
     findings["F01"] = result(
-        "fail"
-        if not sources or bad_sources
+        "pass"
+        if len(sources) > len(bad_sources) + len(unreadable_sources)
         else "pending"
         if unreadable_sources
-        else "pass",
+        else "fail",
         f"Python 파일 {len(sources)}개, 문법 오류 {len(bad_sources)}개. "
-        f"읽기 불가 {len(unreadable_sources)}개. 실행하지 않았습니다.",
+        f"읽기 불가 {len(unreadable_sources)}개. 실행하지 않았습니다. "
+        "명세의 최소 1개 파싱 요건만 판정합니다. "
+        f"오류 파일 {bad_sources}, 읽기 불가 파일 {unreadable_sources}; "
+        "필수 구현에 미치는 영향은 F07, 추가 작업 문제는 정성 피드백에서 검토합니다.",
         [
             ref
             for path in sources

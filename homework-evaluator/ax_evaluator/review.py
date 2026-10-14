@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def validate_rubric(rubric):
+    if rubric.get("scoring_policy") != "requirements-only-v1":
+        raise ValueError("Use a requirements-only-v1 rubric and prepare a new packet")
     validate_policy(rubric["bonus_policy"])
     if rubric.get("checker") not in {"week05", "review-only"}:
         raise ValueError("checker must be week05 or review-only")
@@ -22,6 +24,12 @@ def validate_rubric(rubric):
     for item in items:
         if item["mode"] not in {"auto", "review"}:
             raise ValueError("Invalid criterion mode")
+        if item["category"] not in {"requirements", "consistency", "intent"}:
+            raise ValueError("Invalid criterion category")
+        if item["category"] == "requirements":
+            source = item.get("source_requirement")
+            if not isinstance(source, str) or not source.strip():
+                raise ValueError("A scored requirement needs its assignment source")
         for key in ("id", "title", "category", "rule", "pass_rule", "fail_rule"):
             if not isinstance(item.get(key), str) or not item[key].strip():
                 raise ValueError(f"Criterion needs {key}")
@@ -34,13 +42,20 @@ def validate_rubric(rubric):
         if rubric["open_non_deal"] not in {"pending", "correct", "incorrect"}:
             raise ValueError("Invalid open_non_deal policy")
         reference = read_json(ROOT / "rubrics/week05.json")
-        expected = {i["id"]: (i["mode"], i["category"]) for i in reference["items"]}
-        actual = {i["id"]: (i["mode"], i["category"]) for i in items}
+        expected = {
+            i["id"]: i["category"] for i in reference["items"] if i["mode"] == "auto"
+        }
+        actual = {i["id"]: i["category"] for i in items if i["mode"] == "auto"}
         if expected != actual:
             raise ValueError(
                 "Changing auto checklist IDs/modes requires checker changes"
             )
-    if rubric["base_point_per_item"] != 1:
+    if not any(i["category"] == "requirements" for i in items):
+        raise ValueError("Rubric needs at least one required deliverable")
+    if (
+        type(rubric["base_point_per_item"]) is not int
+        or rubric["base_point_per_item"] != 1
+    ):
         raise ValueError("One point per passed base item is supported")
 
 
@@ -297,6 +312,7 @@ def template_for(bundle):
 
 def validate_review(review, bundle, snapshot):
     verify_bundle(bundle)
+    validate_rubric(bundle["rubric"])
     verify_snapshot(snapshot)
     if snapshot["id"] != bundle["snapshot_id"]:
         raise ValueError("Review bundle belongs to a different snapshot")
@@ -311,6 +327,11 @@ def validate_review(review, bundle, snapshot):
         raise ValueError("items and bonuses must be arrays")
     expected = {
         item["id"] for item in bundle["rubric"]["items"] if item["mode"] == "review"
+    }
+    required = {
+        item["id"]
+        for item in bundle["rubric"]["items"]
+        if item["category"] == "requirements"
     }
     seen = set()
     for item in review["items"]:
@@ -357,7 +378,10 @@ def validate_review(review, bundle, snapshot):
             raise ValueError("Only pending decisions need a pending_reason")
         if not isinstance(item["deduction_reason"], str):
             raise ValueError("deduction_reason must be text")
-        if item["status"] == "fail":
+        if item["id"] not in required:
+            if item["deduction_reason"]:
+                raise ValueError("Qualitative feedback cannot deduct points")
+        elif item["status"] == "fail":
             if (
                 item["severity"] not in {"material", "critical"}
                 or not item["deduction_reason"].strip()
@@ -460,12 +484,23 @@ def validate_visible_evidence(item, bundle, snapshot):
 
 
 def score(bundle, review=None):
+    validate_rubric(bundle["rubric"])
     items = {key: dict(value) for key, value in bundle["checks"]["items"].items()}
     if review:
         for item in review["items"]:
             items[item["id"]] = {**item, "origin": "review"}
-    passed = sum(item["status"] == "pass" for item in items.values())
-    pending = sum(item["status"] == "pending" for item in items.values())
+    required_ids = [
+        item["id"]
+        for item in bundle["rubric"]["items"]
+        if item["category"] == "requirements"
+    ]
+    qualitative_ids = [
+        item["id"]
+        for item in bundle["rubric"]["items"]
+        if item["category"] != "requirements"
+    ]
+    passed = sum(items[key]["status"] == "pass" for key in required_ids)
+    pending = sum(items[key]["status"] == "pending" for key in required_ids)
     bonus = review["bonuses"] if review else []
     policy = bundle["rubric"]["bonus_policy"]
     cap = policy["cap"]
@@ -475,10 +510,15 @@ def score(bundle, review=None):
     return {
         "status": "draft-for-human-review",
         "items": items,
+        "required_ids": required_ids,
+        "qualitative_ids": qualitative_ids,
         "base_earned": passed,
-        "base_max": len(items),
+        "base_max": len(required_ids),
         "base_pending": pending,
         "base_possible_range": [passed, passed + pending],
+        "qualitative_pending": sum(
+            items[key]["status"] == "pending" for key in qualitative_ids
+        ),
         "bonus_earned": awarded,
         "bonus_cap": cap,
         "bonus_pending": sum(item["status"] == "pending" for item in bonus),
@@ -500,26 +540,44 @@ def render(report, bundle):
         "학생 프로그램과 모델 실험을 실행하지 않았습니다.",
         "",
         f"- 확인된 기본점수: **{report['base_earned']}점** / "
-        f"전체 {report['base_max']}항목, "
+        f"필수 {report['base_max']}항목, "
         f"보류 {report['base_pending']}항목",
         f"- 기본점수 확정 가능 범위: {report['base_possible_range'][0]}"
         f"–{report['base_possible_range'][1]}",
+        f"- 정성 검토: {len(report['qualitative_ids'])}영역 (무배점), "
+        f"보류 {report['qualitative_pending']}영역; "
+        "검토할 주장·수정 요청의 수는 배점이나 분모를 늘리지 않습니다.",
         f"- 제안 가산: **{report['bonus_earned']}점** / 상한 {cap}; "
         f"추가 시도 검토 완료: {report['bonus_review_complete']}",
         f"- 평가 입력: `{bundle['id']}`",
         "",
         report["summary"],
         "",
-        "| 항목 | 상태 | 점수 | 판정 주체 |",
-        "|---|---|---:|---|",
     ]
-    for item in bundle["rubric"]["items"]:
-        finding = report["items"][item["id"]]
-        points = {"pass": "1", "fail": "0", "pending": "보류"}[finding["status"]]
-        lines.append(
-            f"| {item['id']} {item['title']} | {finding['status']} | "
-            f"{points} | {finding['origin']} |"
-        )
+    for required, heading in (
+        (True, "필수 요구사항 점수"),
+        (False, "정성 평가 — 별도 점수 없음"),
+    ):
+        lines += [
+            "",
+            f"## {heading}",
+            "",
+            "| 항목 | 상태 | 점수 | 판정 주체 |",
+            "|---|---|---:|---|",
+        ]
+        for item in bundle["rubric"]["items"]:
+            if (item["category"] == "requirements") != required:
+                continue
+            finding = report["items"][item["id"]]
+            points = (
+                {"pass": "1", "fail": "0", "pending": "보류"}[finding["status"]]
+                if required
+                else "무배점"
+            )
+            lines.append(
+                f"| {item['id']} {item['title']} | {finding['status']} | "
+                f"{points} | {finding['origin']} |"
+            )
     for item in bundle["rubric"]["items"]:
         finding = report["items"][item["id"]]
         lines += ["", f"## {item['id']} · {item['title']}", "", finding["reason"]]

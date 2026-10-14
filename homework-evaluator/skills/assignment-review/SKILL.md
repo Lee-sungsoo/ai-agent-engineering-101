@@ -57,11 +57,25 @@ can arise anywhere, including mandatory code, calculations and interpretation.
 
 ## Feedback and points
 
-- Every base item: pass = 1, fail = 0, pending = unassigned. No invented half points.
+- Only `category=requirements` earns base points: pass = 1, fail = 0,
+  pending = unassigned. Each has `source_requirement` tracing it to the assignment.
+  Freeze these items before grading a cohort; never add scored items because one
+  student wrote more. IDs/prefixes do not determine scoring. No half points.
+- `category=consistency` and `category=intent` are qualitative review areas,
+  not scored requirements. Inspect as many claims as the submission warrants,
+  including optional work; an area can contain multiple findings and evidence
+  references. Keep all actionable corrections in its feedback. Pass/fail here
+  describes the assessment only and never changes the score or denominator.
+  Always leave `deduction_reason` empty for these areas. A material issue can
+  still require revision and appear in the PR comment with a full base score.
+- If a qualitative finding proves a required deliverable materially unmet,
+  assess that specific requirement separately with the same evidence and an
+  explicit impact explanation. Do not automatically fail requirements merely
+  because a qualitative area fails. Optional-only errors do not deduct base points.
 - Judge `pass_rule` and `fail_rule`, not perfection. A supported main conclusion
   can pass while a local overstatement receives revision feedback. Use `severity`
   (none/minor/material/critical) separately from the score. Minor wording or style
-  issues never justify fail. Every fail needs `deduction_reason` explaining which
+  issues never justify a scored fail. Every failed requirement needs `deduction_reason` explaining which
   core requirement is materially unmet and why the defect matters. Do not deduct
   twice for the same defect under different criteria.
 - For pending use `pending_reason`: policy (grader decision), evidence (insufficient
@@ -77,7 +91,7 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   contribution once, not once per file, feature or paragraph. Absent extras do not
   reduce the base score. Apply the rubric's configurable cap; do not let bonuses
   cancel revision requests. `bonus_review_complete=false` if coverage is incomplete.
-- `bonus_policy.explicit_criteria` supplies optional named rules and point weights.
+- `bonus_policy.explicit_criteria` supplies optional named rules, each worth 1 point.
   Assess each once; `criterion_id` is that rule ID, or an empty string for a
   meaningful open-ended contribution. Code computes points, never the model.
   The same contribution cannot earn both explicit and open-ended points: use the

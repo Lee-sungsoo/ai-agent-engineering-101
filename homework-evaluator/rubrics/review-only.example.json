@@ -1,5 +1,5 @@
 {
-  "version": "review-only-example-1",
+  "version": "review-only-example-2",
   "week": "week-06",
   "checker": "review-only",
   "status": "template-not-official",
@@ -18,7 +18,8 @@
       "title": "필수 요구사항",
       "rule": "Replace with one concrete required deliverable from the pinned assignment spec.",
       "pass_rule": "Replace with one concrete required deliverable from the pinned assignment spec.",
-      "fail_rule": "Required deliverable is missing or materially incomplete."
+      "fail_rule": "Required deliverable is missing or materially incomplete.",
+      "source_requirement": "Replace with the exact assignment section and explicit required deliverable."
     },
     {
       "id": "C1",
@@ -38,5 +39,6 @@
       "pass_rule": "The central analysis addresses the assignment question and stays within observed evidence.",
       "fail_rule": "The central conclusion depends on unsupported claims or misses the required question."
     }
-  ]
+  ],
+  "scoring_policy": "requirements-only-v1"
 }

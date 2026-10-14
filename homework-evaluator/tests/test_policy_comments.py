@@ -8,9 +8,15 @@ from unittest.mock import patch
 
 from test_review import review_fixture
 
-from ax_evaluator.comments import publish, render_comment, source_links, write_comment
-from ax_evaluator.policy import interview
-from ax_evaluator.review import build_bundle, score, validate_review
+from ax_evaluator.comments import (
+    comment_complete,
+    publish,
+    render_comment,
+    source_links,
+    write_comment,
+)
+from ax_evaluator.policy import interview, validate_policy
+from ax_evaluator.review import build_bundle, render, score, validate_review
 from ax_evaluator.storage import digest
 
 
@@ -49,6 +55,100 @@ def bonus(criterion="", key="extra"):
 
 
 class PolicyTest(unittest.TestCase):
+    def test_old_packets_are_not_silently_rescored_with_new_semantics(self):
+        snapshot, bundle, review = complete_fixture()
+        del bundle["rubric"]["scoring_policy"]
+        bundle["id"] = digest({k: v for k, v in bundle.items() if k != "id"})
+        with self.assertRaisesRegex(ValueError, "prepare a new packet"):
+            score(bundle, review)
+        with self.assertRaisesRegex(ValueError, "prepare a new packet"):
+            validate_review(review, bundle, snapshot)
+
+    def test_bonus_weights_other_than_one_are_rejected(self):
+        _, bundle, _ = complete_fixture()
+        for points in (0, 2, True, 1.0):
+            policy = copy.deepcopy(bundle["rubric"]["bonus_policy"])
+            policy["open_points"] = points
+            with self.assertRaisesRegex(ValueError, "exactly 1"):
+                validate_policy(policy)
+            policy["open_points"] = 1
+            policy["explicit_criteria"] = [
+                dict(id="E1", title="Extra", rule="Evidence", points=points)
+            ]
+            with self.assertRaisesRegex(ValueError, "exactly 1"):
+                validate_policy(policy)
+
+    def test_qualitative_failure_keeps_score_and_revision(self):
+        snapshot, bundle, review = complete_fixture()
+        item = next(i for i in review["items"] if i["id"] == "C04")
+        item.update(
+            status="fail",
+            feedback_type="revision",
+            severity="material",
+            feedback="추가 분석의 계산식을 수정하세요.",
+        )
+        validate_review(review, bundle, snapshot)
+        report = score(bundle, review)
+        self.assertEqual((report["base_earned"], report["base_max"]), (18, 18))
+        self.assertIn("계산식을 수정", render_comment(report, bundle, snapshot))
+        self.assertIn(
+            "C04 보고서·PR·실제 구현의 일치 | fail | 무배점", render(report, bundle)
+        )
+        item["deduction_reason"] = "Qualitative deduction"
+        with self.assertRaisesRegex(ValueError, "Qualitative"):
+            validate_review(review, bundle, snapshot)
+
+    def test_qualitative_pending_does_not_change_score_but_blocks_publication(self):
+        snapshot, bundle, review = complete_fixture()
+        item = next(i for i in review["items"] if i["id"] == "C04")
+        item.update(
+            status="pending", pending_reason="evidence", feedback_type="confirmation"
+        )
+        validate_review(review, bundle, snapshot)
+        report = score(bundle, review)
+        self.assertEqual(report["base_possible_range"], [18, 18])
+        self.assertEqual(report["base_pending"], 0)
+        self.assertEqual(report["qualitative_pending"], 1)
+        self.assertFalse(comment_complete(report))
+
+    def test_more_qualitative_reviews_do_not_increase_denominator(self):
+        snapshot, bundle, review = complete_fixture()
+        rubric = copy.deepcopy(bundle["rubric"])
+        qualitative = next(i for i in rubric["items"] if i["id"] == "C04")
+        finding = next(i for i in review["items"] if i["id"] == "C04")
+        for number in range(8):
+            rubric["items"].append({**qualitative, "id": f"Q{number}"})
+            review["items"].append({**finding, "id": f"Q{number}"})
+        bundle = build_bundle(snapshot, rubric)
+        validate_review(review, bundle, snapshot)
+        report = score(bundle, review)
+        self.assertEqual((report["base_earned"], report["base_max"]), (18, 18))
+        self.assertEqual(len(report["qualitative_ids"]), 11)
+
+    def test_missing_required_deliverable_deducts_once_despite_related_feedback(self):
+        snapshot, bundle, review = complete_fixture()
+        for key in ("C04", "F09"):
+            item = next(i for i in review["items"] if i["id"] == key)
+            item.update(
+                status="fail",
+                feedback_type="revision",
+                severity="material",
+                feedback="필수 결과표를 수정하세요.",
+                deduction_reason="Required results table materially incorrect"
+                if key == "F09"
+                else "",
+            )
+        validate_review(review, bundle, snapshot)
+        report = score(bundle, review)
+        self.assertEqual((report["base_earned"], report["base_max"]), (17, 18))
+
+    def test_scored_requirements_need_assignment_source(self):
+        snapshot, bundle, _ = complete_fixture()
+        rubric = copy.deepcopy(bundle["rubric"])
+        del rubric["items"][0]["source_requirement"]
+        with self.assertRaisesRegex(ValueError, "assignment source"):
+            build_bundle(snapshot, rubric)
+
     def test_interview_without_explicit_rules_keeps_meaningful_extras(self):
         answers = iter(["n", ""])
         policy = interview(lambda _: next(answers))
@@ -58,10 +158,10 @@ class PolicyTest(unittest.TestCase):
 
     def test_explicit_interview_records_rule_points_and_cap(self):
         answers = iter(
-            ["y", "Robustness", "Independent failure tests with logs", "2", "", "4"]
+            ["y", "Robustness", "Independent failure tests with logs", "", "4"]
         )
         policy = interview(lambda _: next(answers))
-        self.assertEqual(policy["explicit_criteria"][0]["points"], 2)
+        self.assertEqual(policy["explicit_criteria"][0]["points"], 1)
         self.assertEqual(policy["cap"], 4)
         self.assertTrue(policy["open_ended"])
 
@@ -72,7 +172,7 @@ class PolicyTest(unittest.TestCase):
             severity="minor", feedback_type="revision", feedback="표현을 수정하세요."
         )
         validate_review(review, bundle, snapshot)
-        self.assertEqual(score(bundle, review)["base_earned"], 20)
+        self.assertEqual(score(bundle, review)["base_earned"], 18)
         item.update(status="fail", deduction_reason="A typo")
         with self.assertRaisesRegex(ValueError, "material defect"):
             validate_review(review, bundle, snapshot)
@@ -81,12 +181,12 @@ class PolicyTest(unittest.TestCase):
         snapshot, bundle, review = complete_fixture()
         rubric = copy.deepcopy(bundle["rubric"])
         rubric["bonus_policy"]["explicit_criteria"] = [
-            dict(id="E1", title="Robustness", rule="Independent tests", points=2)
+            dict(id="E1", title="Robustness", rule="Independent tests", points=1)
         ]
         bundle = build_bundle(snapshot, rubric)
         review["bonuses"] = [bonus("E1")]
         validate_review(review, bundle, snapshot)
-        self.assertEqual(score(bundle, review)["bonus_earned"], 2)
+        self.assertEqual(score(bundle, review)["bonus_earned"], 1)
         review["bonuses"].append({**bonus(), "id": "B2", "title": "Different name"})
         with self.assertRaisesRegex(ValueError, "twice"):
             validate_review(review, bundle, snapshot)

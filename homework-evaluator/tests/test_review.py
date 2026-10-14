@@ -32,7 +32,7 @@ class ReviewTest(unittest.TestCase):
         snapshot, bundle, _ = review_fixture()
         self.assertEqual(bundle, build_bundle(snapshot, bundle["rubric"]))
         self.assertEqual(score(bundle)["base_earned"], 7)
-        self.assertEqual(score(bundle)["base_pending"], 13)
+        self.assertEqual(score(bundle)["base_pending"], 11)
 
     def test_model_cannot_change_deterministic_items(self):
         snapshot, bundle, review = review_fixture()
@@ -102,7 +102,7 @@ class ReviewTest(unittest.TestCase):
         report = score(bundle, review)
         self.assertEqual(report["bonus_earned"], 3)
         self.assertEqual(report["items"][item["id"]]["status"], "fail")
-        self.assertEqual(report["base_pending"], 12)
+        self.assertEqual(report["base_pending"], 10)
 
     def test_same_extra_cannot_be_counted_twice_by_title(self):
         snapshot, bundle, review = review_fixture()
@@ -136,7 +136,7 @@ class ReviewTest(unittest.TestCase):
                 "provenance": {"kind": "human", "reviewer": "test"},
             }
             report = finalize(root / "prepared", response, root / "final")
-            self.assertEqual(report["base_pending"], 13)
+            self.assertEqual(report["base_pending"], 11)
             self.assertIn("사람 검토용", (root / "final/feedback.md").read_text())
             self.assertEqual(
                 read_json(root / "final/evaluation.json")["provenance"]["kind"], "human"
