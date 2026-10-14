@@ -27,6 +27,11 @@ def comment_complete(report):
             for key, item in report["items"].items()
         )
         and not any(b["status"] == "pending" for b in report["bonuses"])
+        and bool(report.get("success_audit"))
+        and all(
+            audit["status"] != "insufficient"
+            for audit in report["success_audit"].values()
+        )
     )
 
 
@@ -53,7 +58,10 @@ def source_links(finding, metadata):
 
 def render_comment(report, bundle, snapshot):
     if not comment_complete(report):
-        return "평가 미완료 — 게시할 수 없습니다. 미검토·증거 보류 항목을 확인하세요.\n"
+        return (
+            "평가 미완료 — 게시할 수 없습니다. "
+            "미검토·증거 보류·성공 판정 검토를 확인하세요.\n"
+        )
     metadata = snapshot["metadata"]
     findings = [report["items"][i["id"]] for i in bundle["rubric"]["items"]]
     findings += report["bonuses"]
@@ -81,13 +89,43 @@ def render_comment(report, bundle, snapshot):
         "",
     ]
     lines += [" ".join(f["feedback"] for f in strengths), ""] if strengths else []
-    for finding in revisions:
+    groups = {}
+    for index, finding in enumerate(revisions):
+        # Semantic grouping is explicit in the review, never guessed from wording.
+        key = (
+            ("review", finding["revision_key"])
+            if finding.get("revision_key")
+            else ("automatic", index)
+        )
+        groups.setdefault(key, []).append(finding)
+    for members in groups.values():
+        finding = members[0]
         prefix = "추가 작업 보완: " if "contribution" in finding else ""
         feedback = finding.get("feedback", finding.get("reason", ""))
         lines += [f"- {prefix}{feedback}"]
-        refs = source_links(finding, metadata)
+        evidence = []
+        for member in members:
+            for ref in member["evidence"]:
+                if ref not in evidence:
+                    evidence.append(ref)
+        refs = source_links({"evidence": evidence}, metadata)
         if refs:
             lines.append(f"  근거: {refs}")
+        reruns = {member.get("rerun", "unknown") for member in members}
+        decision = (
+            "필요"
+            if "needed" in reruns
+            else "확인 필요"
+            if "unknown" in reruns
+            else "불필요"
+        )
+        reasons = list(
+            dict.fromkeys(
+                member.get("rerun_reason", "필요 여부를 채점자가 확인해야 합니다.")
+                for member in members
+            )
+        )
+        lines.append(f"  재실험 {decision}: " + " ".join(reasons))
     if revisions:
         reruns = {f.get("rerun", "unknown") for f in revisions}
         lines += [

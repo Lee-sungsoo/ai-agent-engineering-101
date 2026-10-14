@@ -27,6 +27,15 @@ Do not invent new grading requirements from style preferences or SDK conventions
    response, model provenance and input hashes. Human corrections use a new output
    directory and `import-review`, with the reviewer's name; preserve prior results.
 
+For an explicit PR list, `batch --prs ...` prepares all packets with one saved
+policy and a pinned specification SHA. It does not discover PRs or publish.
+`--stage evaluate` explicitly invokes the configured model for each PR;
+`--stage finalize` only consumes saved responses. Current-session reviews use
+`import-review --kind current-session --out BATCH/pr-N/review.json` and then
+batch resume/finalize. Inspect each packet independently; never reuse one PR's
+judgments for another. `--resume` reuses saved work; failed model calls require
+explicit `--retry-failed`. Use a new batch if criteria/settings change.
+
 The four axes are mandatory requirements, consistency between report and evidence,
 assignment intent, and the value/validity of optional additional work. Revisions
 can arise anywhere, including mandatory code, calculations and interpretation.
@@ -43,6 +52,26 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   omitted packet context, or unavailable history means pending, not automatic fail.
 - Log evidence supports observed records, not proof of execution authenticity or
   correctness on all inputs. Code inspection is not a runtime test.
+- Complete `success_audit` before treating the review as complete. This is an
+  unscored review obligation, not a new assignment requirement. For each area
+  give exact source references and a reason: `reviewed` means inspected (not
+  necessarily correct), `insufficient` means evidence is missing/unread, and
+  `not-applicable` needs evidence explaining why the mechanism is absent.
+  - `final_answer`: read actual terminal output independently of O/pass/success
+    labels. Compare its answer and factual supporting claims with the task and
+    supplied reference data. Distinguish the declared success rule from answer
+    quality; a correct hour does not make an incorrect count correct.
+  - `judge_logic`: inspect the code producing success labels. Consider false
+    positives from substring matching, intermediate reasoning, stale answers,
+    fallbacks and error messages. Label agreement alone does not validate success.
+  - `verification`: trace confirmation/revision/rejection responses through the
+    return paths. Check that the harness returns the intended answer, not the
+    verifier's prose or control token. Inspect the corresponding failure and
+    boundary traces, not only one successful example. Do not impose `Answer:`
+    or another format unless the assignment/submission actually promises it.
+  Put defects discovered here into the relevant qualitative/required/bonus
+  finding with a concrete revision request. The audit itself adds no points and
+  never automatically changes a submitted experimental success label.
 - OpenRouter, Claude CLI and Codex hosts are equally eligible when the spec permits
   them. Temperature/seed explicitly not settable is not an omission. Do not require
   a particular filename, SDK or implementation layout beyond the actual contract.
@@ -82,7 +111,28 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   evidence), or not-reviewed. Do not label unreviewed work as a policy question.
   `rerun` is needed/not-needed/unknown: distinguish rerunning student experiments
   from editing a report or locally testing a small code correction.
+  Every finding also needs `rerun_basis` and a concrete `rerun_reason`:
+  - `records-sufficient` -> not-needed: cite why existing evidence can complete
+    the correction (e.g. recomputing a ratio or fixing historical checkout steps).
+  - `behavior-change` -> needed: the requested correction changes measured
+    behavior, final answers or success classification; say which affected runs
+    must be added/rejudged and preserved. Existing complete outputs may suffice
+    for explicit offline rejudging; then use records-sufficient and explain it.
+  - `missing-records` -> unknown or needed: say what original records would
+    resolve the issue and when additional runs are required. Do not assume
+    mismatched rows can be reconciled or that the required run count is met.
+  - `undetermined` -> unknown: explain the missing decision/evidence.
+  - `not-applicable` -> not-needed: only for findings with no revision request.
+  These are recommendations to the student; never execute their code yourself.
 - `revision`: a concrete error or unmet requirement, with evidence and a correction.
+- Every revision needs a `revision_key` naming its underlying cause. Reuse the
+  key across required/qualitative/bonus findings for that same cause, and use
+  exactly the same consolidated student-ready `feedback` covering all correction
+  steps in those entries. Keep distinct analyses in `reason`. The renderer emits
+  one correction per key with combined references and conservative rerun advice.
+  Different causes need different keys even when they cite the same file.
+  Non-revision findings use an empty key. Grouping does not merge scores or drop
+  criterion-level findings; do not deduct twice for one underlying defect.
 - `suggestion`: optional improvement, without turning it into a mandatory condition.
 - `confirmation`: evidence insufficient for a decision; explain what is needed.
 - `strength`: a specific supported success, not generic praise.

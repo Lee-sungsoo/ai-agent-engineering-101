@@ -10,6 +10,15 @@ from .snapshot import verify_snapshot
 from .storage import canonical, digest, read_json, validate_refs, write_new
 
 ROOT = Path(__file__).resolve().parents[1]
+REVIEW_CONTRACT = "evidence-review-v2"
+SUCCESS_AREAS = ("final_answer", "judge_logic", "verification")
+RERUN_BASES = {
+    "records-sufficient": {"not-needed"},
+    "behavior-change": {"needed"},
+    "missing-records": {"needed", "unknown"},
+    "undetermined": {"unknown"},
+    "not-applicable": {"not-needed"},
+}
 
 
 def validate_rubric(rubric):
@@ -183,9 +192,18 @@ def response_schema(ids):
                     "type": "string",
                     "enum": ["not-needed", "needed", "unknown"],
                 },
+                "rerun_basis": {"type": "string", "enum": list(RERUN_BASES)},
+                "rerun_reason": {"type": "string"},
+                "revision_key": {"type": "string"},
             }
         )
-        entry["required"] += ["severity", "rerun"]
+        entry["required"] += [
+            "severity",
+            "rerun",
+            "rerun_basis",
+            "rerun_reason",
+            "revision_key",
+        ]
     item["properties"].update(
         {
             "deduction_reason": {"type": "string"},
@@ -203,6 +221,19 @@ def response_schema(ids):
         }
     )
     bonus["required"] += ["criterion_id", "contribution_key"]
+    audit = {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "status": {
+                "type": "string",
+                "enum": ["reviewed", "insufficient", "not-applicable"],
+            },
+            "reason": {"type": "string"},
+            "evidence": {"type": "array", "items": ref},
+        },
+        "required": ["status", "reason", "evidence"],
+    }
     return {
         "type": "object",
         "additionalProperties": False,
@@ -211,8 +242,20 @@ def response_schema(ids):
             "bonuses": {"type": "array", "items": bonus},
             "bonus_review_complete": {"type": "boolean"},
             "summary": {"type": "string"},
+            "success_audit": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {area: audit for area in SUCCESS_AREAS},
+                "required": list(SUCCESS_AREAS),
+            },
         },
-        "required": ["items", "bonuses", "bonus_review_complete", "summary"],
+        "required": [
+            "items",
+            "bonuses",
+            "bonus_review_complete",
+            "summary",
+            "success_audit",
+        ],
     }
 
 
@@ -241,6 +284,7 @@ def build_bundle(snapshot, rubric, max_chars=180_000, per_file=12_000):
     docs, coverage = excerpt_documents(snapshot, max_chars, per_file)
     ids = [item["id"] for item in rubric["items"] if item["mode"] == "review"]
     bundle = {
+        "review_contract": REVIEW_CONTRACT,
         "harness_version": __version__,
         "snapshot_id": snapshot["id"],
         "implementation_id": digest(
@@ -288,6 +332,10 @@ def prompt_for(bundle):
 
 def template_for(bundle):
     return {
+        "success_audit": {
+            area: {"status": "insufficient", "reason": "미검토", "evidence": []}
+            for area in SUCCESS_AREAS
+        },
         "items": [
             {
                 "id": item["id"],
@@ -298,6 +346,9 @@ def template_for(bundle):
                 "feedback": "근거 검토 필요",
                 "severity": "none",
                 "rerun": "unknown",
+                "rerun_basis": "undetermined",
+                "rerun_reason": "미검토",
+                "revision_key": "",
                 "deduction_reason": "",
                 "pending_reason": "not-reviewed",
             }
@@ -313,10 +364,18 @@ def template_for(bundle):
 def validate_review(review, bundle, snapshot):
     verify_bundle(bundle)
     validate_rubric(bundle["rubric"])
+    if bundle.get("review_contract") != REVIEW_CONTRACT:
+        raise ValueError("Review contract changed; prepare a new packet")
     verify_snapshot(snapshot)
     if snapshot["id"] != bundle["snapshot_id"]:
         raise ValueError("Review bundle belongs to a different snapshot")
-    if set(review) != {"items", "bonuses", "bonus_review_complete", "summary"}:
+    if set(review) != {
+        "items",
+        "bonuses",
+        "bonus_review_complete",
+        "summary",
+        "success_audit",
+    }:
         raise ValueError("Review has unexpected or missing top-level fields")
     if (
         not isinstance(review["summary"], str)
@@ -325,6 +384,28 @@ def validate_review(review, bundle, snapshot):
         raise ValueError("Invalid summary or bonus_review_complete")
     if not isinstance(review["items"], list) or not isinstance(review["bonuses"], list):
         raise ValueError("items and bonuses must be arrays")
+    audits = review["success_audit"]
+    if not isinstance(audits, dict) or set(audits) != set(SUCCESS_AREAS):
+        raise ValueError("Review needs all three success audit areas")
+    for audit in audits.values():
+        if not isinstance(audit, dict) or set(audit) != {
+            "status",
+            "reason",
+            "evidence",
+        }:
+            raise ValueError("Invalid success audit fields")
+        if audit["status"] not in {"reviewed", "insufficient", "not-applicable"}:
+            raise ValueError("Invalid success audit status")
+        if not isinstance(audit["reason"], str) or not audit["reason"].strip():
+            raise ValueError("Success audit needs a reason")
+        validate_visible_evidence(
+            {
+                **audit,
+                "status": "pending" if audit["status"] == "insufficient" else "pass",
+            },
+            bundle,
+            snapshot,
+        )
     expected = {
         item["id"] for item in bundle["rubric"]["items"] if item["mode"] == "review"
     }
@@ -346,6 +427,9 @@ def validate_review(review, bundle, snapshot):
             "rerun",
             "deduction_reason",
             "pending_reason",
+            "rerun_basis",
+            "rerun_reason",
+            "revision_key",
         }
         if not isinstance(item, dict) or set(item) != fields:
             raise ValueError("Invalid review item fields")
@@ -410,6 +494,9 @@ def validate_review(review, bundle, snapshot):
             "rerun",
             "criterion_id",
             "contribution_key",
+            "rerun_basis",
+            "rerun_reason",
+            "revision_key",
         }:
             raise ValueError("Invalid bonus fields")
         for key in (
@@ -461,6 +548,14 @@ def validate_review(review, bundle, snapshot):
         validate_visible_evidence(bonus, bundle, snapshot)
     if review["bonus_review_complete"] and criterion_ids != explicit:
         raise ValueError("Every explicit bonus criterion must be assessed")
+    grouped_feedback = {}
+    for finding in review["items"] + review["bonuses"]:
+        if finding["feedback_type"] != "revision":
+            continue
+        key = finding["revision_key"]
+        if key in grouped_feedback and grouped_feedback[key] != finding["feedback"]:
+            raise ValueError("Same revision_key needs one consolidated feedback text")
+        grouped_feedback[key] = finding["feedback"]
 
 
 def validate_impact(finding):
@@ -468,6 +563,24 @@ def validate_impact(finding):
         raise ValueError("Invalid severity")
     if finding["rerun"] not in {"not-needed", "needed", "unknown"}:
         raise ValueError("Invalid rerun decision")
+    basis = finding["rerun_basis"]
+    if basis not in RERUN_BASES or finding["rerun"] not in RERUN_BASES[basis]:
+        raise ValueError("Rerun decision contradicts its basis")
+    if (
+        not isinstance(finding["rerun_reason"], str)
+        or not finding["rerun_reason"].strip()
+    ):
+        raise ValueError("Rerun decision needs a reason")
+    key = finding["revision_key"]
+    if not isinstance(key, str) or key != key.strip():
+        raise ValueError("Invalid revision_key")
+    if finding["feedback_type"] == "revision":
+        if not key:
+            raise ValueError("Revision needs a shared cause revision_key")
+        if basis == "not-applicable":
+            raise ValueError("Revision needs an actionable rerun basis")
+    elif key:
+        raise ValueError("Only revisions may have a revision_key")
     if finding["feedback_type"] == "revision" and finding["severity"] == "none":
         raise ValueError("Revision needs a severity")
 
@@ -509,6 +622,9 @@ def score(bundle, review=None):
     awarded = min(cap, total_bonus) if cap is not None else total_bonus
     return {
         "status": "draft-for-human-review",
+        "success_audit": review["success_audit"]
+        if review
+        else template_for(bundle)["success_audit"],
         "items": items,
         "required_ids": required_ids,
         "qualitative_ids": qualitative_ids,
@@ -554,6 +670,18 @@ def render(report, bundle):
         report["summary"],
         "",
     ]
+    lines += ["## 성공 판정 검토 (무배점)", ""]
+    labels = {
+        "final_answer": "실제 최종 답과 근거",
+        "judge_logic": "성공 판정 코드",
+        "verification": "검증 응답 처리",
+    }
+    for area, audit in report["success_audit"].items():
+        lines += [f"- {labels[area]} ({audit['status']}): {audit['reason']}"]
+        lines += [
+            f"  근거: `{ref['path']}:{ref['start']}-{ref['end']}`"
+            for ref in audit["evidence"]
+        ]
     for required, heading in (
         (True, "필수 요구사항 점수"),
         (False, "정성 평가 — 별도 점수 없음"),
@@ -597,6 +725,12 @@ def render(report, bundle):
         lines += ["", f"**{label}:** {finding.get('feedback', finding['reason'])}"]
         if finding.get("deduction_reason"):
             lines += ["", "감점 이유: " + finding["deduction_reason"]]
+        if "rerun_reason" in finding:
+            lines += [
+                "",
+                f"재실험: {finding['rerun']} ({finding['rerun_basis']}) — "
+                + finding["rerun_reason"],
+            ]
         for ref in finding["evidence"]:
             lines.append(f"- 근거: `{ref['path']}:{ref['start']}-{ref['end']}`")
     comparison = bundle["checks"].get("log_comparison", {})
@@ -634,6 +768,9 @@ def render(report, bundle):
             "한계·보완: " + bonus["limitations"],
             "",
             f"{bonus['feedback_type']}: {bonus['feedback']}",
+            "",
+            f"재실험: {bonus['rerun']} ({bonus['rerun_basis']}) — "
+            + bonus["rerun_reason"],
         ]
         lines += [
             f"- 근거: `{ref['path']}:{ref['start']}-{ref['end']}`"

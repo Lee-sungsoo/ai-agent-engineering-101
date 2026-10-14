@@ -31,6 +31,14 @@ def complete_fixture():
             feedback="기록을 잘 남겼습니다.",
             pending_reason="",
             rerun="not-needed",
+            rerun_basis="records-sufficient",
+            rerun_reason="Existing records suffice for this fixture.",
+        )
+    for audit in review["success_audit"].values():
+        audit.update(
+            status="reviewed",
+            reason="Fixture evidence inspected",
+            evidence=[{"path": "REPORT.md", "start": 1, "end": 1}],
         )
     review["bonus_review_complete"] = True
     return snapshot, bundle, review
@@ -49,6 +57,9 @@ def bonus(criterion="", key="extra"):
         feedback="추가 검증이 있습니다.",
         severity="none",
         rerun="not-needed",
+        rerun_basis="not-applicable",
+        rerun_reason="No correction requested.",
+        revision_key="",
         criterion_id=criterion,
         contribution_key=key,
     )
@@ -84,6 +95,7 @@ class PolicyTest(unittest.TestCase):
         item.update(
             status="fail",
             feedback_type="revision",
+            revision_key="fixture-cause",
             severity="material",
             feedback="추가 분석의 계산식을 수정하세요.",
         )
@@ -132,6 +144,7 @@ class PolicyTest(unittest.TestCase):
             item.update(
                 status="fail",
                 feedback_type="revision",
+                revision_key="fixture-cause",
                 severity="material",
                 feedback="필수 결과표를 수정하세요.",
                 deduction_reason="Required results table materially incorrect"
@@ -169,7 +182,10 @@ class PolicyTest(unittest.TestCase):
         snapshot, bundle, review = complete_fixture()
         item = review["items"][0]
         item.update(
-            severity="minor", feedback_type="revision", feedback="표현을 수정하세요."
+            severity="minor",
+            feedback_type="revision",
+            revision_key="fixture-cause",
+            feedback="표현을 수정하세요.",
         )
         validate_review(review, bundle, snapshot)
         self.assertEqual(score(bundle, review)["base_earned"], 18)
@@ -220,11 +236,15 @@ class CommentsTest(unittest.TestCase):
         snapshot, bundle, review = complete_fixture()
         review["items"][0].update(
             feedback_type="revision",
+            revision_key="fixture-cause",
             severity="material",
             feedback="주요 해석을 수정하세요.",
         )
         review["items"][1].update(
-            feedback_type="revision", severity="minor", feedback="typo-only"
+            feedback_type="revision",
+            revision_key="fixture-cause",
+            severity="minor",
+            feedback="typo-only",
         )
         comment = render_comment(score(bundle, review), bundle, snapshot)
         self.assertIn("주요 해석", comment)
