@@ -193,6 +193,43 @@ class CommentsTest(unittest.TestCase):
                     args[:2], ("repos/example/course/issues/comments/4", "PATCH")
                 )
 
+    def test_create_then_identical_comment_needs_no_second_write(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_final(root)
+            head = {"head": {"sha": "abc123"}, "state": "open"}
+            with patch(
+                "ax_evaluator.comments.github",
+                side_effect=[
+                    head,
+                    {"login": "grader"},
+                    [],
+                    head,
+                    {"html_url": "https://example.invalid/new"},
+                ],
+            ) as api:
+                self.assertEqual(publish(root, write=True)["action"], "created")
+                self.assertEqual(
+                    api.call_args.args[:2],
+                    ("repos/example/course/issues/7/comments", "POST"),
+                )
+                body = api.call_args.args[2]["body"]
+            existing = {
+                "user": {"login": "grader"},
+                "body": body,
+                "html_url": "https://example.invalid/new",
+            }
+            with patch(
+                "ax_evaluator.comments.github",
+                side_effect=[
+                    head,
+                    {"login": "grader"},
+                    [existing],
+                ],
+            ) as api:
+                self.assertEqual(publish(root, write=True)["action"], "unchanged")
+                self.assertEqual(api.call_count, 3)
+
 
 if __name__ == "__main__":
     unittest.main()

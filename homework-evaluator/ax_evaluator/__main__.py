@@ -59,6 +59,7 @@ def main(argv=None):
     human.add_argument("run", type=Path)
     human.add_argument("review", type=Path)
     human.add_argument("--reviewer", required=True)
+    human.add_argument("--kind", choices=["human", "current-session"], default="human")
     human.add_argument("--out", type=Path, required=True)
     final = commands.add_parser(
         "finalize", help="Validate saved review and calculate draft points offline"
@@ -129,10 +130,10 @@ def main(argv=None):
                 {
                     "bundle_id": bundle["id"],
                     "review": review,
-                    "provenance": {"kind": "human", "reviewer": args.reviewer},
+                    "provenance": {"kind": args.kind, "reviewer": args.reviewer},
                 },
             )
-            print(f"validated human review: {args.out}")
+            print(f"validated {args.kind} review: {args.out}")
         elif args.command == "finalize":
             report = finalize(args.run, read_json(args.response), args.out)
             print(

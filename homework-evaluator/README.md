@@ -2,7 +2,8 @@
 
 AX week 5 PR의 코드·로그·결과·보고서·커밋 이력을 읽어 **사람 검토용 평가 초안**을
 만듭니다. 학생 코드를 실행하거나 import하지 않습니다. 학생의 LLM 실험, 서버,
-테스트, README의 명령도 실행하지 않습니다. GitHub에 리뷰를 게시하지 않습니다.
+테스트, README의 명령도 실행하지 않습니다. 채점 과정에서는 GitHub에 게시하지
+않으며, 별도로 승인받아 `publish --write`를 실행한 경우에만 코멘트를 게시합니다.
 
 ## 결과물과 평가 방식
 
@@ -11,6 +12,8 @@ AX week 5 PR의 코드·로그·결과·보고서·커밋 이력을 읽어 **사
 - `prompt.txt`, `response.schema.json`: 모델 독립적인 평가 입력과 출력 계약
 - `evaluation.json`: 항목별 판정, 점수, 보류, 근거, 판정 주체
 - `feedback.md`: 잘한 점·수정 요청·개선 제안·확인 필요 사항을 포함한 한국어 초안
+- `pr-comment.md`: 주요 장점·수정 요청·재실험 필요 여부를 담은 학생용 코멘트
+- `publication.json`: 코멘트 해시·평가 대상 PR/커밋·게시 가능 상태
 - `request.json`, `raw-response.txt`, `provider-metadata.json`: 실제 모델 호출 시 감사 기록
 
 평가 축은 **필수 요구사항**, **리포트와 구현·결과의 일치**, **과제 의도**,
@@ -21,14 +24,40 @@ OpenRouter, Claude Code, Codex 중 무엇을 썼는지는 가감점 사유가 �
 증거가 부족하면 `pending`으로 남깁니다. 보류를 0점으로 확정하거나 분모에서
 제거하지 않고 현재 확보 점수와 가능한 범위를 함께 표시합니다.
 
-추가 기여마다 1점을 제안하며 기본점수와 별도로 표시합니다. **가산 상한 3점은
-편집 가능한 초깃값**입니다. 추가 작업이 없다고 감점하지 않고, 가산점으로 필수
-결함을 덮지 않습니다. 동일한 기여를 의미상 중복 집계하지 않았는지는 사람이
-검토해야 합니다. 기여 ID·제목의 중복만 코드가 차단합니다.
+점수와 피드백은 분리합니다. 모델은 `pass_rule`·`fail_rule`에 따라 판정하며,
+`severity`로 문제 중요도를 기록합니다. 경미한 표현 오류는 감점할 수 없고,
+통과 항목에도 수정 요청을 남길 수 있습니다. 미충족에는 핵심 요구사항에 미치는
+영향을 설명한 `deduction_reason`이 필요합니다. 같은 결함을 중복 감점하지 않습니다.
+
+가산 정책은 시작 인터뷰에서 받습니다. 명시 기준이 있으면 이름·충족 조건·배점을
+저장하고, 없더라도 필수사항 밖의 의미 있는 추가 기여마다 1점을 제안합니다.
+명시 기준이 있어도 다른 추가 기여는 평가합니다. 상한은 인터뷰에서 선택하며,
+빈 입력은 상한 없음입니다. 기존의 임의 상한 3점은 기본값에서 제거했습니다.
+같은 수업의 제출물에는 동일한 저장 정책을 재사용하세요.
+
+가산점은 필수 결함을 상쇄하지 않습니다. 같은 기여에는 같은 `contribution_key`를
+사용해 명시 기준과 자유 추가 기여의 중복 가산을 차단합니다. 이름을 바꾼 동일
+기여를 인식하는 의미 판단은 모델·사람의 역할입니다. 배점과 상한 계산은 코드가 합니다.
 
 이 세부 배점은 공식 채점표가 아닙니다. 과제의 공식 재현성 50%·해석 50%를
 환산한 성적도 아닙니다. `rubrics/week05.json`의 항목 정의·상한을 검토한 뒤
-버전을 올려 사용하세요. 다른 주차는 별도 명세·검사기 작업이 필요합니다.
+버전을 올려 사용하세요. 다른 주차는 아래의 review-only 설정으로 시작할 수 있으며,
+주차 전용 자동검사는 별도 검사기 작업이 필요합니다.
+
+## 시작 인터뷰
+
+`prepare`에 저장 정책을 지정하지 않으면 가산점 인터뷰를 시작합니다. 여러 PR을
+같은 기준으로 평가할 때는 먼저 한 번 인터뷰하고 결과를 재사용하세요.
+
+```bash
+uv run python -m ax_evaluator interview --out runs/course-bonus-policy.json
+```
+
+질문 순서는 명시 가산점 기준 유무 → 있으면 항목 이름·충족 조건/근거·배점 반복
+입력 → 전체 가산점 상한입니다. 의미 있는 추가 시도는 기본적으로 계속 평가합니다.
+학생 보고서에 적힌 희망 배점은 교수자 정책으로 취급하지 않습니다.
+자동화 환경에서는 `--policy`가 필수이며, 입력이 끊긴 인터뷰는 임의 답변으로
+채우지 않고 실패합니다. `bundle.json` 안에 정책과 해시가 보존됩니다.
 
 ## 빠른 시작: 모델 비용 없는 검사
 
@@ -46,7 +75,7 @@ uv run python -m ax_evaluator collect-pr 278 \
   --out runs/pr278-snapshot.json
 
 uv run python -m ax_evaluator prepare runs/pr278-snapshot.json \
-  --out runs/pr278-offline
+  --policy runs/course-bonus-policy.json --out runs/pr278-offline
 ```
 
 `collect-pr`는 PR 제목에 의존하지 않고 변경 경로에서 학번을 찾습니다. PR head와
@@ -65,7 +94,8 @@ PR에 포함되지 않습니다. 크래시나 비정상 모델 응답도 덮어�
 ```bash
 uv run python -m ax_evaluator collect-local /path/to/student/week-05 \
   --spec ../weeks/week-05/README.md --out runs/local-snapshot.json
-uv run python -m ax_evaluator prepare runs/local-snapshot.json --out runs/local-offline
+uv run python -m ax_evaluator prepare runs/local-snapshot.json \
+  --policy runs/course-bonus-policy.json --out runs/local-offline
 ```
 
 ## 모델을 연결한 평가
@@ -135,6 +165,55 @@ uv run python -m ax_evaluator evidence runs/pr278-snapshot.json REPORT.md --star
 오류가 있다면 검사기 또는 정책을 수정·버전 관리하고 다시 `prepare`하세요. 수동
 판단을 바꿀 때는 새 response와 출력 폴더를 만들어 이전 판단도 남깁니다.
 
+현재 세션 모델의 판정은 `import-review --kind current-session`으로 가져옵니다.
+사람이 직접 쓴 판정인 것처럼 기록하지 않습니다. 0.2 버전에서는 중요도·감점 사유·
+보류 사유·가산 기준 ID 등이 추가됐으므로 이전 응답을 그대로 재사용하지 마세요.
+새 패킷과 템플릿으로 재평가하고 이전 결과는 보존합니다.
+
+## 학생용 코멘트와 게시
+
+`finalize`는 `pr-comment.md`도 생성합니다. 점수표 대신 주요 장점, 핵심 수정 요청,
+근거 링크, 모델 실험 재실행 필요 여부를 담습니다. 중요 수정 요청은 누락하지 않고,
+경미한 지적은 상세 보고서에 남깁니다. 통과 항목에도 중요한 수정 요청은 표시합니다.
+교수자 정책 보류는 학생의 잘못으로 표현하지 않습니다.
+
+```bash
+# 오프라인 미리보기. GitHub를 호출하지 않습니다.
+uv run python -m ax_evaluator publish runs/pr278-reviewed-01
+
+# 코멘트 내용을 검토하고 게시를 승인받은 뒤에만 실행
+uv run python -m ax_evaluator publish runs/pr278-reviewed-01 --write
+```
+
+`--write`는 GitHub 일반 PR 코멘트를 생성하며, 현재 인증 계정이 쓴 같은 PR·주차의
+하네스 표시 코멘트가 있으면 갱신합니다. 내용이 같으면 다시 쓰지 않습니다.
+교수자나 학생의 다른 댓글은 수정하지 않습니다. GitHub의 Approve/Request changes
+리뷰 상태를 변경하는 기능은 아닙니다. 토큰 권한은 로그인된 `gh` 계정의 권한입니다.
+
+미검토·증거 부족·미완료 가산 평가, 바뀐 코멘트 파일, 변경된 제출 커밋, 닫힌 PR은
+게시를 막습니다. 교수자 정책 보류만 남은 경우에는 잠정 점수를 노출하지 않는 피드백
+코멘트를 게시할 수 있습니다. 게시 직전에 head를 다시 확인하지만 GitHub 댓글 쓰기는
+head 조건부 원자 연산이 아니므로 직후 커밋 변경의 경합은 완전히 막을 수 없습니다.
+같은 PR의 게시 작업은 직렬로 실행하세요. 서버 측 자동 재시도는 하지 않습니다.
+
+## 다른 주차로 확장
+
+`rubrics/review-only.example.json`을 복사하고 주차·항목별 충족/감점 기준을 실제
+과제 명세에 맞게 작성하세요. 예시는 공식 평가 기준이 아닙니다.
+
+```bash
+uv run python -m ax_evaluator collect-pr PR_NUMBER --week week-06 \
+  --spec-ref PINNED_COMMIT --out runs/week06-snapshot.json
+uv run python -m ax_evaluator prepare runs/week06-snapshot.json \
+  --rubric runs/week06-rubric.json --policy runs/course-bonus-policy.json \
+  --out runs/week06-packet
+```
+
+`checker: review-only`에서는 각 항목을 모델/사람이 검토하며 week 5 CSV 규칙을 다른
+과제에 강요하지 않습니다. 해당 주차의 deterministic 검사기는 아직 없으며,
+추가할 때 체크 ID·검사기·회귀 테스트를 함께 등록해야 합니다. PR 수집은 이 수업의
+`weeks/week-NN`·`submissions/<학번>/week-NN` 레이아웃을 전제로 합니다.
+
 ## 결정적인 부분과 검증 한계
 
 자동 검사는 Python AST 구문 분석, 시나리오·CSV 데이터 계약, 고유 run 반복 수,
@@ -166,6 +245,7 @@ uv run python -m ax_evaluator evidence runs/pr278-snapshot.json REPORT.md --star
 
 ```bash
 uv run python -m ax_evaluator prepare runs/pr278-snapshot.json \
+  --policy runs/course-bonus-policy.json \
   --max-chars 500000 --per-file-chars 50000 --out runs/pr278-expanded
 ```
 
@@ -189,12 +269,10 @@ uv run python -m unittest discover -s tests -v
 패킷 변경, 가산 상한, 모델의 자동 검사 덮어쓰기, CLI/API 요청·응답 처리를 검증합니다.
 학생 코드 실행과 실제 모델 호출은 하지 않습니다.
 
-초기 검증에서 30개 테스트와 Ruff 검사, skill frontmatter 검증이 통과했습니다.
-실제 PR #278의 고정 스냅샷으로 수집 → 자동 검사 → 수동 응답 가져오기 → 점수·피드백
-출력을 확인했습니다. 수동 응답 단계에는 미검토 템플릿을 사용했으므로 학생에 대한
-완료된 평가가 아닙니다. 같은 스냅샷을 두 번 처리한 bundle, evaluation, feedback,
-prompt, response schema 다섯 파일은 byte 단위로 같았습니다. 실제 모델 연결은
-mock 테스트까지만 수행했으며, 유료 호출은 하지 않았습니다.
+회귀 테스트에는 시작 인터뷰, 명시 기준 배점, 중복 가산 방지, 경미한 결함의 감점
+차단, 통과 항목의 수정 요청, 다른 주차의 review-only 평가, 코멘트 생성과 게시 제한도
+포함합니다. GitHub 쓰기와 외부 모델 호출은 mock으로 검증하며 실제 게시하지 않습니다.
+같은 입력·저장된 판정의 결과 재현성과 새 모델 판단의 일관성은 서로 다른 검증입니다.
 
 이 디렉터리는 교수자용 하네스 추가로 승인받은 경로입니다. 기존 학생 제출용
 ownership CI는 루트 경로 변경을 거부하므로 향후 PR에서 해당 실패가 예상됩니다.

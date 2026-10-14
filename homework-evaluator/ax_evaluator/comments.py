@@ -52,7 +52,8 @@ def render_comment(report, bundle, snapshot):
     if not comment_complete(report):
         return "평가 미완료 — 게시할 수 없습니다. 미검토·증거 보류 항목을 확인하세요.\n"
     metadata = snapshot["metadata"]
-    findings = list(report["items"].values()) + report["bonuses"]
+    findings = [report["items"][i["id"]] for i in bundle["rubric"]["items"]]
+    findings += report["bonuses"]
     revisions = [
         f
         for f in findings
