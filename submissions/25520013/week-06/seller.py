@@ -35,8 +35,9 @@ import harness
 DEFAULT = {
     "name": "Oak & Brass Workshop",
     "description": (
-        "Premium furniture workshop: solid-brass desk lamps, hardwood chairs and hardwood bookshelves, "
-        "each made by hand and covered by a 2-year warranty. Prices reflect the materials and the craft."
+        "Premium furniture workshop: desk lamps in genuine solid brass (no plating), chairs and bookshelves "
+        "in solid hardwood (no veneer), each made by hand and covered by a 2-year warranty. "
+        "Prices reflect the materials and the craft."
     ),
     "skill_description": (
         "Name the piece you want (lamp, chair or bookshelf) and we quote a price for it. "
