@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from test_review import review_fixture
 
-from ax_evaluator.comments import publish, render_comment, write_comment
+from ax_evaluator.comments import publish, render_comment, source_links, write_comment
 from ax_evaluator.policy import interview
 from ax_evaluator.review import build_bundle, score, validate_review
 from ax_evaluator.storage import digest
@@ -105,6 +105,17 @@ class PolicyTest(unittest.TestCase):
 
 
 class CommentsTest(unittest.TestCase):
+    def test_student_comment_does_not_link_internal_packet_files(self):
+        finding = {
+            "evidence": [
+                {"path": "@history.txt", "start": 1, "end": 2},
+                {"path": "REPORT.md", "start": 10, "end": 12},
+            ]
+        }
+        links = source_links(finding, {"source": "local"})
+        self.assertNotIn("@history", links)
+        self.assertIn("REPORT.md:10", links)
+
     def test_material_revision_survives_pass_minor_stays_in_detail(self):
         snapshot, bundle, review = complete_fixture()
         review["items"][0].update(

@@ -102,8 +102,10 @@ def collect_local(source, spec, out, week="week-05"):
     )
 
 
-def collect_pr(repo, number, out, spec_ref="main", week="week-05"):
+def collect_pr(repo, number, out, spec_ref="main", week="week-05", head_sha=None):
     validate_week(week)
+    if head_sha is not None and not re.fullmatch(r"[0-9a-f]{40}", head_sha):
+        raise ValueError("head_sha must be a full commit SHA")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
         raise ValueError("Expected owner/repository")
     pr = gh(f"repos/{repo}/pulls/{number}")
@@ -135,8 +137,10 @@ def collect_pr(repo, number, out, spec_ref="main", week="week-05"):
                 spec_sha,
             ]
         )
-        head = pr["head"]["sha"]
+        head = head_sha or pr["head"]["sha"]
         command(git + ["cat-file", "-e", head])
+        if head_sha:
+            command(git + ["merge-base", "--is-ancestor", head, pr["head"]["sha"]])
         tree = command(git + ["ls-tree", "-r", "-z", head, "--", prefix])
         for entry in tree.split(b"\0"):
             if not entry:
@@ -159,6 +163,11 @@ def collect_pr(repo, number, out, spec_ref="main", week="week-05"):
             ("@spec.md", f"weeks/{week}/README.md"),
             ("@roster.md", f"roster/{student}.md"),
         ]:
+            if (
+                target == "@roster.md"
+                and not command(git + ["ls-tree", spec_sha, "--", path]).strip()
+            ):
+                continue
             files[target] = document(command(git + ["show", f"{spec_sha}:{path}"]))
         checker_path = f"scripts/check_week{week[-2:]}.py"
         if command(git + ["ls-tree", spec_sha, "--", checker_path]).strip():
@@ -177,7 +186,10 @@ def collect_pr(repo, number, out, spec_ref="main", week="week-05"):
             ]
         )
         files["@history.txt"] = document(history)
-    files["@pr.md"] = document((pr["title"] + "\n\n" + (pr["body"] or "")).encode())
+    # GitHub exposes the current PR body, not its historical revision. Avoid
+    # leaking post-review corrections into an evaluation of an older commit.
+    if not head_sha or head_sha == pr["head"]["sha"]:
+        files["@pr.md"] = document((pr["title"] + "\n\n" + (pr["body"] or "")).encode())
     metadata = {
         "source": "github",
         "repository": repo,
@@ -185,13 +197,18 @@ def collect_pr(repo, number, out, spec_ref="main", week="week-05"):
         "url": pr["html_url"],
         "author": pr["user"]["login"],
         "student_id": student,
-        "head_sha": pr["head"]["sha"],
+        "head_sha": head,
+        "current_pr_head_sha": pr["head"]["sha"],
+        "historical": head != pr["head"]["sha"],
+        "pr_body_included": "@pr.md" in files,
+        "roster_included": "@roster.md" in files,
         "base_sha": pr["base"]["sha"],
         "spec_sha": spec_sha,
         "opened_at": pr["created_at"],
         "week": week,
         "history_available": True,
         "changed_paths": [item["filename"] for item in changes],
+        "changed_paths_scope": "current PR, not historical commit diff",
     }
     return finish(files, metadata, out)
 

@@ -32,7 +32,10 @@ def comment_complete(report):
 
 def source_links(finding, metadata):
     labels = []
-    for ref in finding["evidence"][:3]:
+    # Packet-only files such as @history.txt do not exist in the student's PR.
+    # Keep their full references in feedback.md, not in public source links.
+    visible = [ref for ref in finding["evidence"] if not ref["path"].startswith("@")]
+    for ref in visible[:3]:
         label = f"{ref['path']}:{ref['start']}"
         if metadata.get("source") == "github" and not ref["path"].startswith("@"):
             path = (

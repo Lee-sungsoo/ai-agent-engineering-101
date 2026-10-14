@@ -34,6 +34,9 @@ def main(argv=None):
     remote.add_argument("--spec-ref", default="main")
     remote.add_argument("--out", type=Path, required=True)
     remote.add_argument("--week", default="week-05")
+    remote.add_argument(
+        "--head-sha", help="Historical commit on the PR's current ancestry"
+    )
     prep = commands.add_parser(
         "prepare",
         help="Run deterministic checks and create review packet; no model call",
@@ -93,7 +96,12 @@ def main(argv=None):
             if args.number <= 0:
                 raise ValueError("PR number must be positive")
             result = collect_pr(
-                args.repo, args.number, args.out, args.spec_ref, week=args.week
+                args.repo,
+                args.number,
+                args.out,
+                args.spec_ref,
+                week=args.week,
+                head_sha=args.head_sha,
             )
             print(f"snapshot {result['id']} ({len(result['files'])} files)")
         elif args.command == "prepare":
