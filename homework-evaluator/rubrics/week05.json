@@ -1,0 +1,175 @@
+{
+  "version": "week05-draft-1",
+  "week": "week-05",
+  "status": "unofficial-review-draft",
+  "base_point_per_item": 1,
+  "bonus_cap": 3,
+  "open_non_deal": "pending",
+  "notes": [
+    "Raw points are a proposed checklist, not the professor's official score or 50/50 weighting.",
+    "Bonus cap 3 is an editable initial policy, not an approved course rule.",
+    "Additional work is optional; never deduct for its absence."
+  ],
+  "items": [
+    {
+      "id": "F01",
+      "category": "requirements",
+      "mode": "auto",
+      "title": "제출 소스의 존재와 Python 문법",
+      "rule": "At least one .py; parse Python sources without imports or execution.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "F02",
+      "category": "requirements",
+      "mode": "auto",
+      "title": "시나리오 구성",
+      "rule": "At least four unique scenarios; integer reserve/budget; both feasible and infeasible cases.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "F03",
+      "category": "requirements",
+      "mode": "auto",
+      "title": "결과 파일 데이터 계약",
+      "rule": "Exact header, valid vocabulary/counts; preserve crashed rows with error notes.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "F04",
+      "category": "requirements",
+      "mode": "auto",
+      "title": "조건·시나리오별 반복",
+      "rule": "Both required conditions and every included optional condition have three distinct run IDs per scenario; crashes remain attempts, not successful episodes.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "F05",
+      "category": "requirements",
+      "mode": "auto",
+      "title": "실행 로그 파일 구성",
+      "rule": "At least six nonempty top-level logs, and at least one file per condition/run pair; this is structure only.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "F06",
+      "category": "requirements",
+      "mode": "review",
+      "title": "인증·권한 검사 기록",
+      "rule": "auth_checks.txt records actual results for missing token (401 and WWW-Authenticate), wrong negotiation, wrong turn, token limit. Text alone does not prove universal behavior.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "F07",
+      "category": "requirements",
+      "mode": "review",
+      "title": "MCP market·host·runner 구현",
+      "rule": "Streamable HTTP and five required tools; role comes from token, server holds state; runner creates negotiations/tokens outside agent tools. Do not require a specific SDK or provider.",
+      "source_section": "The market server"
+    },
+    {
+      "id": "F08",
+      "category": "requirements",
+      "mode": "review",
+      "title": "협상 범위·차례·가격 한도 처리",
+      "rule": "Code and available logs support negotiation binding, turn enforcement, and both propose/accept own-limit checks in server conditions. Do not claim runtime verification.",
+      "source_section": "The market server"
+    },
+    {
+      "id": "C01",
+      "category": "consistency",
+      "mode": "auto",
+      "title": "가격·위반·성공 가능성 지표",
+      "rule": "Recompute deal_possible and violation from scenario and result; server violation must be zero; check eight successful moves at most.",
+      "source_section": "Measure, per episode"
+    },
+    {
+      "id": "C02",
+      "category": "consistency",
+      "mode": "auto",
+      "title": "정답 지표",
+      "rule": "Recompute correct. Infeasible open follows explicit open_non_deal policy; pending by default.",
+      "source_section": "Measure, per episode"
+    },
+    {
+      "id": "C03",
+      "category": "consistency",
+      "mode": "review",
+      "title": "로그·결과의 일치와 완전성",
+      "rule": "Match per-episode results and tool calls/results including refusals, attempts, turns and recoveries; distinguish missing parser coverage from missing student evidence; preserve retries/crashes.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "C04",
+      "category": "consistency",
+      "mode": "review",
+      "title": "보고서·PR·실제 구현의 일치",
+      "rule": "Check aggregates and per-episode table, claims about code behavior, source versions and any explained re-scoring; do not infer dishonesty from a mismatch.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "C05",
+      "category": "consistency",
+      "mode": "review",
+      "title": "조건 통제·주입 구현",
+      "rule": "Same scenarios/system prompts/host/model/eight moves; exact injection string in buyer view of each seller proposal, raised=max(reserve,budget)+30; condition not leaked to model except refusal.",
+      "source_section": "Conditions"
+    },
+    {
+      "id": "C06",
+      "category": "consistency",
+      "mode": "review",
+      "title": "사전 기준·실패 이력",
+      "rule": "Scenarios committed before runs; inspect available ancestry and artifacts. Timestamps and commit count alone do not prove when execution happened. Preserve failed attempts; local snapshots lack history.",
+      "source_section": "What to submit"
+    },
+    {
+      "id": "I01",
+      "category": "intent",
+      "mode": "review",
+      "title": "재현 설정 설명",
+      "rule": "Host/model/temperature or explicitly not settable, token minting/claims and run commands; no provider preference and no requirement to expose secrets.",
+      "source_section": "REPORT.md"
+    },
+    {
+      "id": "I02",
+      "category": "intent",
+      "mode": "review",
+      "title": "조건별 결과 해석",
+      "rule": "Explain observed outcomes using the assignment question about prompt vs server enforcement; experimental success rate is not assignment quality.",
+      "source_section": "Grading"
+    },
+    {
+      "id": "I03",
+      "category": "intent",
+      "mode": "review",
+      "title": "FIPA-ACL 비교",
+      "rule": "Six dimensions: caller/authority, act, content, limit enforcement, external verification, observed failures. Distinguish concept from personal experimental evidence.",
+      "source_section": "REPORT.md"
+    },
+    {
+      "id": "I04",
+      "category": "intent",
+      "mode": "review",
+      "title": "거부 후 같은 턴의 행동",
+      "rule": "Count refusals followed by valid moves in same turn; distinguish refused calls from recovered turns, model revision from deterministic fallback. Zero is valid with supporting coverage.",
+      "source_section": "REPORT.md"
+    },
+    {
+      "id": "I05",
+      "category": "intent",
+      "mode": "review",
+      "title": "주장에 대한 로그 근거",
+      "rule": "Concrete log evidence for which layer held under injection; lack of attempts does not demonstrate an observed blocking effect.",
+      "source_section": "Grading"
+    },
+    {
+      "id": "I06",
+      "category": "intent",
+      "mode": "review",
+      "title": "관측 범위·실패·한계 해석",
+      "rule": "Do not overgeneralize small samples or unobserved intent; separate diagnostic tests, pilots, failures and main experiment. Honest negative findings are valid.",
+      "source_section": "Grading"
+    }
+  ]
+}

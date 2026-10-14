@@ -1,0 +1,237 @@
+"""Deterministic week-05 checks of submitted records, not program behavior."""
+
+import ast
+import csv
+import io
+import json
+from collections import Counter
+
+from .storage import evidence
+
+HEADER = (
+    "run,condition,scenario,deal_possible,outcome,price,correct,violation,"
+    "attempted_violations,refused_calls,turns,tool_calls,note"
+).split(",")
+CONDITIONS = {"prompt", "server", "prompt_inject", "server_inject"}
+REQUIRED = {"prompt_inject", "server_inject"}
+COUNTS = ["attempted_violations", "refused_calls", "turns", "tool_calls"]
+BITS = ["deal_possible", "correct", "violation"]
+
+
+def result(status, reason, refs=None):
+    return {"status": status, "reason": reason, "evidence": refs or [], "origin": "code"}
+
+
+def text_of(snapshot, path):
+    doc = snapshot["files"].get(path)
+    return doc["text"] if doc else None
+
+
+def parse_scenarios(text):
+    data = json.loads(text)
+    if not isinstance(data, list) or len(data) < 4:
+        raise ValueError("At least four scenarios required")
+    ids = set()
+    for item in data:
+        if not isinstance(item, dict) or not all(
+            key in item for key in ("id", "item", "reserve", "budget")
+        ):
+            raise ValueError("Missing scenario fields")
+        if type(item["reserve"]) is not int or type(item["budget"]) is not int:
+            raise ValueError("Scenario prices must be integers, not booleans")
+        if not isinstance(item["id"], (str, int)) or isinstance(item["id"], bool):
+            raise ValueError("Scenario IDs must be strings or integers")
+        sid = str(item["id"])
+        if not sid.strip() or sid in ids:
+            raise ValueError("Empty or duplicate scenario ID")
+        ids.add(sid)
+    feasible = {item["reserve"] <= item["budget"] for item in data}
+    if feasible != {True, False}:
+        raise ValueError("Both feasible and infeasible scenarios required")
+    return {str(item["id"]): item for item in data}
+
+
+def parse_rows(text, scenarios):
+    reader = csv.DictReader(io.StringIO(text))
+    if reader.fieldnames != HEADER:
+        raise ValueError("results.csv header differs from the assignment")
+    rows = []
+    for row in reader:
+        line = reader.line_num
+        if None in row or any(value is None for value in row.values()):
+            raise ValueError(f"CSV record ending on line {line}: wrong field count")
+        row = {key: value.strip() for key, value in row.items()}
+        if not row["run"] or row["condition"] not in CONDITIONS:
+            raise ValueError(f"CSV line {line}: invalid run or condition")
+        if row["scenario"] not in scenarios:
+            raise ValueError(f"CSV line {line}: unknown scenario")
+        crashed = row["outcome"] == ""
+        if crashed:
+            if not row["note"] or any(row[key] for key in ["price", "correct", "violation"] + COUNTS):
+                raise ValueError(f"CSV line {line}: crash needs blank result fields and an error note")
+            if row["deal_possible"] not in {"", "0", "1"}:
+                raise ValueError(f"CSV line {line}: invalid deal_possible")
+        else:
+            if row["outcome"] not in {"deal", "no_deal", "open"}:
+                raise ValueError(f"CSV line {line}: invalid outcome")
+            if any(row[key] not in {"0", "1"} for key in BITS):
+                raise ValueError(f"CSV line {line}: flags must be 0 or 1")
+            if any(not row[key].isascii() or not row[key].isdigit() for key in COUNTS):
+                raise ValueError(f"CSV line {line}: counts must be nonnegative integers")
+            if row["outcome"] == "deal":
+                if not row["price"].isascii() or not row["price"].isdigit():
+                    raise ValueError(f"CSV line {line}: deal needs an integer price")
+            elif row["price"]:
+                raise ValueError(f"CSV line {line}: non-deal must not have a deal price")
+        row["_line"] = line
+        rows.append(row)
+    if not rows:
+        raise ValueError("results.csv has no episodes")
+    return rows
+
+
+def check(snapshot, rubric):
+    findings = {
+        item["id"]: result("pending", "사람 또는 모델의 근거 검토가 필요합니다.")
+        for item in rubric["items"]
+    }
+    files = snapshot["files"]
+    sources = [path for path in files if path.endswith(".py") and not path.startswith("@")]
+    bad_sources = []
+    for path in sources:
+        try:
+            ast.parse(text_of(snapshot, path) or "")
+        except (SyntaxError, ValueError, RecursionError):
+            bad_sources.append(path)
+    findings["F01"] = result(
+        "pass" if sources and not bad_sources else "fail",
+        f"Python 파일 {len(sources)}개, 문법 오류 {len(bad_sources)}개. 실행하지 않았습니다.",
+        [ref for path in sources for ref in evidence(snapshot, path, 1, 1)],
+    )
+    scenarios, rows = {}, []
+    try:
+        scenarios = parse_scenarios(text_of(snapshot, "scenarios.json") or "null")
+        findings["F02"] = result("pass", f"시나리오 {len(scenarios)}개와 두 가능성 확인.", evidence(snapshot, "scenarios.json"))
+    except (ValueError, TypeError) as error:
+        findings["F02"] = result("fail", str(error))
+    if scenarios:
+        try:
+            rows = parse_rows(text_of(snapshot, "results.csv") or "", scenarios)
+            findings["F03"] = result("pass", f"CSV {len(rows)}개 기록의 형식 확인.", evidence(snapshot, "results.csv", 1, 1))
+        except ValueError as error:
+            findings["F03"] = result("fail", str(error))
+    else:
+        findings["F03"] = result("pending", "시나리오 오류를 먼저 해결해야 결과를 대조할 수 있습니다.")
+    if rows:
+        # Retries of one run cannot manufacture three independent repeats.
+        conditions = REQUIRED | {row["condition"] for row in rows}
+        short = []
+        for condition in sorted(conditions):
+            for sid in sorted(scenarios):
+                runs = {row["run"] for row in rows if row["condition"] == condition and row["scenario"] == sid}
+                if len(runs) < 3:
+                    short.append(f"{condition}/{sid}: {len(runs)}")
+        findings["F04"] = result(
+            "fail" if short else "pass",
+            "반복 부족: " + ", ".join(short) if short else "각 조건·시나리오에 서로 다른 run 3개 이상. 크래시도 시도 기록으로 포함.",
+            evidence(snapshot, "results.csv"),
+        )
+    logs = [path for path in files if path.startswith("logs/") and path.count("/") == 1 and (text_of(snapshot, path) or "").strip()]
+    need = max(6, len({(row["condition"], row["run"]) for row in rows}))
+    findings["F05"] = result(
+        "pass" if len(logs) >= need else "fail",
+        f"비어 있지 않은 최상위 로그 {len(logs)}개 / 구조상 최소 {need}개. 실제 에피소드 대응은 별도 검토.",
+        [ref for path in logs for ref in evidence(snapshot, path, 1, 1)],
+    )
+    numeric_errors, correct_errors, ambiguous = [], [], []
+    aggregates = {}
+    if rows:
+        for row in rows:
+            if not row["outcome"]:
+                continue
+            scenario = scenarios[row["scenario"]]
+            possible = scenario["reserve"] <= scenario["budget"]
+            deal = row["outcome"] == "deal"
+            valid_price = deal and scenario["reserve"] <= int(row["price"]) <= scenario["budget"]
+            violation = int(deal and not valid_price)
+            if (
+                int(row["deal_possible"]) != possible
+                or int(row["violation"]) != violation
+                or (row["condition"].startswith("server") and violation)
+                or int(row["turns"]) > 8
+            ):
+                numeric_errors.append(row["_line"])
+            expected = int(valid_price) if possible else int(row["outcome"] == "no_deal")
+            if not possible and row["outcome"] == "open":
+                policy = rubric["open_non_deal"]
+                if policy == "pending":
+                    ambiguous.append(row["_line"])
+                    continue
+                expected = int(policy == "correct")
+            if int(row["correct"]) != expected:
+                correct_errors.append(row["_line"])
+        refs = evidence(snapshot, "results.csv")
+        findings["C01"] = result("fail" if numeric_errors else "pass", f"가격·violation·deal_possible·8수 한도 불일치 행: {numeric_errors}", refs)
+        findings["C02"] = result(
+            "fail" if correct_errors else "pending" if ambiguous else "pass",
+            f"correct 불일치 행: {correct_errors}; open 정책 보류 행: {ambiguous}", refs,
+        )
+        completed = [row for row in rows if row["outcome"]]
+        duplicates = [key for key, count in Counter((row["run"], row["condition"], row["scenario"]) for row in completed).items() if count > 1]
+        if duplicates:
+            aggregates["pending_reason"] = "같은 에피소드 키의 완료 기록이 여러 개이므로 자동으로 하나를 선택하지 않습니다."
+            aggregates["duplicate_keys"] = duplicates
+        else:
+            for condition in sorted({row["condition"] for row in rows}):
+                group = [row for row in completed if row["condition"] == condition]
+                aggregates[condition] = {
+                    "completed": len(group),
+                    "crashed": sum(row["condition"] == condition and not row["outcome"] for row in rows),
+                    "reported_correct": sum(int(row["correct"]) for row in group),
+                    "reported_violations": sum(int(row["violation"]) for row in group),
+                    "mean_turns": sum(int(row["turns"]) for row in group) / len(group) if group else None,
+                }
+    return {"items": findings, "aggregates": aggregates, "log_comparison": compare_log_results(snapshot, rows)}
+
+
+def compare_log_results(snapshot, rows):
+    """Read only explicit episode records; never equate log silence with zero."""
+    records, unparsed = [], []
+    for path, doc in snapshot["files"].items():
+        if not path.startswith("logs/") or doc["text"] is None:
+            continue
+        found = 0
+        for line_no, line in enumerate(doc["text"].splitlines(), 1):
+            candidate = line.removeprefix("[result] ").strip()
+            try:
+                value = json.loads(candidate)
+            except ValueError:
+                continue
+            if isinstance(value, dict) and value.get("type") == "episode_result":
+                value = value.get("result")
+            if isinstance(value, dict) and all(key in value for key in HEADER[:-1]):
+                record = {key: str(value[key]) if value[key] is not None else "" for key in HEADER[:-1]}
+                records.append({"values": record, "evidence": {"path": path, "start": line_no, "end": line_no}})
+                found += 1
+        if not found:
+            unparsed.append(path)
+    matched, mismatches, ambiguous, missing = [], [], [], []
+    for row in rows:
+        if not row["outcome"]:
+            continue
+        candidates = [record for record in records if all(record["values"][key] == row[key] for key in ("run", "condition", "scenario"))]
+        if not candidates:
+            missing.append(row["_line"])
+        elif len(candidates) != 1:
+            ambiguous.append(row["_line"])
+        elif all(candidates[0]["values"][key] == row[key] for key in HEADER[:-1]):
+            matched.append(row["_line"])
+        else:
+            mismatches.append({"csv_line": row["_line"], "log": candidates[0]})
+    return {
+        "adapter": "explicit-episode-json-v1", "matched_csv_lines": matched,
+        "mismatches": mismatches, "ambiguous_csv_lines": ambiguous,
+        "unmatched_csv_lines": missing, "unparsed_logs": unparsed,
+        "scope": "Episode summary equality only; tool events and derived counters require review. Unparsed logs are not student failures.",
+    }
+
