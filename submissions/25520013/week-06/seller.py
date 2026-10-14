@@ -1,13 +1,16 @@
-"""A rule-based seller exposed as an A2A server (a2a-sdk 1.2.x, JSON-RPC binding).
+"""A harness-driven seller exposed as an A2A server (a2a-sdk 1.2.x, JSON-RPC binding).
 
-    python seller_agent.py                       # lamp shop on :9999
-    python seller_agent.py --config cards/b.json # another seller from a config file
+    python seller.py --port 9999
 
-No model inside: the seller asks for an offer (INPUT_REQUIRED), counters, and
-either closes with a receipt artifact (COMPLETED) or walks away (REJECTED).
+The harness (see harness.py) decides the asking price, every counteroffer, and
+when to accept or reject. This file only speaks A2A, keeps each task's history,
+and enforces the rules of the game: never ask or sell below the reserve, end
+every INPUT_REQUIRED message with the asking price, and close the deal when the
+buyer meets the current ask.
 """
 
 import argparse
+import asyncio
 import json
 import math
 import re
@@ -27,20 +30,123 @@ from a2a.server.tasks import InMemoryTaskStore, TaskUpdater
 from a2a.types import AgentCapabilities, AgentCard, AgentInterface, AgentSkill
 from starlette.applications import Starlette
 
+import harness
+
 DEFAULT = {
     "name": "Lamp Shop",
     "description": "Sells desk lamps, chairs and bookshelves. Negotiates the price with the buyer.",
     "skill_description": "Ask for an item, then send a price. The shop answers with a counteroffer or a receipt.",
     "port": 9999,
     "reserve": {"lamp": 100, "chair": 180, "bookshelf": 260},
-    "max_rounds": 3,
 }
+HARNESS_TIMEOUT = (
+    80  # seconds per call; one retry stays under the kit's 200 s per request
+)
+
+
+# ---------------------------------------------------------------- decision (written by hand)
+
+
+def build_seller_prompt(item: str, reserve: int, history: list[dict]) -> str:
+    """Builds the prompt that asks the harness for the seller's next move.
+
+    Args:
+        item: The item under negotiation ("lamp", "chair" or "bookshelf").
+        reserve: The lowest price the shop may accept for this item.
+        history: Every message so far, oldest first, as
+            {"role": "buyer" | "seller", "text": str, "price": int | float | None}.
+
+    Returns:
+        The full prompt for harness.ask().
+    """
+    raise NotImplementedError("write the seller prompt")
+
+
+def parse_seller_decision(answer: str) -> dict:
+    """Reads the seller's move from the harness's answer.
+
+    Returns:
+        {"action": "counter" | "accept" | "reject", "price": int | None, "message": str}
+
+    Raises:
+        ValueError: If the answer holds no readable decision.
+    """
+    raise NotImplementedError("write the seller answer parser")
+
+
+# ---------------------------------------------------------------- plumbing
+
+
+def log(line: str) -> None:
+    print(line, flush=True)
+
+
+def single_number(text: str):
+    """Returns the one number in text, or None when there is none or several."""
+    nums = {float(n) for n in re.findall(r"\d+(?:\.\d+)?", text)}
+    if len(nums) != 1:
+        return None
+    n = nums.pop()
+    return int(n) if n.is_integer() else n
 
 
 class Seller(AgentExecutor):
     def __init__(self, cfg):
         self.cfg = cfg
-        self.open = {}  # task id -> {"item", "ask", "rounds"}
+        self.open = {}  # task id -> {"item", "ask", "history"}
+
+    def decide(self, deal: dict, reserve: int, task_id: str):
+        """Asks the harness for a move; tries twice, returns None if both fail."""
+        prompt = build_seller_prompt(deal["item"], reserve, deal["history"])
+        for attempt in (1, 2):
+            try:
+                answer = harness.ask(prompt, timeout=HARNESS_TIMEOUT)
+                log(f"[{task_id[:8]}] harness answer #{attempt}:\n{answer}")
+                return parse_seller_decision(answer)
+            except (harness.HarnessError, ValueError) as e:
+                log(f"[{task_id[:8]}] harness attempt {attempt} failed: {e}")
+        return None
+
+    def enforce(self, decision, deal: dict, offer, reserve: int):
+        """Turns the harness's decision into a legal move: (action, price, message, notes)."""
+        hold = deal["ask"] if deal["ask"] is not None else math.ceil(reserve * 1.3)
+        if decision is None:
+            return "counter", hold, "", ["no usable decision: hold the current ask"]
+        action, price, message = (
+            decision["action"],
+            decision.get("price"),
+            decision.get("message") or "",
+        )
+        notes = []
+        if action == "accept":
+            if offer is None or offer < reserve:
+                return (
+                    "counter",
+                    hold,
+                    message,
+                    [f"accept without a valid offer ({offer}): hold {hold}"],
+                )
+            return "accept", offer, message, notes
+        if action == "reject":
+            return "reject", None, message, notes
+        if price is None:
+            return (
+                "counter",
+                hold,
+                message,
+                ["counter without a price: hold the current ask"],
+            )
+        if price < reserve:
+            notes.append(f"counter {price} below reserve: raised to {reserve}")
+            price = reserve
+        if offer is not None and offer >= reserve and price <= offer:
+            return (
+                "accept",
+                offer,
+                message,
+                notes + [f"counter {price} <= offer {offer}: accept the offer"],
+            )
+        return "counter", price, message, notes
 
     async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
         task = context.current_task
@@ -52,7 +158,8 @@ class Seller(AgentExecutor):
         )
         say = lambda text: up.new_agent_message(parts=[new_text_part(text)])
         text = get_message_text(context.message) or ""
-        deal = self.open.get(task.id)
+        tid = task.id
+        deal = self.open.get(tid)
 
         if deal is None:  # first message: which item?
             item = next((k for k in self.cfg["reserve"] if k in text.lower()), None)
@@ -61,33 +168,39 @@ class Seller(AgentExecutor):
                     say("We only sell: " + ", ".join(self.cfg["reserve"]) + ".")
                 )
                 return
-            ask = math.ceil(self.cfg["reserve"][item] * 1.3)
-            self.open[task.id] = {"item": item, "ask": ask, "rounds": 0}
-            await up.requires_input(
-                say(f"{item}: asking {ask}. Send your offer as a number.")
-            )
-            return
-
-        m = re.search(r"\d+", text)
-        if m is None:
-            await up.requires_input(say("Send your offer as a number."))
-            return
-        offer, reserve = int(m.group()), self.cfg["reserve"][deal["item"]]
-        if offer >= reserve:
-            receipt = {"seller": self.cfg["name"], "item": deal["item"], "price": offer}
-            await up.add_artifact(parts=[new_data_part(receipt)], name="receipt")
-            await up.complete(say(f"Deal: {deal['item']} at {offer}."))
-            del self.open[task.id]
-            return
-        deal["rounds"] += 1
-        if deal["rounds"] >= self.cfg["max_rounds"]:
-            await up.reject(say(f"No deal at {offer}."))
-            del self.open[task.id]
-            return
-        deal["ask"] = max(reserve, (offer + deal["ask"]) // 2)
-        await up.requires_input(
-            say(f"{offer} is too low. Counteroffer: {deal['ask']}.")
+            deal = self.open[tid] = {"item": item, "ask": None, "history": []}
+        reserve = self.cfg["reserve"][deal["item"]]
+        offer = single_number(text)
+        deal["history"].append({"role": "buyer", "text": text, "price": offer})
+        log(
+            f"[{tid[:8]}] buyer: {text!r} (offer {offer}, ask {deal['ask']}, reserve {reserve})"
         )
+
+        if offer is not None and deal["ask"] is not None and offer >= deal["ask"]:
+            log(f"[{tid[:8]}] rule: offer {offer} meets ask {deal['ask']} -> accept")
+            action, price, message = "accept", offer, ""
+        else:
+            decision = await asyncio.to_thread(self.decide, deal, reserve, tid)
+            action, price, message, notes = self.enforce(decision, deal, offer, reserve)
+            for n in notes:
+                log(f"[{tid[:8]}] rule: {n}")
+        log(f"[{tid[:8]}] move: {action} {price}")
+
+        if action == "accept":
+            receipt = {"seller": self.cfg["name"], "item": deal["item"], "price": price}
+            await up.add_artifact(parts=[new_data_part(receipt)], name="receipt")
+            await up.complete(
+                say(f"{message} Deal: {deal['item']} at {price}.".strip())
+            )
+            del self.open[tid]
+        elif action == "reject":
+            await up.reject(say(message or "No deal."))
+            del self.open[tid]
+        else:  # counter: the kit reads the asking price as the last number of the message
+            deal["ask"] = price
+            reply = f"{message} Asking price: {price}.".strip()
+            deal["history"].append({"role": "seller", "text": reply, "price": price})
+            await up.requires_input(say(reply))
 
     async def cancel(self, context: RequestContext, event_queue: EventQueue) -> None:
         task = context.current_task
