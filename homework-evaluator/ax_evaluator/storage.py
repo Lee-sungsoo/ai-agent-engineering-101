@@ -50,4 +50,3 @@ def validate_refs(refs, snapshot):
             or not 1 <= start <= end <= len(doc["text"].splitlines())
         ):
             raise ValueError("evidence line range is outside its source")
-

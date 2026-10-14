@@ -1,8 +1,8 @@
 """Read local or GitHub submission blobs; never check out or run student code."""
 
-import base64
 import hashlib
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -18,7 +18,12 @@ SECRET = re.compile(r"(?:sk-(?:ant-|or-v1-|proj-)[A-Za-z0-9_-]{16,})")
 
 def command(args, cwd=None):
     result = subprocess.run(
-        args, cwd=cwd, capture_output=True, timeout=180, check=False
+        args,
+        cwd=cwd,
+        capture_output=True,
+        timeout=180,
+        check=False,
+        env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
     )
     if result.returncode:
         # Avoid echoing remote error bodies, command arguments or credentials.
@@ -45,7 +50,11 @@ def document(data):
         text = None
     if text is not None and SECRET.search(text):
         raise ValueError("Possible credential detected; snapshot was not saved")
-    return {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "text": text}
+    return {
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "bytes": len(data),
+        "text": text,
+    }
 
 
 def finish(files, metadata, out):
@@ -109,8 +118,16 @@ def collect_pr(repo, number, out, spec_ref="main"):
     with tempfile.TemporaryDirectory(prefix="ax-collect-") as temp:
         command(["git", "init", "--bare", "--template=", temp])
         git = ["git", "--git-dir", temp, "-c", "core.hooksPath=/dev/null"]
-        command(git + ["fetch", "--no-tags", f"https://github.com/{repo}.git",
-                       f"refs/pull/{number}/head", spec_sha])
+        command(
+            git
+            + [
+                "fetch",
+                "--no-tags",
+                f"https://github.com/{repo}.git",
+                f"refs/pull/{number}/head",
+                spec_sha,
+            ]
+        )
         head = pr["head"]["sha"]
         command(git + ["cat-file", "-e", head])
         tree = command(git + ["ls-tree", "-r", "-z", head, "--", prefix])
@@ -119,7 +136,9 @@ def collect_pr(repo, number, out, spec_ref="main"):
                 continue
             info, name = entry.split(b"\t", 1)
             mode, kind, sha = info.decode().split()
-            path = name.decode()[len(prefix):]
+            path = name.decode()[len(prefix) :]
+            if path.startswith("@"):
+                raise ValueError("Submission paths starting with @ are reserved")
             if mode not in {"100644", "100755"} or kind != "blob":
                 raise ValueError(f"Unsupported submission entry: {path}")
             if Path(path).name.startswith(".env"):
@@ -135,20 +154,31 @@ def collect_pr(repo, number, out, spec_ref="main"):
             ("@roster.md", f"roster/{student}.md"),
         ]:
             files[target] = document(command(git + ["show", f"{spec_sha}:{path}"]))
-        history = command(git + [
-            "log", "--format=commit %H%nparents %P%nAuthorDate %aI%nCommitDate %cI%n%B",
-            "--name-status", head, "--", prefix,
-        ])
+        history = command(
+            git
+            + [
+                "log",
+                "--format=commit %H%nparents %P%nAuthorDate %aI%nCommitDate %cI%n%B",
+                "--name-status",
+                head,
+                "--",
+                prefix,
+            ]
+        )
         files["@history.txt"] = document(history)
-    files["@pr.md"] = document(
-        (pr["title"] + "\n\n" + (pr["body"] or "")).encode()
-    )
+    files["@pr.md"] = document((pr["title"] + "\n\n" + (pr["body"] or "")).encode())
     metadata = {
-        "source": "github", "repository": repo, "pr": number,
-        "url": pr["html_url"], "author": pr["user"]["login"],
-        "student_id": student, "head_sha": pr["head"]["sha"],
-        "base_sha": pr["base"]["sha"], "spec_sha": spec_sha,
-        "opened_at": pr["created_at"], "week": "week-05",
+        "source": "github",
+        "repository": repo,
+        "pr": number,
+        "url": pr["html_url"],
+        "author": pr["user"]["login"],
+        "student_id": student,
+        "head_sha": pr["head"]["sha"],
+        "base_sha": pr["base"]["sha"],
+        "spec_sha": spec_sha,
+        "opened_at": pr["created_at"],
+        "week": "week-05",
         "history_available": True,
         "changed_paths": [item["filename"] for item in changes],
     }
@@ -164,4 +194,3 @@ def verify_snapshot(snapshot):
             data = doc["text"].encode()
             if hashlib.sha256(data).hexdigest() != doc["sha256"]:
                 raise ValueError("Source text digest mismatch")
-

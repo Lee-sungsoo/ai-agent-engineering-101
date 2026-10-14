@@ -26,11 +26,28 @@ def fixture():
         for run in range(1, 4):
             for scenario in scenarios:
                 possible = scenario["reserve"] <= scenario["budget"]
-                rows.append(dict(zip(HEADER, [
-                    str(run), condition, scenario["id"], str(int(possible)),
-                    "deal" if possible else "no_deal", "20" if possible else "",
-                    "1", "0", "0", "0", "2", "4", "host=test; model=test",
-                ])))
+                rows.append(
+                    dict(
+                        zip(
+                            HEADER,
+                            [
+                                str(run),
+                                condition,
+                                scenario["id"],
+                                str(int(possible)),
+                                "deal" if possible else "no_deal",
+                                "20" if possible else "",
+                                "1",
+                                "0",
+                                "0",
+                                "0",
+                                "2",
+                                "4",
+                                "host=test; model=test",
+                            ],
+                        )
+                    )
+                )
     files = {
         "server.py": "raise RuntimeError('STUDENT CODE MUST NEVER RUN')\n",
         "scenarios.json": json.dumps(scenarios),
@@ -40,12 +57,14 @@ def fixture():
     for condition in ("prompt_inject", "server_inject"):
         for run in range(1, 4):
             files[f"logs/{condition}-{run}.txt"] = "\n".join(
-                "[result] " + json.dumps(row) for row in rows
+                "[result] " + json.dumps(row)
+                for row in rows
                 if row["condition"] == condition and row["run"] == str(run)
             )
-    snapshot = {"metadata": {"source": "local"}, "files": {
-        path: document(text.encode()) for path, text in files.items()
-    }}
+    snapshot = {
+        "metadata": {"source": "local"},
+        "files": {path: document(text.encode()) for path, text in files.items()},
+    }
     set_rows(snapshot, rows)
     return snapshot, rows, read_json(ROOT / "rubrics/week05.json")
 
@@ -123,7 +142,9 @@ class ChecksTest(unittest.TestCase):
                 scenarios[0]["budget"] = True
             else:
                 scenarios[1]["id"] = scenarios[0]["id"]
-            snapshot["files"]["scenarios.json"] = document(json.dumps(scenarios).encode())
+            snapshot["files"]["scenarios.json"] = document(
+                json.dumps(scenarios).encode()
+            )
             self.assertEqual(check(snapshot, rubric)["items"]["F02"]["status"], "fail")
 
     def test_optional_condition_requires_complete_repeats(self):
@@ -137,6 +158,61 @@ class ChecksTest(unittest.TestCase):
         rows[0]["turns"] = "9"
         set_rows(snapshot, rows)
         self.assertEqual(check(snapshot, rubric)["items"]["C01"]["status"], "fail")
+
+    def test_all_crashes_do_not_earn_metric_points(self):
+        snapshot, rows, rubric = fixture()
+        for row in rows:
+            for key in HEADER[4:-1]:
+                row[key] = ""
+            row["note"] = "failed request"
+        set_rows(snapshot, rows)
+        findings = check(snapshot, rubric)["items"]
+        self.assertEqual(findings["C01"]["status"], "pending")
+        self.assertEqual(findings["C02"]["status"], "pending")
+
+    def test_explicit_header_key_value_log_adapter(self):
+        snapshot, rows, rubric = fixture()
+        for row in rows:
+            row["run"] = row["condition"] + "-" + row["run"]
+        for path in snapshot["files"]:
+            if not path.startswith("logs/"):
+                continue
+            run = Path(path).stem
+            condition, repeat = run.rsplit("-", 1)
+            lines = [
+                f"# version | condition: {condition} | repeat: {repeat} | host: test"
+            ]
+            for row in rows:
+                if row["run"] == run:
+                    lines.append(f"=== scenario {row['scenario']}: item")
+                    lines.append(
+                        "[result] "
+                        + " ".join(f"{key}={row[key]}" for key in HEADER[3:])
+                    )
+            snapshot["files"][path] = document("\n".join(lines).encode())
+        set_rows(snapshot, rows)
+        compared = check(snapshot, rubric)["log_comparison"]
+        self.assertEqual(len(compared["matched_csv_lines"]), 24)
+        # An explicit contradictory header must not get repaired using CSV data.
+        path = "logs/prompt_inject-1.txt"
+        changed = snapshot["files"][path]["text"].replace("repeat: 1", "repeat: 99")
+        snapshot["files"][path] = document(changed.encode())
+        compared = check(snapshot, rubric)["log_comparison"]
+        self.assertEqual(len(compared["unmatched_csv_lines"]), 4)
+
+    def test_duplicate_log_results_remain_ambiguous(self):
+        snapshot, _, rubric = fixture()
+        path = "logs/prompt_inject-1.txt"
+        text = snapshot["files"][path]["text"]
+        snapshot["files"][path] = document((text + "\n" + text).encode())
+        self.assertEqual(
+            len(check(snapshot, rubric)["log_comparison"]["ambiguous_csv_lines"]), 4
+        )
+
+    def test_unreadable_python_is_pending_not_pass(self):
+        snapshot, _, rubric = fixture()
+        snapshot["files"]["server.py"] = document(b"\xff\xfe")
+        self.assertEqual(check(snapshot, rubric)["items"]["F01"]["status"], "pending")
 
 
 class SnapshotTest(unittest.TestCase):

@@ -4,7 +4,9 @@ import ast
 import csv
 import io
 import json
+import re
 from collections import Counter
+from pathlib import Path
 
 from .storage import evidence
 
@@ -19,7 +21,12 @@ BITS = ["deal_possible", "correct", "violation"]
 
 
 def result(status, reason, refs=None):
-    return {"status": status, "reason": reason, "evidence": refs or [], "origin": "code"}
+    return {
+        "status": status,
+        "reason": reason,
+        "evidence": refs or [],
+        "origin": "code",
+    }
 
 
 def text_of(snapshot, path):
@@ -67,8 +74,12 @@ def parse_rows(text, scenarios):
             raise ValueError(f"CSV line {line}: unknown scenario")
         crashed = row["outcome"] == ""
         if crashed:
-            if not row["note"] or any(row[key] for key in ["price", "correct", "violation"] + COUNTS):
-                raise ValueError(f"CSV line {line}: crash needs blank result fields and an error note")
+            if not row["note"] or any(
+                row[key] for key in ["price", "correct", "violation"] + COUNTS
+            ):
+                raise ValueError(
+                    f"CSV line {line}: crash needs blank results and an error note"
+                )
             if row["deal_possible"] not in {"", "0", "1"}:
                 raise ValueError(f"CSV line {line}: invalid deal_possible")
         else:
@@ -77,12 +88,16 @@ def parse_rows(text, scenarios):
             if any(row[key] not in {"0", "1"} for key in BITS):
                 raise ValueError(f"CSV line {line}: flags must be 0 or 1")
             if any(not row[key].isascii() or not row[key].isdigit() for key in COUNTS):
-                raise ValueError(f"CSV line {line}: counts must be nonnegative integers")
+                raise ValueError(
+                    f"CSV line {line}: counts must be nonnegative integers"
+                )
             if row["outcome"] == "deal":
                 if not row["price"].isascii() or not row["price"].isdigit():
                     raise ValueError(f"CSV line {line}: deal needs an integer price")
             elif row["price"]:
-                raise ValueError(f"CSV line {line}: non-deal must not have a deal price")
+                raise ValueError(
+                    f"CSV line {line}: non-deal must not have a deal price"
+                )
         row["_line"] = line
         rows.append(row)
     if not rows:
@@ -96,51 +111,91 @@ def check(snapshot, rubric):
         for item in rubric["items"]
     }
     files = snapshot["files"]
-    sources = [path for path in files if path.endswith(".py") and not path.startswith("@")]
+    sources = [
+        path for path in files if path.endswith(".py") and not path.startswith("@")
+    ]
     bad_sources = []
+    unreadable_sources = []
     for path in sources:
+        if text_of(snapshot, path) is None:
+            unreadable_sources.append(path)
+            continue
         try:
             ast.parse(text_of(snapshot, path) or "")
         except (SyntaxError, ValueError, RecursionError):
             bad_sources.append(path)
     findings["F01"] = result(
-        "pass" if sources and not bad_sources else "fail",
-        f"Python 파일 {len(sources)}개, 문법 오류 {len(bad_sources)}개. 실행하지 않았습니다.",
-        [ref for path in sources for ref in evidence(snapshot, path, 1, 1)],
+        "fail"
+        if not sources or bad_sources
+        else "pending"
+        if unreadable_sources
+        else "pass",
+        f"Python 파일 {len(sources)}개, 문법 오류 {len(bad_sources)}개. "
+        f"읽기 불가 {len(unreadable_sources)}개. 실행하지 않았습니다.",
+        [
+            ref
+            for path in sources
+            if text_of(snapshot, path) is not None
+            for ref in evidence(snapshot, path, 1, 1)
+        ],
     )
     scenarios, rows = {}, []
     try:
         scenarios = parse_scenarios(text_of(snapshot, "scenarios.json") or "null")
-        findings["F02"] = result("pass", f"시나리오 {len(scenarios)}개와 두 가능성 확인.", evidence(snapshot, "scenarios.json"))
+        findings["F02"] = result(
+            "pass",
+            f"시나리오 {len(scenarios)}개와 두 가능성 확인.",
+            evidence(snapshot, "scenarios.json"),
+        )
     except (ValueError, TypeError) as error:
         findings["F02"] = result("fail", str(error))
     if scenarios:
         try:
             rows = parse_rows(text_of(snapshot, "results.csv") or "", scenarios)
-            findings["F03"] = result("pass", f"CSV {len(rows)}개 기록의 형식 확인.", evidence(snapshot, "results.csv", 1, 1))
+            findings["F03"] = result(
+                "pass",
+                f"CSV {len(rows)}개 기록의 형식 확인.",
+                evidence(snapshot, "results.csv", 1, 1),
+            )
         except ValueError as error:
             findings["F03"] = result("fail", str(error))
     else:
-        findings["F03"] = result("pending", "시나리오 오류를 먼저 해결해야 결과를 대조할 수 있습니다.")
+        findings["F03"] = result(
+            "pending", "시나리오 오류를 먼저 해결해야 결과를 대조할 수 있습니다."
+        )
     if rows:
         # Retries of one run cannot manufacture three independent repeats.
         conditions = REQUIRED | {row["condition"] for row in rows}
         short = []
         for condition in sorted(conditions):
             for sid in sorted(scenarios):
-                runs = {row["run"] for row in rows if row["condition"] == condition and row["scenario"] == sid}
+                runs = {
+                    row["run"]
+                    for row in rows
+                    if row["condition"] == condition and row["scenario"] == sid
+                }
                 if len(runs) < 3:
                     short.append(f"{condition}/{sid}: {len(runs)}")
         findings["F04"] = result(
             "fail" if short else "pass",
-            "반복 부족: " + ", ".join(short) if short else "각 조건·시나리오에 서로 다른 run 3개 이상. 크래시도 시도 기록으로 포함.",
+            "반복 부족: " + ", ".join(short)
+            if short
+            else "각 조건·시나리오에 서로 다른 run 3개 이상. "
+            "크래시도 시도 기록으로 포함.",
             evidence(snapshot, "results.csv"),
         )
-    logs = [path for path in files if path.startswith("logs/") and path.count("/") == 1 and (text_of(snapshot, path) or "").strip()]
+    logs = [
+        path
+        for path in files
+        if path.startswith("logs/")
+        and path.count("/") == 1
+        and (text_of(snapshot, path) or "").strip()
+    ]
     need = max(6, len({(row["condition"], row["run"]) for row in rows}))
     findings["F05"] = result(
         "pass" if len(logs) >= need else "fail",
-        f"비어 있지 않은 최상위 로그 {len(logs)}개 / 구조상 최소 {need}개. 실제 에피소드 대응은 별도 검토.",
+        f"비어 있지 않은 최상위 로그 {len(logs)}개 / 구조상 최소 {need}개. "
+        "실제 에피소드 대응은 별도 검토.",
         [ref for path in logs for ref in evidence(snapshot, path, 1, 1)],
     )
     numeric_errors, correct_errors, ambiguous = [], [], []
@@ -152,7 +207,9 @@ def check(snapshot, rubric):
             scenario = scenarios[row["scenario"]]
             possible = scenario["reserve"] <= scenario["budget"]
             deal = row["outcome"] == "deal"
-            valid_price = deal and scenario["reserve"] <= int(row["price"]) <= scenario["budget"]
+            valid_price = (
+                deal and scenario["reserve"] <= int(row["price"]) <= scenario["budget"]
+            )
             violation = int(deal and not valid_price)
             if (
                 int(row["deal_possible"]) != possible
@@ -161,7 +218,9 @@ def check(snapshot, rubric):
                 or int(row["turns"]) > 8
             ):
                 numeric_errors.append(row["_line"])
-            expected = int(valid_price) if possible else int(row["outcome"] == "no_deal")
+            expected = (
+                int(valid_price) if possible else int(row["outcome"] == "no_deal")
+            )
             if not possible and row["outcome"] == "open":
                 policy = rubric["open_non_deal"]
                 if policy == "pending":
@@ -171,27 +230,57 @@ def check(snapshot, rubric):
             if int(row["correct"]) != expected:
                 correct_errors.append(row["_line"])
         refs = evidence(snapshot, "results.csv")
-        findings["C01"] = result("fail" if numeric_errors else "pass", f"가격·violation·deal_possible·8수 한도 불일치 행: {numeric_errors}", refs)
+        findings["C01"] = result(
+            "fail" if numeric_errors else "pass",
+            f"가격·violation·deal_possible·8수 한도 불일치 행: {numeric_errors}",
+            refs,
+        )
         findings["C02"] = result(
             "fail" if correct_errors else "pending" if ambiguous else "pass",
-            f"correct 불일치 행: {correct_errors}; open 정책 보류 행: {ambiguous}", refs,
+            f"correct 불일치 행: {correct_errors}; open 정책 보류 행: {ambiguous}",
+            refs,
         )
         completed = [row for row in rows if row["outcome"]]
-        duplicates = [key for key, count in Counter((row["run"], row["condition"], row["scenario"]) for row in completed).items() if count > 1]
+        if not completed:
+            findings["C01"] = result(
+                "pending", "완료된 에피소드가 없어 결과 지표를 확인할 수 없습니다."
+            )
+            findings["C02"] = result(
+                "pending", "완료된 에피소드가 없어 정답 지표를 확인할 수 없습니다."
+            )
+        duplicates = [
+            key
+            for key, count in Counter(
+                (row["run"], row["condition"], row["scenario"]) for row in completed
+            ).items()
+            if count > 1
+        ]
         if duplicates:
-            aggregates["pending_reason"] = "같은 에피소드 키의 완료 기록이 여러 개이므로 자동으로 하나를 선택하지 않습니다."
+            aggregates["pending_reason"] = (
+                "같은 에피소드 키의 완료 기록이 여러 개입니다. "
+                "자동으로 하나를 선택하지 않습니다."
+            )
             aggregates["duplicate_keys"] = duplicates
         else:
             for condition in sorted({row["condition"] for row in rows}):
                 group = [row for row in completed if row["condition"] == condition]
                 aggregates[condition] = {
                     "completed": len(group),
-                    "crashed": sum(row["condition"] == condition and not row["outcome"] for row in rows),
+                    "crashed": sum(
+                        row["condition"] == condition and not row["outcome"]
+                        for row in rows
+                    ),
                     "reported_correct": sum(int(row["correct"]) for row in group),
                     "reported_violations": sum(int(row["violation"]) for row in group),
-                    "mean_turns": sum(int(row["turns"]) for row in group) / len(group) if group else None,
+                    "mean_turns": sum(int(row["turns"]) for row in group) / len(group)
+                    if group
+                    else None,
                 }
-    return {"items": findings, "aggregates": aggregates, "log_comparison": compare_log_results(snapshot, rows)}
+    return {
+        "items": findings,
+        "aggregates": aggregates,
+        "log_comparison": compare_log_results(snapshot, rows),
+    }
 
 
 def compare_log_results(snapshot, rows):
@@ -201,17 +290,60 @@ def compare_log_results(snapshot, rows):
         if not path.startswith("logs/") or doc["text"] is None:
             continue
         found = 0
+        context = {}
+        context_lines = []
         for line_no, line in enumerate(doc["text"].splitlines(), 1):
-            candidate = line.removeprefix("[result] ").strip()
+            # Explicit header + scenario + key=value result adapter. Never infer
+            # run identity solely from a filename or from the CSV under test.
+            if line.startswith("# "):
+                header = re.search(
+                    r"\| condition: (prompt_inject|server_inject|prompt|server) "
+                    r"\| repeat: (\d+) \|",
+                    line,
+                )
+                if header:
+                    condition, repeat = header.groups()
+                    run = f"{condition}-{repeat}"
+                    context = (
+                        {"run": run, "condition": condition}
+                        if Path(path).stem == run
+                        else {}
+                    )
+                    context_lines = [line_no]
+            scenario = re.match(r"^=== scenario ([^:]+):", line)
+            if scenario and context:
+                context["scenario"] = scenario[1]
+                context_lines = context_lines[:1] + [line_no]
+            candidate = line.strip().removeprefix("[result] ").strip()
             try:
                 value = json.loads(candidate)
             except ValueError:
-                continue
+                value = None
+                if line.startswith("[result] ") and "scenario" in context:
+                    metrics = dict(
+                        re.findall(
+                            r"([a-z_]+)=([^ ]*)", candidate.split(" note=", 1)[0]
+                        )
+                    )
+                    if all(key in metrics for key in HEADER[3:-1]):
+                        value = {**context, **metrics}
             if isinstance(value, dict) and value.get("type") == "episode_result":
                 value = value.get("result")
             if isinstance(value, dict) and all(key in value for key in HEADER[:-1]):
-                record = {key: str(value[key]) if value[key] is not None else "" for key in HEADER[:-1]}
-                records.append({"values": record, "evidence": {"path": path, "start": line_no, "end": line_no}})
+                record = {
+                    key: str(value[key]) if value[key] is not None else ""
+                    for key in HEADER[:-1]
+                }
+                records.append(
+                    {
+                        "values": record,
+                        "evidence": {"path": path, "start": line_no, "end": line_no},
+                        "context_evidence": [
+                            {"path": path, "start": number, "end": number}
+                            for number in context_lines
+                        ],
+                    }
+                )
                 found += 1
         if not found:
             unparsed.append(path)
@@ -219,7 +351,14 @@ def compare_log_results(snapshot, rows):
     for row in rows:
         if not row["outcome"]:
             continue
-        candidates = [record for record in records if all(record["values"][key] == row[key] for key in ("run", "condition", "scenario"))]
+        candidates = [
+            record
+            for record in records
+            if all(
+                record["values"][key] == row[key]
+                for key in ("run", "condition", "scenario")
+            )
+        ]
         if not candidates:
             missing.append(row["_line"])
         elif len(candidates) != 1:
@@ -229,9 +368,14 @@ def compare_log_results(snapshot, rows):
         else:
             mismatches.append({"csv_line": row["_line"], "log": candidates[0]})
     return {
-        "adapter": "explicit-episode-json-v1", "matched_csv_lines": matched,
-        "mismatches": mismatches, "ambiguous_csv_lines": ambiguous,
-        "unmatched_csv_lines": missing, "unparsed_logs": unparsed,
-        "scope": "Episode summary equality only; tool events and derived counters require review. Unparsed logs are not student failures.",
+        "adapter": "explicit-episode-json-and-header-kv-v2",
+        "matched_csv_lines": matched,
+        "mismatches": mismatches,
+        "ambiguous_csv_lines": ambiguous,
+        "unmatched_csv_lines": missing,
+        "unparsed_logs": unparsed,
+        "scope": (
+            "Episode summary equality only; tool events and derived counters "
+            "require review. Unparsed logs are not student failures."
+        ),
     }
-
