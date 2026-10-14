@@ -74,4 +74,3 @@ packet off-machine or incur charges. Use it only when that model call is authori
 Never call student servers, run their tests, execute their README commands, post
 comments, push or merge as part of grading. Local model endpoints need to be running
 already; the evaluator does not start or install model servers.
-
