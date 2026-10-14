@@ -33,9 +33,15 @@ from starlette.applications import Starlette
 import harness
 
 DEFAULT = {
-    "name": "Lamp Shop",
-    "description": "Sells desk lamps, chairs and bookshelves. Negotiates the price with the buyer.",
-    "skill_description": "Ask for an item, then send a price. The shop answers with a counteroffer or a receipt.",
+    "name": "Oak & Brass Workshop",
+    "description": (
+        "Premium furniture workshop: solid-brass desk lamps, hardwood chairs and hardwood bookshelves, "
+        "each made by hand and covered by a 2-year warranty. Prices reflect the materials and the craft."
+    ),
+    "skill_description": (
+        "Name the piece you want (lamp, chair or bookshelf) and we quote a price for it. "
+        "Send your offer as a number; we answer with a counteroffer or close the sale with a receipt."
+    ),
     "port": 9999,
     "reserve": {"lamp": 100, "chair": 180, "bookshelf": 260},
 }
@@ -227,8 +233,8 @@ def build(cfg):
                 id="negotiate",
                 name="Negotiate a purchase",
                 description=cfg["skill_description"],
-                tags=["shopping", "negotiation"],
-                examples=["I want to buy a lamp", "90"],
+                tags=["shopping", "furniture", "premium", "handmade"],
+                examples=["I want to buy a lamp", "150"],
             )
         ],
     )
