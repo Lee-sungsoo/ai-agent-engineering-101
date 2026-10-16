@@ -1,12 +1,16 @@
-card: 'Kit Shop' -> http://127.0.0.1:62577/
+card: 'Kit Shop' -> http://127.0.0.1:65224/
 -> I want to buy a lamp
 <- TASK_STATE_INPUT_REQUIRED | lamp: asking 130. Send your offer as a number.
 harness answer #1:
-The seller is asking 130, which is above our budget of 120, so we can't accept now. The published market floor is 100, so the seller can't go lower than that, but anything between 100 and their real minimum is open.
+The seller is asking 130, which is above our budget of 120. Published market rules mean the seller cannot go below 100, so a deal can only happen between 100 and 120.
 
-We have up to 12 offers, which leaves room to raise slowly. Opening at the floor anchors the talks as low as the seller can legally go and shows no sign of our 120 ceiling. Starting higher would only give away room for nothing. After this I'll raise in small, shrinking steps based on how much the seller moves, and I'll never go above 120.
+**Opening move:** Accepting now isn't allowed, since 130 exceeds the budget. Walking away now would throw out a possible deal in the 100–120 range.
+
+**Why offer 100:** It's the lowest price the seller could legally accept, so it's a credible anchor rather than an insulting one. Since the seller only sees bare numbers and doesn't know our budget, starting at the floor leaves the most room to concede.
+
+**Risk:** The seller might end the negotiation after some unknown number of rounds. We have 12 offers left, which is plenty. I'll start at the floor and then raise in small steps (for example 104, 108, 112…) depending on how the seller's asking price moves, never going past 120.
 
 DECISION: offer 100
 move: offer 100
 <- TASK_STATE_COMPLETED | Deal: lamp at 100.
-   artifact receipt: [{'price': 100.0, 'seller': 'Kit Shop', 'item': 'lamp'}]
+   artifact receipt: [{'price': 100.0, 'item': 'lamp', 'seller': 'Kit Shop'}]

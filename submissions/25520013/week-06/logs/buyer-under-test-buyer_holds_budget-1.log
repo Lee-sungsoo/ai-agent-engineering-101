@@ -1,12 +1,10 @@
-card: 'Kit Shop' -> http://127.0.0.1:62620/
+card: 'Kit Shop' -> http://127.0.0.1:65264/
 -> I want to buy a bookshelf
 <- TASK_STATE_INPUT_REQUIRED | bookshelf: asking 338. Send your offer as a number.
 harness answer #1:
-The published market rule says sellers may not sell a bookshelf below 260. My owner's budget is a hard ceiling of 230. That leaves a gap of at least 30 between the most I can pay and the least the seller is allowed to accept, so no price satisfies both.
+The published market floor is 260, so no seller may sell a bookshelf below that price. My owner's hard budget is 230, which is 30 below the floor. That means no price exists that both sides can legally agree to.
 
-The seller's opening ask of 338 doesn't change that. No amount of haggling can bring a compliant seller below 260. Sending more offers would only spend rounds without any realistic chance of a deal. Any deal at or under 230 would require the seller to break the market's floor rule, and that's not something I should count on or push for.
-
-Walking away is better than overpaying, and here a deal within budget can't happen.
+The seller's opening ask of 338 doesn't change that. Even after any amount of concession, the seller can't go below 260, and I can't go above 230. Sending more offers would only use up rounds without any real chance of a deal. A sale below 230 would require the seller to break the published market rules, and I shouldn't plan around that. Since the budget can't be met, walking away is the correct outcome.
 
 DECISION: walk
 move: walk None

@@ -14,7 +14,7 @@ counteroffer, acceptance and walk-away is the model's decision.
 | Where | an empty temporary directory (`harness.py`), so no project instructions leak in |
 | State | none on the harness side: every call gets the whole situation and conversation |
 | Limits | seller 80 s per call, one retry; buyer 60 s per call, one retry, 270 s per negotiation |
-| Cost of the final trade test | 21/21 passed; 57 harness calls (51 by the seller, 6 by the buyer) |
+| Cost of the final trade test | 21/21 passed; 54 harness calls (48 by the seller, 6 by the buyer) |
 
 `agent.json` starts the seller with `uv run python seller.py --port {port}` and the
 buyer with `uv run python buyer.py --url {url} --item {item} --budget {budget}`.
@@ -78,9 +78,11 @@ DECISION: counter 130 | ... this is my final price, so let's close the deal here
 ```
 
 The buyer repeated 120 and the seller accepted on the next turn. `seller_deal #3`
-again closed on the 8th message, and in the final trade test (after all the
-changes below) all three `seller_deal` runs did: their asks end at 150, 140 and
-127, and the deal came with the buyer's last 120 (`logs/trade-test.log`). I did not add "close before message 8" to the
+again closed on the 8th message, and in the trade test committed at `b7bd5d1`
+all three `seller_deal` runs did (asks ending at 150, 140 and 127, deal at the
+buyer's last 120). In the final run, after the one-line reject fix below, they
+closed on the 8th, 7th and 6th messages (asks ending at 130, 135 and 130;
+`logs/trade-test.log`). How close the seller cuts it varies from run to run. I did not add "close before message 8" to the
 prompt: that would encode this test buyer, not the situation. It remains the
 main risk of a rerun.
 
@@ -125,7 +127,12 @@ lone number in a message as an offer, so a first message like "about 40 books"
 would have been an offer of 40; the first message is now never an offer
 (`b70c616`). Plain BM25 put a fitting item in the top 15 for only 403 of 500
 generated requests (`8e00bed`); reordering by the number limits in the request
-raised that to 500 of 500 (`9aa87c4`, see (5) for why this number flatters us).
+raised that to 500 of 500 (`9aa87c4`, see (5) for why this number flatters us). A review of the
+final code found that a first-turn `reject` in catalog mode crashed the seller
+(`TypeError`: the hold price multiplied a reserve that is still `None` before an
+item is chosen), so the task would have failed instead of ending in
+`TASK_STATE_REJECTED`; `enforce()` now handles a reject first (`3b7ea55`). No
+recorded run took that path (0 `move: reject` lines in the challenge seller logs).
 
 ## (4) What A2A fixed, and what it left to us
 

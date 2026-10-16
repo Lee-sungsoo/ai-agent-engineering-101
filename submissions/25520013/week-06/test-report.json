@@ -1,7 +1,7 @@
 {
   "kit_version": "1",
   "kit_sha256": "8e00baa43b319e6c0067eab8eedc6834cbe4b9dc3e9e2ab5bd16e9572c99f120",
-  "started": "2026-10-16T09:38:52+00:00",
+  "started": "2026-10-16T09:58:45+00:00",
   "harness": "Claude Code: claude -p --model opus (claude-opus-5-5) --tools \"\" --setting-sources \"\" --no-session-persistence",
   "seller_cmd": "uv run python seller.py --port {port}",
   "buyer_cmd": "uv run python buyer.py --url {url} --item {item} --budget {budget}",
@@ -10,7 +10,7 @@
     "description": "Premium furniture workshop: desk lamps in genuine solid brass (no plating), chairs and bookshelves in solid hardwood (no veneer), each made by hand and covered by a 2-year warranty. Prices reflect the materials and the craft.",
     "supportedInterfaces": [
       {
-        "url": "http://127.0.0.1:60416/",
+        "url": "http://127.0.0.1:63224/",
         "protocolBinding": "JSONRPC",
         "protocolVersion": "1.0"
       }
@@ -61,7 +61,7 @@
       "test": "seller_deal",
       "run": 1,
       "pass": true,
-      "detail": "TASK_STATE_COMPLETED, receipt price 120.0, asks [240, 215, 198, 185, 172, 160, 150]"
+      "detail": "TASK_STATE_COMPLETED, receipt price 120.0, asks [240, 215, 195, 175, 150, 140, 130]"
     },
     {
       "test": "seller_terminal",
@@ -73,31 +73,31 @@
       "test": "seller_deal",
       "run": 2,
       "pass": true,
-      "detail": "TASK_STATE_COMPLETED, receipt price 120.0, asks [240, 215, 195, 180, 165, 152, 140]"
+      "detail": "TASK_STATE_COMPLETED, receipt price 120.0, asks [240, 215, 189, 159, 145, 135]"
     },
     {
       "test": "seller_deal",
       "run": 3,
       "pass": true,
-      "detail": "TASK_STATE_COMPLETED, receipt price 120.0, asks [240, 215, 189, 165, 145, 135, 127]"
+      "detail": "TASK_STATE_COMPLETED, receipt price 120.0, asks [240, 205, 175, 145, 130]"
     },
     {
       "test": "seller_holds_reserve",
       "run": 1,
       "pass": true,
-      "detail": "TASK_STATE_INPUT_REQUIRED, asks [450, 400, 370, 345, 325, 310, 280, 260, 260]"
+      "detail": "TASK_STATE_INPUT_REQUIRED, asks [480, 440, 410, 385, 365, 340, 325, 325, 285]"
     },
     {
       "test": "seller_holds_reserve",
       "run": 2,
       "pass": true,
-      "detail": "TASK_STATE_INPUT_REQUIRED, asks [460, 420, 390, 365, 345, 310, 280, 260, 260]"
+      "detail": "TASK_STATE_INPUT_REQUIRED, asks [480, 440, 410, 385, 365, 350, 315, 270, 260]"
     },
     {
       "test": "seller_holds_reserve",
       "run": 3,
       "pass": true,
-      "detail": "TASK_STATE_INPUT_REQUIRED, asks [480, 440, 400, 375, 350, 335, 295, 260, 260]"
+      "detail": "TASK_STATE_INPUT_REQUIRED, asks [480, 445, 415, 390, 370, 355, 340, 315, 285]"
     },
     {
       "test": "buyer_deal",
