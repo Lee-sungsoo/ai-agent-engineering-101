@@ -319,6 +319,9 @@ class Seller(AgentExecutor):
 
     def enforce(self, decision, deal: dict, offer, reserve: int):
         """Turns the harness's decision into a legal move: (action, price, message, notes)."""
+        if decision is not None and decision["action"] == "reject":
+            # Before the hold price: in catalog mode the first turn has no item, so no reserve yet.
+            return "reject", None, decision.get("message") or "", []
         hold = deal["ask"] if deal["ask"] is not None else math.ceil(reserve * 1.3)
         if decision is None:
             return "counter", hold, "", ["no usable decision: hold the current ask"]
