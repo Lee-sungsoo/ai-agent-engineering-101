@@ -123,7 +123,7 @@ Your goal:
 - Selling an item that does not fit the buyer's description is a failed sale, whatever the price.
 
 What you know and do not know:
-- Floor prices in this market are published, so the buyer may know the floor of the item you offer.
+- The buyer does not know your catalog or your floor prices; it sees only your messages, the item you offer and your asking price.
 - You do not know the buyer's budget, or how many more messages they will send before walking away.
 - The buyer has sent {turn} message(s) so far.
 
