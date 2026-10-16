@@ -310,7 +310,7 @@
  {
   "id": "C00018",
   "name": "Nena Minimalist Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in wrought iron metal, terracotta finish. 104 cm high, 49 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in wrought iron metal, terracotta finish. 104 cm high, 49 cm wide, 2 cm deep.",
   "reserve": 59,
   "attrs": {
    "category": "mirror",
@@ -327,7 +327,7 @@
  {
   "id": "C00019",
   "name": "Orisve Modern Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 335 cm. Modern style in natural jute fibre, white finish. 2 cm high, 120 cm wide, 335 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 335 cm long. Modern style in natural jute fibre, white finish. 2 cm high, 120 cm wide, 335 cm deep.",
   "reserve": 145,
   "attrs": {
    "category": "rug",
@@ -651,7 +651,7 @@
  {
   "id": "C00038",
   "name": "Mamamo Industrial Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in powder-coated steel metal, cream finish. 143 cm high, 84 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in powder-coated steel metal, cream finish. 143 cm high, 84 cm wide, 5 cm deep.",
   "reserve": 114,
   "attrs": {
    "category": "mirror",
@@ -668,7 +668,7 @@
  {
   "id": "C00039",
   "name": "Nenael Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 60 x 265 cm. Bohemian style in natural jute fibre, grey finish. 3 cm high, 60 cm wide, 265 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 60 cm wide and 265 cm long. Bohemian style in natural jute fibre, grey finish. 3 cm high, 60 cm wide, 265 cm deep.",
   "reserve": 137,
   "attrs": {
    "category": "rug",
@@ -992,7 +992,7 @@
  {
   "id": "C00058",
   "name": "Veki Bohemian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid walnut wood, black finish. 66 cm high, 98 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid walnut wood, black finish. 66 cm high, 98 cm wide, 4 cm deep.",
   "reserve": 126,
   "attrs": {
    "category": "mirror",
@@ -1009,7 +1009,7 @@
  {
   "id": "C00059",
   "name": "Veis Farmhouse Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 185 cm. Farmhouse style in flat-woven cotton, grey finish. 2 cm high, 120 cm wide, 185 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 185 cm long. Farmhouse style in flat-woven cotton, grey finish. 2 cm high, 120 cm wide, 185 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "rug",
@@ -1333,7 +1333,7 @@
  {
   "id": "C00078",
   "name": "Isloel Mid-Century Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in solid walnut wood, white finish. 133 cm high, 37 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in solid walnut wood, white finish. 133 cm high, 37 cm wide, 3 cm deep.",
   "reserve": 109,
   "attrs": {
    "category": "mirror",
@@ -1350,7 +1350,7 @@
  {
   "id": "C00079",
   "name": "Orsema Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 175 x 115 cm. Minimalist style in flat-woven cotton, terracotta finish. 3 cm high, 175 cm wide, 115 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 175 cm long. Minimalist style in flat-woven cotton, terracotta finish. 3 cm high, 115 cm wide, 175 cm deep.",
   "reserve": 129,
   "attrs": {
    "category": "rug",
@@ -1359,8 +1359,8 @@
    "style": "minimalist",
    "colour": "terracotta",
    "height_cm": 3,
-   "width_cm": 175,
-   "depth_cm": 115
+   "width_cm": 115,
+   "depth_cm": 175
   }
  },
  {
@@ -1674,7 +1674,7 @@
  {
   "id": "C00098",
   "name": "Kitara Scandinavian Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in powder-coated steel metal, grey finish. 49 cm high, 70 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in powder-coated steel metal, grey finish. 49 cm high, 70 cm wide, 3 cm deep.",
   "reserve": 61,
   "attrs": {
    "category": "mirror",
@@ -1691,7 +1691,7 @@
  {
   "id": "C00099",
   "name": "Raha Industrial Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 270 cm. Industrial style in natural jute fibre, sage green finish. 3 cm high, 65 cm wide, 270 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 270 cm long. Industrial style in natural jute fibre, sage green finish. 3 cm high, 65 cm wide, 270 cm deep.",
   "reserve": 125,
   "attrs": {
    "category": "rug",
@@ -2015,7 +2015,7 @@
  {
   "id": "C00118",
   "name": "Elrimo Modern Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Modern style in solid walnut wood, white finish. 147 cm high, 39 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, white finish. 147 cm high, 39 cm wide, 5 cm deep.",
   "reserve": 133,
   "attrs": {
    "category": "mirror",
@@ -2032,7 +2032,7 @@
  {
   "id": "C00119",
   "name": "Isnelo Art Deco Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 170 x 290 cm. Art deco style in hand-tufted wool, black finish. 2 cm high, 170 cm wide, 290 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 170 cm wide and 290 cm long. Art deco style in hand-tufted wool, black finish. 2 cm high, 170 cm wide, 290 cm deep.",
   "reserve": 212,
   "attrs": {
    "category": "rug",
@@ -2356,7 +2356,7 @@
  {
   "id": "C00138",
   "name": "Nesaki Scandinavian Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Scandinavian style in solid brass metal, honey finish. 141 cm high, 35 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid brass metal, honey finish. 141 cm high, 35 cm wide, 3 cm deep.",
   "reserve": 102,
   "attrs": {
    "category": "mirror",
@@ -2373,7 +2373,7 @@
  {
   "id": "C00139",
   "name": "Vior Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 165 x 325 cm. Rustic style in flat-woven cotton, white finish. 2 cm high, 165 cm wide, 325 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 165 cm wide and 325 cm long. Rustic style in flat-woven cotton, white finish. 2 cm high, 165 cm wide, 325 cm deep.",
   "reserve": 161,
   "attrs": {
    "category": "rug",
@@ -2697,7 +2697,7 @@
  {
   "id": "C00158",
   "name": "Eldo Farmhouse Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Farmhouse style in woven rattan wicker, black finish. 170 cm high, 51 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in woven rattan wicker, black finish. 170 cm high, 51 cm wide, 2 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "mirror",
@@ -2714,7 +2714,7 @@
  {
   "id": "C00159",
   "name": "Visa Rustic Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 240 x 295 cm. Rustic style in natural jute fibre, honey finish. 2 cm high, 240 cm wide, 295 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 240 cm wide and 295 cm long. Rustic style in natural jute fibre, honey finish. 2 cm high, 240 cm wide, 295 cm deep.",
   "reserve": 143,
   "attrs": {
    "category": "rug",
@@ -3038,7 +3038,7 @@
  {
   "id": "C00178",
   "name": "Vimo Modern Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid oak wood, black finish. 66 cm high, 64 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid oak wood, black finish. 66 cm high, 64 cm wide, 2 cm deep.",
   "reserve": 88,
   "attrs": {
    "category": "mirror",
@@ -3055,7 +3055,7 @@
  {
   "id": "C00179",
   "name": "Mari Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 165 x 350 cm. Minimalist style in natural jute fibre, grey finish. 3 cm high, 165 cm wide, 350 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 165 cm wide and 350 cm long. Minimalist style in natural jute fibre, grey finish. 3 cm high, 165 cm wide, 350 cm deep.",
   "reserve": 157,
   "attrs": {
    "category": "rug",
@@ -3379,7 +3379,7 @@
  {
   "id": "C00198",
   "name": "Sama Modern Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid brass metal, navy finish. 88 cm high, 99 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid brass metal, navy finish. 88 cm high, 99 cm wide, 2 cm deep.",
   "reserve": 111,
   "attrs": {
    "category": "mirror",
@@ -3396,7 +3396,7 @@
  {
   "id": "C00199",
   "name": "Lotaor Modern Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 95 x 265 cm. Modern style in hand-tufted wool, navy finish. 1 cm high, 95 cm wide, 265 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 265 cm long. Modern style in hand-tufted wool, navy finish. 1 cm high, 95 cm wide, 265 cm deep.",
   "reserve": 157,
   "attrs": {
    "category": "rug",
@@ -3720,7 +3720,7 @@
  {
   "id": "C00218",
   "name": "Isvi Modern Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid brass metal, charcoal finish. 104 cm high, 47 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid brass metal, charcoal finish. 104 cm high, 47 cm wide, 2 cm deep.",
   "reserve": 97,
   "attrs": {
    "category": "mirror",
@@ -3737,7 +3737,7 @@
  {
   "id": "C00219",
   "name": "Raisvi Art Deco Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 170 x 160 cm. Art deco style in flat-woven cotton, sage green finish. 2 cm high, 170 cm wide, 160 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 160 cm wide and 170 cm long. Art deco style in flat-woven cotton, sage green finish. 2 cm high, 160 cm wide, 170 cm deep.",
   "reserve": 129,
   "attrs": {
    "category": "rug",
@@ -3746,8 +3746,8 @@
    "style": "art deco",
    "colour": "sage green",
    "height_cm": 2,
-   "width_cm": 170,
-   "depth_cm": 160
+   "width_cm": 160,
+   "depth_cm": 170
   }
  },
  {
@@ -4061,7 +4061,7 @@
  {
   "id": "C00238",
   "name": "Lone Modern Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid walnut wood, honey finish. 124 cm high, 92 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, honey finish. 124 cm high, 92 cm wide, 5 cm deep.",
   "reserve": 180,
   "attrs": {
    "category": "mirror",
@@ -4078,7 +4078,7 @@
  {
   "id": "C00239",
   "name": "Kive Japanese Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 200 x 335 cm. Japanese style in flat-woven cotton, terracotta finish. 3 cm high, 200 cm wide, 335 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 200 cm wide and 335 cm long. Japanese style in flat-woven cotton, terracotta finish. 3 cm high, 200 cm wide, 335 cm deep.",
   "reserve": 171,
   "attrs": {
    "category": "rug",
@@ -4402,7 +4402,7 @@
  {
   "id": "C00258",
   "name": "Raan Mid-Century Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Mid-century style in solid walnut wood, white finish. 144 cm high, 53 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in solid walnut wood, white finish. 144 cm high, 53 cm wide, 3 cm deep.",
   "reserve": 150,
   "attrs": {
    "category": "mirror",
@@ -4419,7 +4419,7 @@
  {
   "id": "C00259",
   "name": "Iskiha Art Deco Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 250 x 230 cm. Art deco style in natural jute fibre, white finish. 1 cm high, 250 cm wide, 230 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 230 cm wide and 250 cm long. Art deco style in natural jute fibre, white finish. 1 cm high, 230 cm wide, 250 cm deep.",
   "reserve": 143,
   "attrs": {
    "category": "rug",
@@ -4428,8 +4428,8 @@
    "style": "art deco",
    "colour": "white",
    "height_cm": 1,
-   "width_cm": 250,
-   "depth_cm": 230
+   "width_cm": 230,
+   "depth_cm": 250
   }
  },
  {
@@ -4743,7 +4743,7 @@
  {
   "id": "C00278",
   "name": "Haor Bohemian Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in powder-coated steel metal, black finish. 133 cm high, 42 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in powder-coated steel metal, black finish. 133 cm high, 42 cm wide, 2 cm deep.",
   "reserve": 65,
   "attrs": {
    "category": "mirror",
@@ -4760,7 +4760,7 @@
  {
   "id": "C00279",
   "name": "Sakiri Art Deco Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 250 x 220 cm. Art deco style in hand-tufted wool, sage green finish. 3 cm high, 250 cm wide, 220 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 220 cm wide and 250 cm long. Art deco style in hand-tufted wool, sage green finish. 3 cm high, 220 cm wide, 250 cm deep.",
   "reserve": 272,
   "attrs": {
    "category": "rug",
@@ -4769,8 +4769,8 @@
    "style": "art deco",
    "colour": "sage green",
    "height_cm": 3,
-   "width_cm": 250,
-   "depth_cm": 220
+   "width_cm": 220,
+   "depth_cm": 250
   }
  },
  {
@@ -5084,7 +5084,7 @@
  {
   "id": "C00298",
   "name": "Rilu Industrial Iron Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in wrought iron metal, honey finish. 186 cm high, 33 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in wrought iron metal, honey finish. 186 cm high, 33 cm wide, 5 cm deep.",
   "reserve": 72,
   "attrs": {
    "category": "mirror",
@@ -5101,7 +5101,7 @@
  {
   "id": "C00299",
   "name": "Sadoha Japanese Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 285 cm. Japanese style in hand-tufted wool, grey finish. 1 cm high, 125 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 125 cm wide and 285 cm long. Japanese style in hand-tufted wool, grey finish. 1 cm high, 125 cm wide, 285 cm deep.",
   "reserve": 167,
   "attrs": {
    "category": "rug",
@@ -5425,7 +5425,7 @@
  {
   "id": "C00318",
   "name": "Elvelo Industrial Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in woven rattan wicker, charcoal finish. 66 cm high, 47 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, charcoal finish. 66 cm high, 47 cm wide, 4 cm deep.",
   "reserve": 80,
   "attrs": {
    "category": "mirror",
@@ -5442,7 +5442,7 @@
  {
   "id": "C00319",
   "name": "Raelne Farmhouse Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 245 x 215 cm. Farmhouse style in natural jute fibre, natural finish. 1 cm high, 245 cm wide, 215 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 215 cm wide and 245 cm long. Farmhouse style in natural jute fibre, natural finish. 1 cm high, 215 cm wide, 245 cm deep.",
   "reserve": 133,
   "attrs": {
    "category": "rug",
@@ -5451,8 +5451,8 @@
    "style": "farmhouse",
    "colour": "natural",
    "height_cm": 1,
-   "width_cm": 245,
-   "depth_cm": 215
+   "width_cm": 215,
+   "depth_cm": 245
   }
  },
  {
@@ -5766,7 +5766,7 @@
  {
   "id": "C00338",
   "name": "Vemane Modern Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid walnut wood, terracotta finish. 57 cm high, 58 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, terracotta finish. 57 cm high, 58 cm wide, 2 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "mirror",
@@ -5783,7 +5783,7 @@
  {
   "id": "C00339",
   "name": "Nara Industrial Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 340 cm. Industrial style in flat-woven cotton, honey finish. 2 cm high, 125 cm wide, 340 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 125 cm wide and 340 cm long. Industrial style in flat-woven cotton, honey finish. 2 cm high, 125 cm wide, 340 cm deep.",
   "reserve": 143,
   "attrs": {
    "category": "rug",
@@ -6107,7 +6107,7 @@
  {
   "id": "C00358",
   "name": "Isneki Farmhouse Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Farmhouse style in powder-coated steel metal, charcoal finish. 183 cm high, 99 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in powder-coated steel metal, charcoal finish. 183 cm high, 99 cm wide, 5 cm deep.",
   "reserve": 136,
   "attrs": {
    "category": "mirror",
@@ -6124,7 +6124,7 @@
  {
   "id": "C00359",
   "name": "Halo Art Deco Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 195 x 105 cm. Art deco style in flat-woven cotton, white finish. 3 cm high, 195 cm wide, 105 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 195 cm long. Art deco style in flat-woven cotton, white finish. 3 cm high, 105 cm wide, 195 cm deep.",
   "reserve": 122,
   "attrs": {
    "category": "rug",
@@ -6133,8 +6133,8 @@
    "style": "art deco",
    "colour": "white",
    "height_cm": 3,
-   "width_cm": 195,
-   "depth_cm": 105
+   "width_cm": 105,
+   "depth_cm": 195
   }
  },
  {
@@ -6448,7 +6448,7 @@
  {
   "id": "C00378",
   "name": "Moma Industrial Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in solid brass metal, charcoal finish. 132 cm high, 51 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid brass metal, charcoal finish. 132 cm high, 51 cm wide, 2 cm deep.",
   "reserve": 94,
   "attrs": {
    "category": "mirror",
@@ -6465,7 +6465,7 @@
  {
   "id": "C00379",
   "name": "Seelna Rustic Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 260 cm. Rustic style in natural jute fibre, natural finish. 2 cm high, 155 cm wide, 260 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 260 cm long. Rustic style in natural jute fibre, natural finish. 2 cm high, 155 cm wide, 260 cm deep.",
   "reserve": 135,
   "attrs": {
    "category": "rug",
@@ -6789,7 +6789,7 @@
  {
   "id": "C00398",
   "name": "Ando Industrial Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in solid walnut wood, sage green finish. 47 cm high, 70 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid walnut wood, sage green finish. 47 cm high, 70 cm wide, 2 cm deep.",
   "reserve": 83,
   "attrs": {
    "category": "mirror",
@@ -6806,7 +6806,7 @@
  {
   "id": "C00399",
   "name": "Istado Scandinavian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 95 x 110 cm. Scandinavian style in flat-woven cotton, navy finish. 3 cm high, 95 cm wide, 110 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 110 cm long. Scandinavian style in flat-woven cotton, navy finish. 3 cm high, 95 cm wide, 110 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "rug",
@@ -7130,7 +7130,7 @@
  {
   "id": "C00418",
   "name": "Saor Japanese Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid brass metal, grey finish. 81 cm high, 87 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid brass metal, grey finish. 81 cm high, 87 cm wide, 2 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "mirror",
@@ -7147,7 +7147,7 @@
  {
   "id": "C00419",
   "name": "Mata Scandinavian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 115 cm. Scandinavian style in natural jute fibre, black finish. 3 cm high, 155 cm wide, 115 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 155 cm long. Scandinavian style in natural jute fibre, black finish. 3 cm high, 115 cm wide, 155 cm deep.",
   "reserve": 114,
   "attrs": {
    "category": "rug",
@@ -7156,8 +7156,8 @@
    "style": "Scandinavian",
    "colour": "black",
    "height_cm": 3,
-   "width_cm": 155,
-   "depth_cm": 115
+   "width_cm": 115,
+   "depth_cm": 155
   }
  },
  {
@@ -7471,7 +7471,7 @@
  {
   "id": "C00438",
   "name": "Ralu Farmhouse Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Farmhouse style in powder-coated steel metal, honey finish. 150 cm high, 53 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in powder-coated steel metal, honey finish. 150 cm high, 53 cm wide, 5 cm deep.",
   "reserve": 89,
   "attrs": {
    "category": "mirror",
@@ -7488,7 +7488,7 @@
  {
   "id": "C00439",
   "name": "Veis Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 290 cm. Minimalist style in natural jute fibre, sage green finish. 1 cm high, 120 cm wide, 290 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 290 cm long. Minimalist style in natural jute fibre, sage green finish. 1 cm high, 120 cm wide, 290 cm deep.",
   "reserve": 95,
   "attrs": {
    "category": "rug",
@@ -7812,7 +7812,7 @@
  {
   "id": "C00458",
   "name": "Ridota Modern Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid walnut wood, cream finish. 113 cm high, 66 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, cream finish. 113 cm high, 66 cm wide, 3 cm deep.",
   "reserve": 117,
   "attrs": {
    "category": "mirror",
@@ -7829,7 +7829,7 @@
  {
   "id": "C00459",
   "name": "Hane Bohemian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 195 x 225 cm. Bohemian style in flat-woven cotton, charcoal finish. 1 cm high, 195 cm wide, 225 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 195 cm wide and 225 cm long. Bohemian style in flat-woven cotton, charcoal finish. 1 cm high, 195 cm wide, 225 cm deep.",
   "reserve": 126,
   "attrs": {
    "category": "rug",
@@ -8153,7 +8153,7 @@
  {
   "id": "C00478",
   "name": "Vimona Mid-Century Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Mid-century style in solid walnut wood, white finish. 181 cm high, 60 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in solid walnut wood, white finish. 181 cm high, 60 cm wide, 3 cm deep.",
   "reserve": 150,
   "attrs": {
    "category": "mirror",
@@ -8170,7 +8170,7 @@
  {
   "id": "C00479",
   "name": "Lokiki Farmhouse Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 80 x 205 cm. Farmhouse style in natural jute fibre, honey finish. 1 cm high, 80 cm wide, 205 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 80 cm wide and 205 cm long. Farmhouse style in natural jute fibre, honey finish. 1 cm high, 80 cm wide, 205 cm deep.",
   "reserve": 85,
   "attrs": {
    "category": "rug",
@@ -8494,7 +8494,7 @@
  {
   "id": "C00498",
   "name": "Dori Minimalist Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in wrought iron metal, navy finish. 105 cm high, 94 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in wrought iron metal, navy finish. 105 cm high, 94 cm wide, 2 cm deep.",
   "reserve": 74,
   "attrs": {
    "category": "mirror",
@@ -8511,7 +8511,7 @@
  {
   "id": "C00499",
   "name": "Visa Japanese Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 80 x 140 cm. Japanese style in natural jute fibre, honey finish. 3 cm high, 80 cm wide, 140 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 80 cm wide and 140 cm long. Japanese style in natural jute fibre, honey finish. 3 cm high, 80 cm wide, 140 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "rug",
@@ -8835,7 +8835,7 @@
  {
   "id": "C00518",
   "name": "Naki Scandinavian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid walnut wood, terracotta finish. 130 cm high, 68 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid walnut wood, terracotta finish. 130 cm high, 68 cm wide, 5 cm deep.",
   "reserve": 142,
   "attrs": {
    "category": "mirror",
@@ -8852,7 +8852,7 @@
  {
   "id": "C00519",
   "name": "Hasama Mid-Century Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 330 cm. Mid-century style in flat-woven cotton, natural finish. 3 cm high, 155 cm wide, 330 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 330 cm long. Mid-century style in flat-woven cotton, natural finish. 3 cm high, 155 cm wide, 330 cm deep.",
   "reserve": 147,
   "attrs": {
    "category": "rug",
@@ -9176,7 +9176,7 @@
  {
   "id": "C00538",
   "name": "Lomo Art Deco Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in solid oak wood, charcoal finish. 98 cm high, 32 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in solid oak wood, charcoal finish. 98 cm high, 32 cm wide, 5 cm deep.",
   "reserve": 100,
   "attrs": {
    "category": "mirror",
@@ -9193,7 +9193,7 @@
  {
   "id": "C00539",
   "name": "Haneis Bohemian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 150 x 280 cm. Bohemian style in hand-tufted wool, grey finish. 1 cm high, 150 cm wide, 280 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 280 cm long. Bohemian style in hand-tufted wool, grey finish. 1 cm high, 150 cm wide, 280 cm deep.",
   "reserve": 166,
   "attrs": {
    "category": "rug",
@@ -9517,7 +9517,7 @@
  {
   "id": "C00558",
   "name": "Orma Japanese Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid oak wood, charcoal finish. 129 cm high, 30 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid oak wood, charcoal finish. 129 cm high, 30 cm wide, 4 cm deep.",
   "reserve": 108,
   "attrs": {
    "category": "mirror",
@@ -9534,7 +9534,7 @@
  {
   "id": "C00559",
   "name": "Isan Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 120 cm. Bohemian style in natural jute fibre, terracotta finish. 2 cm high, 115 cm wide, 120 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 120 cm long. Bohemian style in natural jute fibre, terracotta finish. 2 cm high, 115 cm wide, 120 cm deep.",
   "reserve": 103,
   "attrs": {
    "category": "rug",
@@ -9858,7 +9858,7 @@
  {
   "id": "C00578",
   "name": "Dodoma Bohemian Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid brass metal, honey finish. 92 cm high, 88 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid brass metal, honey finish. 92 cm high, 88 cm wide, 5 cm deep.",
   "reserve": 153,
   "attrs": {
    "category": "mirror",
@@ -9875,7 +9875,7 @@
  {
   "id": "C00579",
   "name": "Sari Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 75 x 190 cm. Industrial style in hand-tufted wool, honey finish. 1 cm high, 75 cm wide, 190 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 75 cm wide and 190 cm long. Industrial style in hand-tufted wool, honey finish. 1 cm high, 75 cm wide, 190 cm deep.",
   "reserve": 128,
   "attrs": {
    "category": "rug",
@@ -10199,7 +10199,7 @@
  {
   "id": "C00598",
   "name": "Luoran Minimalist Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in solid walnut wood, white finish. 47 cm high, 71 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in solid walnut wood, white finish. 47 cm high, 71 cm wide, 5 cm deep.",
   "reserve": 133,
   "attrs": {
    "category": "mirror",
@@ -10216,7 +10216,7 @@
  {
   "id": "C00599",
   "name": "Luorlu Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 180 x 150 cm. Rustic style in hand-tufted wool, natural finish. 3 cm high, 180 cm wide, 150 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 180 cm long. Rustic style in hand-tufted wool, natural finish. 3 cm high, 150 cm wide, 180 cm deep.",
   "reserve": 230,
   "attrs": {
    "category": "rug",
@@ -10225,8 +10225,8 @@
    "style": "rustic",
    "colour": "natural",
    "height_cm": 3,
-   "width_cm": 180,
-   "depth_cm": 150
+   "width_cm": 150,
+   "depth_cm": 180
   }
  },
  {
@@ -10540,7 +10540,7 @@
  {
   "id": "C00618",
   "name": "Anve Scandinavian Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Scandinavian style in solid oak wood, natural finish. 189 cm high, 46 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid oak wood, natural finish. 189 cm high, 46 cm wide, 3 cm deep.",
   "reserve": 131,
   "attrs": {
    "category": "mirror",
@@ -10557,7 +10557,7 @@
  {
   "id": "C00619",
   "name": "Mais Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 230 x 180 cm. Bohemian style in natural jute fibre, sage green finish. 1 cm high, 230 cm wide, 180 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 180 cm wide and 230 cm long. Bohemian style in natural jute fibre, sage green finish. 1 cm high, 180 cm wide, 230 cm deep.",
   "reserve": 118,
   "attrs": {
    "category": "rug",
@@ -10566,8 +10566,8 @@
    "style": "bohemian",
    "colour": "sage green",
    "height_cm": 1,
-   "width_cm": 230,
-   "depth_cm": 180
+   "width_cm": 180,
+   "depth_cm": 230
   }
  },
  {
@@ -10881,7 +10881,7 @@
  {
   "id": "C00638",
   "name": "Neor Minimalist Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in wrought iron metal, terracotta finish. 123 cm high, 37 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in wrought iron metal, terracotta finish. 123 cm high, 37 cm wide, 2 cm deep.",
   "reserve": 51,
   "attrs": {
    "category": "mirror",
@@ -10898,7 +10898,7 @@
  {
   "id": "C00639",
   "name": "Elne Scandinavian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 210 x 225 cm. Scandinavian style in hand-tufted wool, sage green finish. 3 cm high, 210 cm wide, 225 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 210 cm wide and 225 cm long. Scandinavian style in hand-tufted wool, sage green finish. 3 cm high, 210 cm wide, 225 cm deep.",
   "reserve": 282,
   "attrs": {
    "category": "rug",
@@ -11222,7 +11222,7 @@
  {
   "id": "C00658",
   "name": "Kisa Bohemian Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in powder-coated steel metal, sage green finish. 47 cm high, 86 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in powder-coated steel metal, sage green finish. 47 cm high, 86 cm wide, 2 cm deep.",
   "reserve": 54,
   "attrs": {
    "category": "mirror",
@@ -11239,7 +11239,7 @@
  {
   "id": "C00659",
   "name": "Elis Bohemian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 240 cm. Bohemian style in hand-tufted wool, honey finish. 3 cm high, 125 cm wide, 240 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 125 cm wide and 240 cm long. Bohemian style in hand-tufted wool, honey finish. 3 cm high, 125 cm wide, 240 cm deep.",
   "reserve": 230,
   "attrs": {
    "category": "rug",
@@ -11563,7 +11563,7 @@
  {
   "id": "C00678",
   "name": "Vinese Minimalist Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in solid brass metal, white finish. 106 cm high, 57 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in solid brass metal, white finish. 106 cm high, 57 cm wide, 2 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "mirror",
@@ -11580,7 +11580,7 @@
  {
   "id": "C00679",
   "name": "Tanave Mid-Century Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 205 x 215 cm. Mid-century style in natural jute fibre, black finish. 1 cm high, 205 cm wide, 215 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 205 cm wide and 215 cm long. Mid-century style in natural jute fibre, black finish. 1 cm high, 205 cm wide, 215 cm deep.",
   "reserve": 116,
   "attrs": {
    "category": "rug",
@@ -11904,7 +11904,7 @@
  {
   "id": "C00698",
   "name": "Dolumo Minimalist Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in solid walnut wood, cream finish. 81 cm high, 82 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in solid walnut wood, cream finish. 81 cm high, 82 cm wide, 4 cm deep.",
   "reserve": 147,
   "attrs": {
    "category": "mirror",
@@ -11921,7 +11921,7 @@
  {
   "id": "C00699",
   "name": "Lohaor Japanese Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 165 x 345 cm. Japanese style in flat-woven cotton, cream finish. 3 cm high, 165 cm wide, 345 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 165 cm wide and 345 cm long. Japanese style in flat-woven cotton, cream finish. 3 cm high, 165 cm wide, 345 cm deep.",
   "reserve": 188,
   "attrs": {
    "category": "rug",
@@ -12245,7 +12245,7 @@
  {
   "id": "C00718",
   "name": "Lori Art Deco Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Art deco style in solid oak wood, cream finish. 140 cm high, 80 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in solid oak wood, cream finish. 140 cm high, 80 cm wide, 3 cm deep.",
   "reserve": 109,
   "attrs": {
    "category": "mirror",
@@ -12262,7 +12262,7 @@
  {
   "id": "C00719",
   "name": "Isel Bohemian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 80 x 195 cm. Bohemian style in flat-woven cotton, black finish. 2 cm high, 80 cm wide, 195 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 80 cm wide and 195 cm long. Bohemian style in flat-woven cotton, black finish. 2 cm high, 80 cm wide, 195 cm deep.",
   "reserve": 94,
   "attrs": {
    "category": "rug",
@@ -12586,7 +12586,7 @@
  {
   "id": "C00738",
   "name": "Mois Farmhouse Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in solid oak wood, grey finish. 110 cm high, 55 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in solid oak wood, grey finish. 110 cm high, 55 cm wide, 3 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "mirror",
@@ -12603,7 +12603,7 @@
  {
   "id": "C00739",
   "name": "Samoha Art Deco Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 80 x 265 cm. Art deco style in natural jute fibre, grey finish. 1 cm high, 80 cm wide, 265 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 80 cm wide and 265 cm long. Art deco style in natural jute fibre, grey finish. 1 cm high, 80 cm wide, 265 cm deep.",
   "reserve": 97,
   "attrs": {
    "category": "rug",
@@ -12927,7 +12927,7 @@
  {
   "id": "C00758",
   "name": "Domama Art Deco Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in powder-coated steel metal, natural finish. 77 cm high, 76 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in powder-coated steel metal, natural finish. 77 cm high, 76 cm wide, 2 cm deep.",
   "reserve": 62,
   "attrs": {
    "category": "mirror",
@@ -12944,7 +12944,7 @@
  {
   "id": "C00759",
   "name": "Ordo Bohemian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 265 cm. Bohemian style in flat-woven cotton, white finish. 2 cm high, 125 cm wide, 265 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 125 cm wide and 265 cm long. Bohemian style in flat-woven cotton, white finish. 2 cm high, 125 cm wide, 265 cm deep.",
   "reserve": 129,
   "attrs": {
    "category": "rug",
@@ -13268,7 +13268,7 @@
  {
   "id": "C00778",
   "name": "Hanene Industrial Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in woven rattan wicker, terracotta finish. 91 cm high, 64 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, terracotta finish. 91 cm high, 64 cm wide, 2 cm deep.",
   "reserve": 82,
   "attrs": {
    "category": "mirror",
@@ -13285,7 +13285,7 @@
  {
   "id": "C00779",
   "name": "Kivean Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 200 x 285 cm. Rustic style in hand-tufted wool, black finish. 1 cm high, 200 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 200 cm wide and 285 cm long. Rustic style in hand-tufted wool, black finish. 1 cm high, 200 cm wide, 285 cm deep.",
   "reserve": 220,
   "attrs": {
    "category": "rug",
@@ -13609,7 +13609,7 @@
  {
   "id": "C00798",
   "name": "Dodota Scandinavian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid walnut wood, navy finish. 98 cm high, 61 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid walnut wood, navy finish. 98 cm high, 61 cm wide, 4 cm deep.",
   "reserve": 156,
   "attrs": {
    "category": "mirror",
@@ -13626,7 +13626,7 @@
  {
   "id": "C00799",
   "name": "Manais Industrial Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 160 cm. Industrial style in flat-woven cotton, natural finish. 3 cm high, 120 cm wide, 160 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 160 cm long. Industrial style in flat-woven cotton, natural finish. 3 cm high, 120 cm wide, 160 cm deep.",
   "reserve": 120,
   "attrs": {
    "category": "rug",
@@ -13950,7 +13950,7 @@
  {
   "id": "C00818",
   "name": "Vine Modern Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in woven rattan wicker, natural finish. 94 cm high, 58 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in woven rattan wicker, natural finish. 94 cm high, 58 cm wide, 3 cm deep.",
   "reserve": 81,
   "attrs": {
    "category": "mirror",
@@ -13967,7 +13967,7 @@
  {
   "id": "C00819",
   "name": "Taor Art Deco Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 240 x 275 cm. Art deco style in hand-tufted wool, natural finish. 2 cm high, 240 cm wide, 275 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 240 cm wide and 275 cm long. Art deco style in hand-tufted wool, natural finish. 2 cm high, 240 cm wide, 275 cm deep.",
   "reserve": 262,
   "attrs": {
    "category": "rug",
@@ -14291,7 +14291,7 @@
  {
   "id": "C00838",
   "name": "Isha Mid-Century Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in woven rattan wicker, honey finish. 93 cm high, 52 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in woven rattan wicker, honey finish. 93 cm high, 52 cm wide, 4 cm deep.",
   "reserve": 95,
   "attrs": {
    "category": "mirror",
@@ -14308,7 +14308,7 @@
  {
   "id": "C00839",
   "name": "Sakise Modern Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 165 x 115 cm. Modern style in natural jute fibre, terracotta finish. 1 cm high, 165 cm wide, 115 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 165 cm long. Modern style in natural jute fibre, terracotta finish. 1 cm high, 115 cm wide, 165 cm deep.",
   "reserve": 93,
   "attrs": {
    "category": "rug",
@@ -14317,8 +14317,8 @@
    "style": "modern",
    "colour": "terracotta",
    "height_cm": 1,
-   "width_cm": 165,
-   "depth_cm": 115
+   "width_cm": 115,
+   "depth_cm": 165
   }
  },
  {
@@ -14632,7 +14632,7 @@
  {
   "id": "C00858",
   "name": "Lumo Industrial Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in solid brass metal, sage green finish. 175 cm high, 90 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid brass metal, sage green finish. 175 cm high, 90 cm wide, 4 cm deep.",
   "reserve": 158,
   "attrs": {
    "category": "mirror",
@@ -14649,7 +14649,7 @@
  {
   "id": "C00859",
   "name": "Taki Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 185 x 255 cm. Rustic style in flat-woven cotton, terracotta finish. 2 cm high, 185 cm wide, 255 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 185 cm wide and 255 cm long. Rustic style in flat-woven cotton, terracotta finish. 2 cm high, 185 cm wide, 255 cm deep.",
   "reserve": 157,
   "attrs": {
    "category": "rug",
@@ -14973,7 +14973,7 @@
  {
   "id": "C00878",
   "name": "Naneel Mid-Century Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Mid-century style in solid brass metal, terracotta finish. 140 cm high, 83 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in solid brass metal, terracotta finish. 140 cm high, 83 cm wide, 3 cm deep.",
   "reserve": 136,
   "attrs": {
    "category": "mirror",
@@ -14990,7 +14990,7 @@
  {
   "id": "C00879",
   "name": "Anta Modern Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 205 x 95 cm. Modern style in hand-tufted wool, sage green finish. 1 cm high, 205 cm wide, 95 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 205 cm long. Modern style in hand-tufted wool, sage green finish. 1 cm high, 95 cm wide, 205 cm deep.",
   "reserve": 122,
   "attrs": {
    "category": "rug",
@@ -14999,8 +14999,8 @@
    "style": "modern",
    "colour": "sage green",
    "height_cm": 1,
-   "width_cm": 205,
-   "depth_cm": 95
+   "width_cm": 95,
+   "depth_cm": 205
   }
  },
  {
@@ -15314,7 +15314,7 @@
  {
   "id": "C00898",
   "name": "Rimo Bohemian Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid oak wood, terracotta finish. 57 cm high, 78 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid oak wood, terracotta finish. 57 cm high, 78 cm wide, 2 cm deep.",
   "reserve": 93,
   "attrs": {
    "category": "mirror",
@@ -15331,7 +15331,7 @@
  {
   "id": "C00899",
   "name": "Hamaan Japanese Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 210 x 110 cm. Japanese style in hand-tufted wool, cream finish. 2 cm high, 210 cm wide, 110 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 110 cm wide and 210 cm long. Japanese style in hand-tufted wool, cream finish. 2 cm high, 110 cm wide, 210 cm deep.",
   "reserve": 172,
   "attrs": {
    "category": "rug",
@@ -15340,8 +15340,8 @@
    "style": "Japanese",
    "colour": "cream",
    "height_cm": 2,
-   "width_cm": 210,
-   "depth_cm": 110
+   "width_cm": 110,
+   "depth_cm": 210
   }
  },
  {
@@ -15655,7 +15655,7 @@
  {
   "id": "C00918",
   "name": "Doma Bohemian Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in woven rattan wicker, navy finish. 47 cm high, 35 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in woven rattan wicker, navy finish. 47 cm high, 35 cm wide, 4 cm deep.",
   "reserve": 71,
   "attrs": {
    "category": "mirror",
@@ -15672,7 +15672,7 @@
  {
   "id": "C00919",
   "name": "Anha Bohemian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 130 x 110 cm. Bohemian style in flat-woven cotton, navy finish. 1 cm high, 130 cm wide, 110 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 110 cm wide and 130 cm long. Bohemian style in flat-woven cotton, navy finish. 1 cm high, 110 cm wide, 130 cm deep.",
   "reserve": 82,
   "attrs": {
    "category": "rug",
@@ -15681,8 +15681,8 @@
    "style": "bohemian",
    "colour": "navy",
    "height_cm": 1,
-   "width_cm": 130,
-   "depth_cm": 110
+   "width_cm": 110,
+   "depth_cm": 130
   }
  },
  {
@@ -15996,7 +15996,7 @@
  {
   "id": "C00938",
   "name": "Moki Farmhouse Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in solid brass metal, natural finish. 58 cm high, 95 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in solid brass metal, natural finish. 58 cm high, 95 cm wide, 4 cm deep.",
   "reserve": 137,
   "attrs": {
    "category": "mirror",
@@ -16013,7 +16013,7 @@
  {
   "id": "C00939",
   "name": "Rado Mid-Century Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 325 cm. Mid-century style in flat-woven cotton, black finish. 1 cm high, 115 cm wide, 325 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 325 cm long. Mid-century style in flat-woven cotton, black finish. 1 cm high, 115 cm wide, 325 cm deep.",
   "reserve": 90,
   "attrs": {
    "category": "rug",
@@ -16337,7 +16337,7 @@
  {
   "id": "C00958",
   "name": "Oran Art Deco Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in solid oak wood, grey finish. 70 cm high, 55 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in solid oak wood, grey finish. 70 cm high, 55 cm wide, 5 cm deep.",
   "reserve": 95,
   "attrs": {
    "category": "mirror",
@@ -16354,7 +16354,7 @@
  {
   "id": "C00959",
   "name": "Elne Scandinavian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 70 x 235 cm. Scandinavian style in natural jute fibre, navy finish. 1 cm high, 70 cm wide, 235 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 70 cm wide and 235 cm long. Scandinavian style in natural jute fibre, navy finish. 1 cm high, 70 cm wide, 235 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "rug",
@@ -16678,7 +16678,7 @@
  {
   "id": "C00978",
   "name": "Hakima Bohemian Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid brass metal, sage green finish. 91 cm high, 58 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid brass metal, sage green finish. 91 cm high, 58 cm wide, 2 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "mirror",
@@ -16695,7 +16695,7 @@
  {
   "id": "C00979",
   "name": "Elor Japanese Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 195 x 160 cm. Japanese style in flat-woven cotton, navy finish. 2 cm high, 195 cm wide, 160 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 160 cm wide and 195 cm long. Japanese style in flat-woven cotton, navy finish. 2 cm high, 160 cm wide, 195 cm deep.",
   "reserve": 132,
   "attrs": {
    "category": "rug",
@@ -16704,8 +16704,8 @@
    "style": "Japanese",
    "colour": "navy",
    "height_cm": 2,
-   "width_cm": 195,
-   "depth_cm": 160
+   "width_cm": 160,
+   "depth_cm": 195
   }
  },
  {
@@ -17019,7 +17019,7 @@
  {
   "id": "C00998",
   "name": "Luanki Bohemian Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in wrought iron metal, natural finish. 88 cm high, 57 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in wrought iron metal, natural finish. 88 cm high, 57 cm wide, 3 cm deep.",
   "reserve": 65,
   "attrs": {
    "category": "mirror",
@@ -17036,7 +17036,7 @@
  {
   "id": "C00999",
   "name": "Lodori Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 110 x 285 cm. Industrial style in hand-tufted wool, white finish. 1 cm high, 110 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 110 cm wide and 285 cm long. Industrial style in hand-tufted wool, white finish. 1 cm high, 110 cm wide, 285 cm deep.",
   "reserve": 166,
   "attrs": {
    "category": "rug",
@@ -17360,7 +17360,7 @@
  {
   "id": "C01018",
   "name": "Molo Modern Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid walnut wood, navy finish. 60 cm high, 88 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, navy finish. 60 cm high, 88 cm wide, 3 cm deep.",
   "reserve": 138,
   "attrs": {
    "category": "mirror",
@@ -17377,7 +17377,7 @@
  {
   "id": "C01019",
   "name": "Neri Industrial Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 130 x 290 cm. Industrial style in natural jute fibre, black finish. 3 cm high, 130 cm wide, 290 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 290 cm long. Industrial style in natural jute fibre, black finish. 3 cm high, 130 cm wide, 290 cm deep.",
   "reserve": 142,
   "attrs": {
    "category": "rug",
@@ -17701,7 +17701,7 @@
  {
   "id": "C01038",
   "name": "Sasane Industrial Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in powder-coated steel metal, natural finish. 174 cm high, 59 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in powder-coated steel metal, natural finish. 174 cm high, 59 cm wide, 3 cm deep.",
   "reserve": 77,
   "attrs": {
    "category": "mirror",
@@ -17718,7 +17718,7 @@
  {
   "id": "C01039",
   "name": "Lokisa Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 235 cm. Minimalist style in flat-woven cotton, terracotta finish. 1 cm high, 120 cm wide, 235 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 235 cm long. Minimalist style in flat-woven cotton, terracotta finish. 1 cm high, 120 cm wide, 235 cm deep.",
   "reserve": 105,
   "attrs": {
    "category": "rug",
@@ -18042,7 +18042,7 @@
  {
   "id": "C01058",
   "name": "Dona Minimalist Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in solid walnut wood, cream finish. 99 cm high, 81 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in solid walnut wood, cream finish. 99 cm high, 81 cm wide, 3 cm deep.",
   "reserve": 127,
   "attrs": {
    "category": "mirror",
@@ -18059,7 +18059,7 @@
  {
   "id": "C01059",
   "name": "Isha Farmhouse Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 140 cm. Farmhouse style in flat-woven cotton, natural finish. 2 cm high, 155 cm wide, 140 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 140 cm wide and 155 cm long. Farmhouse style in flat-woven cotton, natural finish. 2 cm high, 140 cm wide, 155 cm deep.",
   "reserve": 117,
   "attrs": {
    "category": "rug",
@@ -18068,8 +18068,8 @@
    "style": "farmhouse",
    "colour": "natural",
    "height_cm": 2,
-   "width_cm": 155,
-   "depth_cm": 140
+   "width_cm": 140,
+   "depth_cm": 155
   }
  },
  {
@@ -18383,7 +18383,7 @@
  {
   "id": "C01078",
   "name": "Lolu Modern Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid walnut wood, terracotta finish. 79 cm high, 50 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, terracotta finish. 79 cm high, 50 cm wide, 2 cm deep.",
   "reserve": 88,
   "attrs": {
    "category": "mirror",
@@ -18400,7 +18400,7 @@
  {
   "id": "C01079",
   "name": "Vivive Art Deco Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 190 x 130 cm. Art deco style in flat-woven cotton, white finish. 2 cm high, 190 cm wide, 130 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 190 cm long. Art deco style in flat-woven cotton, white finish. 2 cm high, 130 cm wide, 190 cm deep.",
   "reserve": 117,
   "attrs": {
    "category": "rug",
@@ -18409,8 +18409,8 @@
    "style": "art deco",
    "colour": "white",
    "height_cm": 2,
-   "width_cm": 190,
-   "depth_cm": 130
+   "width_cm": 130,
+   "depth_cm": 190
   }
  },
  {
@@ -18724,7 +18724,7 @@
  {
   "id": "C01098",
   "name": "Vilu Bohemian Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Bohemian style in solid brass metal, sage green finish. 151 cm high, 41 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid brass metal, sage green finish. 151 cm high, 41 cm wide, 4 cm deep.",
   "reserve": 147,
   "attrs": {
    "category": "mirror",
@@ -18741,7 +18741,7 @@
  {
   "id": "C01099",
   "name": "Neki Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 145 x 120 cm. Minimalist style in flat-woven cotton, cream finish. 2 cm high, 145 cm wide, 120 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 145 cm long. Minimalist style in flat-woven cotton, cream finish. 2 cm high, 120 cm wide, 145 cm deep.",
   "reserve": 101,
   "attrs": {
    "category": "rug",
@@ -18750,8 +18750,8 @@
    "style": "minimalist",
    "colour": "cream",
    "height_cm": 2,
-   "width_cm": 145,
-   "depth_cm": 120
+   "width_cm": 120,
+   "depth_cm": 145
   }
  },
  {
@@ -19065,7 +19065,7 @@
  {
   "id": "C01118",
   "name": "Hari Farmhouse Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in solid oak wood, natural finish. 96 cm high, 46 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in solid oak wood, natural finish. 96 cm high, 46 cm wide, 2 cm deep.",
   "reserve": 81,
   "attrs": {
    "category": "mirror",
@@ -19082,7 +19082,7 @@
  {
   "id": "C01119",
   "name": "Kinaha Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 200 x 155 cm. Minimalist style in natural jute fibre, black finish. 3 cm high, 200 cm wide, 155 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 200 cm long. Minimalist style in natural jute fibre, black finish. 3 cm high, 155 cm wide, 200 cm deep.",
   "reserve": 148,
   "attrs": {
    "category": "rug",
@@ -19091,8 +19091,8 @@
    "style": "minimalist",
    "colour": "black",
    "height_cm": 3,
-   "width_cm": 200,
-   "depth_cm": 155
+   "width_cm": 155,
+   "depth_cm": 200
   }
  },
  {
@@ -19406,7 +19406,7 @@
  {
   "id": "C01138",
   "name": "Virior Industrial Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in woven rattan wicker, grey finish. 63 cm high, 79 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, grey finish. 63 cm high, 79 cm wide, 5 cm deep.",
   "reserve": 95,
   "attrs": {
    "category": "mirror",
@@ -19423,7 +19423,7 @@
  {
   "id": "C01139",
   "name": "Oranne Modern Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 170 cm. Modern style in natural jute fibre, navy finish. 1 cm high, 65 cm wide, 170 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 170 cm long. Modern style in natural jute fibre, navy finish. 1 cm high, 65 cm wide, 170 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "rug",
@@ -19747,7 +19747,7 @@
  {
   "id": "C01158",
   "name": "Kira Modern Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid oak wood, cream finish. 60 cm high, 92 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid oak wood, cream finish. 60 cm high, 92 cm wide, 2 cm deep.",
   "reserve": 99,
   "attrs": {
    "category": "mirror",
@@ -19764,7 +19764,7 @@
  {
   "id": "C01159",
   "name": "Vielmo Farmhouse Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 115 cm. Farmhouse style in flat-woven cotton, natural finish. 2 cm high, 65 cm wide, 115 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 115 cm long. Farmhouse style in flat-woven cotton, natural finish. 2 cm high, 65 cm wide, 115 cm deep.",
   "reserve": 87,
   "attrs": {
    "category": "rug",
@@ -20088,7 +20088,7 @@
  {
   "id": "C01178",
   "name": "Elseel Japanese Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Japanese style in solid oak wood, honey finish. 174 cm high, 57 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid oak wood, honey finish. 174 cm high, 57 cm wide, 4 cm deep.",
   "reserve": 140,
   "attrs": {
    "category": "mirror",
@@ -20105,7 +20105,7 @@
  {
   "id": "C01179",
   "name": "Lulu Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 160 x 190 cm. Bohemian style in natural jute fibre, cream finish. 1 cm high, 160 cm wide, 190 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 160 cm wide and 190 cm long. Bohemian style in natural jute fibre, cream finish. 1 cm high, 160 cm wide, 190 cm deep.",
   "reserve": 112,
   "attrs": {
    "category": "rug",
@@ -20429,7 +20429,7 @@
  {
   "id": "C01198",
   "name": "Isdomo Mid-Century Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Mid-century style in woven rattan wicker, charcoal finish. 144 cm high, 90 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in woven rattan wicker, charcoal finish. 144 cm high, 90 cm wide, 2 cm deep.",
   "reserve": 96,
   "attrs": {
    "category": "mirror",
@@ -20446,7 +20446,7 @@
  {
   "id": "C01199",
   "name": "Orta Japanese Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 225 x 205 cm. Japanese style in hand-tufted wool, cream finish. 2 cm high, 225 cm wide, 205 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 205 cm wide and 225 cm long. Japanese style in hand-tufted wool, cream finish. 2 cm high, 205 cm wide, 225 cm deep.",
   "reserve": 232,
   "attrs": {
    "category": "rug",
@@ -20455,8 +20455,8 @@
    "style": "Japanese",
    "colour": "cream",
    "height_cm": 2,
-   "width_cm": 225,
-   "depth_cm": 205
+   "width_cm": 205,
+   "depth_cm": 225
   }
  },
  {
@@ -20770,7 +20770,7 @@
  {
   "id": "C01218",
   "name": "Kima Minimalist Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Minimalist style in woven rattan wicker, black finish. 183 cm high, 97 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in woven rattan wicker, black finish. 183 cm high, 97 cm wide, 2 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "mirror",
@@ -20787,7 +20787,7 @@
  {
   "id": "C01219",
   "name": "Neri Japanese Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 110 x 205 cm. Japanese style in hand-tufted wool, cream finish. 3 cm high, 110 cm wide, 205 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 110 cm wide and 205 cm long. Japanese style in hand-tufted wool, cream finish. 3 cm high, 110 cm wide, 205 cm deep.",
   "reserve": 191,
   "attrs": {
    "category": "rug",
@@ -21111,7 +21111,7 @@
  {
   "id": "C01238",
   "name": "Ramovi Modern Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Modern style in solid walnut wood, terracotta finish. 168 cm high, 55 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, terracotta finish. 168 cm high, 55 cm wide, 2 cm deep.",
   "reserve": 139,
   "attrs": {
    "category": "mirror",
@@ -21128,7 +21128,7 @@
  {
   "id": "C01239",
   "name": "Sekima Scandinavian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 195 cm. Scandinavian style in flat-woven cotton, black finish. 3 cm high, 155 cm wide, 195 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 195 cm long. Scandinavian style in flat-woven cotton, black finish. 3 cm high, 155 cm wide, 195 cm deep.",
   "reserve": 156,
   "attrs": {
    "category": "rug",
@@ -21452,7 +21452,7 @@
  {
   "id": "C01258",
   "name": "Takilu Modern Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in wrought iron metal, white finish. 92 cm high, 44 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in wrought iron metal, white finish. 92 cm high, 44 cm wide, 5 cm deep.",
   "reserve": 67,
   "attrs": {
    "category": "mirror",
@@ -21469,7 +21469,7 @@
  {
   "id": "C01259",
   "name": "Losesa Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 185 cm. Bohemian style in natural jute fibre, charcoal finish. 1 cm high, 155 cm wide, 185 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 185 cm long. Bohemian style in natural jute fibre, charcoal finish. 1 cm high, 155 cm wide, 185 cm deep.",
   "reserve": 102,
   "attrs": {
    "category": "rug",
@@ -21793,7 +21793,7 @@
  {
   "id": "C01278",
   "name": "Ralu Farmhouse Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in solid oak wood, natural finish. 133 cm high, 54 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in solid oak wood, natural finish. 133 cm high, 54 cm wide, 5 cm deep.",
   "reserve": 130,
   "attrs": {
    "category": "mirror",
@@ -21810,7 +21810,7 @@
  {
   "id": "C01279",
   "name": "Luluve Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 85 x 300 cm. Rustic style in hand-tufted wool, white finish. 2 cm high, 85 cm wide, 300 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 85 cm wide and 300 cm long. Rustic style in hand-tufted wool, white finish. 2 cm high, 85 cm wide, 300 cm deep.",
   "reserve": 205,
   "attrs": {
    "category": "rug",
@@ -22134,7 +22134,7 @@
  {
   "id": "C01298",
   "name": "Ramona Mid-Century Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in solid oak wood, charcoal finish. 81 cm high, 44 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in solid oak wood, charcoal finish. 81 cm high, 44 cm wide, 4 cm deep.",
   "reserve": 90,
   "attrs": {
    "category": "mirror",
@@ -22151,7 +22151,7 @@
  {
   "id": "C01299",
   "name": "Isor Industrial Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 175 x 175 cm. Industrial style in flat-woven cotton, sage green finish. 2 cm high, 175 cm wide, 175 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 175 cm wide and 175 cm long. Industrial style in flat-woven cotton, sage green finish. 2 cm high, 175 cm wide, 175 cm deep.",
   "reserve": 127,
   "attrs": {
    "category": "rug",
@@ -22475,7 +22475,7 @@
  {
   "id": "C01318",
   "name": "Luveor Bohemian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid walnut wood, cream finish. 64 cm high, 100 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid walnut wood, cream finish. 64 cm high, 100 cm wide, 2 cm deep.",
   "reserve": 128,
   "attrs": {
    "category": "mirror",
@@ -22492,7 +22492,7 @@
  {
   "id": "C01319",
   "name": "Elel Modern Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 150 x 285 cm. Modern style in flat-woven cotton, natural finish. 2 cm high, 150 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 285 cm long. Modern style in flat-woven cotton, natural finish. 2 cm high, 150 cm wide, 285 cm deep.",
   "reserve": 127,
   "attrs": {
    "category": "rug",
@@ -22816,7 +22816,7 @@
  {
   "id": "C01338",
   "name": "Loma Minimalist Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Minimalist style in solid oak wood, honey finish. 175 cm high, 61 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in solid oak wood, honey finish. 175 cm high, 61 cm wide, 2 cm deep.",
   "reserve": 103,
   "attrs": {
    "category": "mirror",
@@ -22833,7 +22833,7 @@
  {
   "id": "C01339",
   "name": "Anlu Scandinavian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 110 x 145 cm. Scandinavian style in hand-tufted wool, sage green finish. 2 cm high, 110 cm wide, 145 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 110 cm wide and 145 cm long. Scandinavian style in hand-tufted wool, sage green finish. 2 cm high, 110 cm wide, 145 cm deep.",
   "reserve": 153,
   "attrs": {
    "category": "rug",
@@ -23157,7 +23157,7 @@
  {
   "id": "C01358",
   "name": "Nema Farmhouse Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Farmhouse style in woven rattan wicker, sage green finish. 157 cm high, 62 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in woven rattan wicker, sage green finish. 157 cm high, 62 cm wide, 5 cm deep.",
   "reserve": 117,
   "attrs": {
    "category": "mirror",
@@ -23174,7 +23174,7 @@
  {
   "id": "C01359",
   "name": "Hael Japanese Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 90 x 150 cm. Japanese style in hand-tufted wool, honey finish. 3 cm high, 90 cm wide, 150 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 90 cm wide and 150 cm long. Japanese style in hand-tufted wool, honey finish. 3 cm high, 90 cm wide, 150 cm deep.",
   "reserve": 185,
   "attrs": {
    "category": "rug",
@@ -23498,7 +23498,7 @@
  {
   "id": "C01378",
   "name": "Nana Farmhouse Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Farmhouse style in woven rattan wicker, sage green finish. 170 cm high, 46 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in woven rattan wicker, sage green finish. 170 cm high, 46 cm wide, 3 cm deep.",
   "reserve": 100,
   "attrs": {
    "category": "mirror",
@@ -23515,7 +23515,7 @@
  {
   "id": "C01379",
   "name": "Vimodo Modern Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 320 cm. Modern style in flat-woven cotton, honey finish. 3 cm high, 120 cm wide, 320 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 320 cm long. Modern style in flat-woven cotton, honey finish. 3 cm high, 120 cm wide, 320 cm deep.",
   "reserve": 153,
   "attrs": {
    "category": "rug",
@@ -23839,7 +23839,7 @@
  {
   "id": "C01398",
   "name": "Neanse Scandinavian Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in wrought iron metal, navy finish. 121 cm high, 59 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in wrought iron metal, navy finish. 121 cm high, 59 cm wide, 2 cm deep.",
   "reserve": 60,
   "attrs": {
    "category": "mirror",
@@ -23856,7 +23856,7 @@
  {
   "id": "C01399",
   "name": "Elis Minimalist Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 135 x 145 cm. Minimalist style in hand-tufted wool, black finish. 3 cm high, 135 cm wide, 145 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 135 cm wide and 145 cm long. Minimalist style in hand-tufted wool, black finish. 3 cm high, 135 cm wide, 145 cm deep.",
   "reserve": 184,
   "attrs": {
    "category": "rug",
@@ -24180,7 +24180,7 @@
  {
   "id": "C01418",
   "name": "Lurais Japanese Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid oak wood, sage green finish. 49 cm high, 67 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid oak wood, sage green finish. 49 cm high, 67 cm wide, 3 cm deep.",
   "reserve": 76,
   "attrs": {
    "category": "mirror",
@@ -24197,7 +24197,7 @@
  {
   "id": "C01419",
   "name": "Lovi Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 95 x 225 cm. Rustic style in flat-woven cotton, grey finish. 3 cm high, 95 cm wide, 225 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 225 cm long. Rustic style in flat-woven cotton, grey finish. 3 cm high, 95 cm wide, 225 cm deep.",
   "reserve": 127,
   "attrs": {
    "category": "rug",
@@ -24521,7 +24521,7 @@
  {
   "id": "C01438",
   "name": "Elneis Farmhouse Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in powder-coated steel metal, grey finish. 76 cm high, 85 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in powder-coated steel metal, grey finish. 76 cm high, 85 cm wide, 5 cm deep.",
   "reserve": 90,
   "attrs": {
    "category": "mirror",
@@ -24538,7 +24538,7 @@
  {
   "id": "C01439",
   "name": "Ordomo Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 95 x 120 cm. Industrial style in hand-tufted wool, white finish. 3 cm high, 95 cm wide, 120 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 120 cm long. Industrial style in hand-tufted wool, white finish. 3 cm high, 95 cm wide, 120 cm deep.",
   "reserve": 176,
   "attrs": {
    "category": "rug",
@@ -24862,7 +24862,7 @@
  {
   "id": "C01458",
   "name": "Elsa Rustic Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Rustic style in powder-coated steel metal, terracotta finish. 85 cm high, 74 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in powder-coated steel metal, terracotta finish. 85 cm high, 74 cm wide, 4 cm deep.",
   "reserve": 90,
   "attrs": {
    "category": "mirror",
@@ -24879,7 +24879,7 @@
  {
   "id": "C01459",
   "name": "Dohaor Scandinavian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 190 cm. Scandinavian style in hand-tufted wool, grey finish. 2 cm high, 120 cm wide, 190 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 190 cm long. Scandinavian style in hand-tufted wool, grey finish. 2 cm high, 120 cm wide, 190 cm deep.",
   "reserve": 162,
   "attrs": {
    "category": "rug",
@@ -25203,7 +25203,7 @@
  {
   "id": "C01478",
   "name": "Ismo Modern Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Modern style in solid walnut wood, honey finish. 152 cm high, 93 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, honey finish. 152 cm high, 93 cm wide, 3 cm deep.",
   "reserve": 154,
   "attrs": {
    "category": "mirror",
@@ -25220,7 +25220,7 @@
  {
   "id": "C01479",
   "name": "Ororan Modern Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 170 x 270 cm. Modern style in hand-tufted wool, black finish. 3 cm high, 170 cm wide, 270 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 170 cm wide and 270 cm long. Modern style in hand-tufted wool, black finish. 3 cm high, 170 cm wide, 270 cm deep.",
   "reserve": 282,
   "attrs": {
    "category": "rug",
@@ -25544,7 +25544,7 @@
  {
   "id": "C01498",
   "name": "Senalo Japanese Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid brass metal, navy finish. 127 cm high, 43 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid brass metal, navy finish. 127 cm high, 43 cm wide, 2 cm deep.",
   "reserve": 102,
   "attrs": {
    "category": "mirror",
@@ -25561,7 +25561,7 @@
  {
   "id": "C01499",
   "name": "Tama Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 75 x 285 cm. Industrial style in hand-tufted wool, cream finish. 2 cm high, 75 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 75 cm wide and 285 cm long. Industrial style in hand-tufted wool, cream finish. 2 cm high, 75 cm wide, 285 cm deep.",
   "reserve": 194,
   "attrs": {
    "category": "rug",
@@ -25885,7 +25885,7 @@
  {
   "id": "C01518",
   "name": "Salu Mid-Century Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in powder-coated steel metal, white finish. 82 cm high, 95 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in powder-coated steel metal, white finish. 82 cm high, 95 cm wide, 2 cm deep.",
   "reserve": 76,
   "attrs": {
    "category": "mirror",
@@ -25902,7 +25902,7 @@
  {
   "id": "C01519",
   "name": "Nedo Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 210 x 190 cm. Minimalist style in natural jute fibre, cream finish. 3 cm high, 210 cm wide, 190 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 190 cm wide and 210 cm long. Minimalist style in natural jute fibre, cream finish. 3 cm high, 190 cm wide, 210 cm deep.",
   "reserve": 180,
   "attrs": {
    "category": "rug",
@@ -25911,8 +25911,8 @@
    "style": "minimalist",
    "colour": "cream",
    "height_cm": 3,
-   "width_cm": 210,
-   "depth_cm": 190
+   "width_cm": 190,
+   "depth_cm": 210
   }
  },
  {
@@ -26226,7 +26226,7 @@
  {
   "id": "C01538",
   "name": "Nema Rustic Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Rustic style in powder-coated steel metal, sage green finish. 46 cm high, 72 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in powder-coated steel metal, sage green finish. 46 cm high, 72 cm wide, 4 cm deep.",
   "reserve": 65,
   "attrs": {
    "category": "mirror",
@@ -26243,7 +26243,7 @@
  {
   "id": "C01539",
   "name": "Sese Mid-Century Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 70 x 250 cm. Mid-century style in hand-tufted wool, charcoal finish. 3 cm high, 70 cm wide, 250 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 70 cm wide and 250 cm long. Mid-century style in hand-tufted wool, charcoal finish. 3 cm high, 70 cm wide, 250 cm deep.",
   "reserve": 213,
   "attrs": {
    "category": "rug",
@@ -26567,7 +26567,7 @@
  {
   "id": "C01558",
   "name": "Elvi Farmhouse Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in powder-coated steel metal, charcoal finish. 46 cm high, 32 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in powder-coated steel metal, charcoal finish. 46 cm high, 32 cm wide, 3 cm deep.",
   "reserve": 45,
   "attrs": {
    "category": "mirror",
@@ -26584,7 +26584,7 @@
  {
   "id": "C01559",
   "name": "Sari Modern Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 90 x 345 cm. Modern style in flat-woven cotton, natural finish. 3 cm high, 90 cm wide, 345 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 90 cm wide and 345 cm long. Modern style in flat-woven cotton, natural finish. 3 cm high, 90 cm wide, 345 cm deep.",
   "reserve": 156,
   "attrs": {
    "category": "rug",
@@ -26908,7 +26908,7 @@
  {
   "id": "C01578",
   "name": "Elrise Bohemian Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Bohemian style in solid oak wood, charcoal finish. 166 cm high, 42 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid oak wood, charcoal finish. 166 cm high, 42 cm wide, 2 cm deep.",
   "reserve": 108,
   "attrs": {
    "category": "mirror",
@@ -26925,7 +26925,7 @@
  {
   "id": "C01579",
   "name": "Lusa Bohemian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 215 x 280 cm. Bohemian style in hand-tufted wool, charcoal finish. 3 cm high, 215 cm wide, 280 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 215 cm wide and 280 cm long. Bohemian style in hand-tufted wool, charcoal finish. 3 cm high, 215 cm wide, 280 cm deep.",
   "reserve": 308,
   "attrs": {
    "category": "rug",
@@ -27249,7 +27249,7 @@
  {
   "id": "C01598",
   "name": "Mane Mid-Century Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Mid-century style in powder-coated steel metal, cream finish. 189 cm high, 100 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in powder-coated steel metal, cream finish. 189 cm high, 100 cm wide, 4 cm deep.",
   "reserve": 128,
   "attrs": {
    "category": "mirror",
@@ -27266,7 +27266,7 @@
  {
   "id": "C01599",
   "name": "Neis Bohemian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 105 cm. Bohemian style in hand-tufted wool, navy finish. 1 cm high, 115 cm wide, 105 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 115 cm long. Bohemian style in hand-tufted wool, navy finish. 1 cm high, 105 cm wide, 115 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "rug",
@@ -27275,8 +27275,8 @@
    "style": "bohemian",
    "colour": "navy",
    "height_cm": 1,
-   "width_cm": 115,
-   "depth_cm": 105
+   "width_cm": 105,
+   "depth_cm": 115
   }
  },
  {
@@ -27590,7 +27590,7 @@
  {
   "id": "C01618",
   "name": "Nalo Art Deco Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in powder-coated steel metal, sage green finish. 132 cm high, 31 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in powder-coated steel metal, sage green finish. 132 cm high, 31 cm wide, 2 cm deep.",
   "reserve": 63,
   "attrs": {
    "category": "mirror",
@@ -27607,7 +27607,7 @@
  {
   "id": "C01619",
   "name": "Vivive Farmhouse Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 85 x 175 cm. Farmhouse style in natural jute fibre, grey finish. 1 cm high, 85 cm wide, 175 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 85 cm wide and 175 cm long. Farmhouse style in natural jute fibre, grey finish. 1 cm high, 85 cm wide, 175 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "rug",
@@ -27931,7 +27931,7 @@
  {
   "id": "C01638",
   "name": "Isislu Industrial Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in solid walnut wood, navy finish. 183 cm high, 89 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid walnut wood, navy finish. 183 cm high, 89 cm wide, 3 cm deep.",
   "reserve": 146,
   "attrs": {
    "category": "mirror",
@@ -27948,7 +27948,7 @@
  {
   "id": "C01639",
   "name": "Marimo Industrial Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 105 x 250 cm. Industrial style in natural jute fibre, sage green finish. 3 cm high, 105 cm wide, 250 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 250 cm long. Industrial style in natural jute fibre, sage green finish. 3 cm high, 105 cm wide, 250 cm deep.",
   "reserve": 147,
   "attrs": {
    "category": "rug",
@@ -28272,7 +28272,7 @@
  {
   "id": "C01658",
   "name": "Kimosa Japanese Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid brass metal, natural finish. 94 cm high, 49 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid brass metal, natural finish. 94 cm high, 49 cm wide, 2 cm deep.",
   "reserve": 92,
   "attrs": {
    "category": "mirror",
@@ -28289,7 +28289,7 @@
  {
   "id": "C01659",
   "name": "Saveve Modern Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 70 x 350 cm. Modern style in flat-woven cotton, navy finish. 3 cm high, 70 cm wide, 350 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 70 cm wide and 350 cm long. Modern style in flat-woven cotton, navy finish. 3 cm high, 70 cm wide, 350 cm deep.",
   "reserve": 115,
   "attrs": {
    "category": "rug",
@@ -28613,7 +28613,7 @@
  {
   "id": "C01678",
   "name": "Visa Scandinavian Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid oak wood, terracotta finish. 86 cm high, 81 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid oak wood, terracotta finish. 86 cm high, 81 cm wide, 5 cm deep.",
   "reserve": 119,
   "attrs": {
    "category": "mirror",
@@ -28630,7 +28630,7 @@
  {
   "id": "C01679",
   "name": "Eltane Scandinavian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 250 x 160 cm. Scandinavian style in natural jute fibre, charcoal finish. 2 cm high, 250 cm wide, 160 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 160 cm wide and 250 cm long. Scandinavian style in natural jute fibre, charcoal finish. 2 cm high, 160 cm wide, 250 cm deep.",
   "reserve": 160,
   "attrs": {
    "category": "rug",
@@ -28639,8 +28639,8 @@
    "style": "Scandinavian",
    "colour": "charcoal",
    "height_cm": 2,
-   "width_cm": 250,
-   "depth_cm": 160
+   "width_cm": 160,
+   "depth_cm": 250
   }
  },
  {
@@ -28954,7 +28954,7 @@
  {
   "id": "C01698",
   "name": "Tavi Mid-Century Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in powder-coated steel metal, cream finish. 127 cm high, 70 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in powder-coated steel metal, cream finish. 127 cm high, 70 cm wide, 5 cm deep.",
   "reserve": 93,
   "attrs": {
    "category": "mirror",
@@ -28971,7 +28971,7 @@
  {
   "id": "C01699",
   "name": "Orralo Mid-Century Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 340 cm. Mid-century style in hand-tufted wool, charcoal finish. 1 cm high, 65 cm wide, 340 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 340 cm long. Mid-century style in hand-tufted wool, charcoal finish. 1 cm high, 65 cm wide, 340 cm deep.",
   "reserve": 144,
   "attrs": {
    "category": "rug",
@@ -29295,7 +29295,7 @@
  {
   "id": "C01718",
   "name": "Oran Mid-Century Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in powder-coated steel metal, grey finish. 105 cm high, 100 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in powder-coated steel metal, grey finish. 105 cm high, 100 cm wide, 4 cm deep.",
   "reserve": 89,
   "attrs": {
    "category": "mirror",
@@ -29312,7 +29312,7 @@
  {
   "id": "C01719",
   "name": "Rihana Farmhouse Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 180 x 205 cm. Farmhouse style in hand-tufted wool, white finish. 3 cm high, 180 cm wide, 205 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 180 cm wide and 205 cm long. Farmhouse style in hand-tufted wool, white finish. 3 cm high, 180 cm wide, 205 cm deep.",
   "reserve": 205,
   "attrs": {
    "category": "rug",
@@ -29636,7 +29636,7 @@
  {
   "id": "C01738",
   "name": "Rira Scandinavian Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Scandinavian style in powder-coated steel metal, white finish. 152 cm high, 92 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in powder-coated steel metal, white finish. 152 cm high, 92 cm wide, 2 cm deep.",
   "reserve": 93,
   "attrs": {
    "category": "mirror",
@@ -29653,7 +29653,7 @@
  {
   "id": "C01739",
   "name": "Luis Rustic Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 245 x 240 cm. Rustic style in natural jute fibre, sage green finish. 1 cm high, 245 cm wide, 240 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 240 cm wide and 245 cm long. Rustic style in natural jute fibre, sage green finish. 1 cm high, 240 cm wide, 245 cm deep.",
   "reserve": 117,
   "attrs": {
    "category": "rug",
@@ -29662,8 +29662,8 @@
    "style": "rustic",
    "colour": "sage green",
    "height_cm": 1,
-   "width_cm": 245,
-   "depth_cm": 240
+   "width_cm": 240,
+   "depth_cm": 245
   }
  },
  {
@@ -29977,7 +29977,7 @@
  {
   "id": "C01758",
   "name": "Nase Bohemian Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid oak wood, charcoal finish. 45 cm high, 74 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid oak wood, charcoal finish. 45 cm high, 74 cm wide, 5 cm deep.",
   "reserve": 115,
   "attrs": {
    "category": "mirror",
@@ -29994,7 +29994,7 @@
  {
   "id": "C01759",
   "name": "Taluma Art Deco Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 150 x 300 cm. Art deco style in hand-tufted wool, cream finish. 2 cm high, 150 cm wide, 300 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 300 cm long. Art deco style in hand-tufted wool, cream finish. 2 cm high, 150 cm wide, 300 cm deep.",
   "reserve": 244,
   "attrs": {
    "category": "rug",
@@ -30318,7 +30318,7 @@
  {
   "id": "C01778",
   "name": "Rimo Japanese Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid brass metal, navy finish. 86 cm high, 96 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid brass metal, navy finish. 86 cm high, 96 cm wide, 2 cm deep.",
   "reserve": 108,
   "attrs": {
    "category": "mirror",
@@ -30335,7 +30335,7 @@
  {
   "id": "C01779",
   "name": "Rimalo Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 230 x 100 cm. Rustic style in hand-tufted wool, natural finish. 3 cm high, 230 cm wide, 100 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 100 cm wide and 230 cm long. Rustic style in hand-tufted wool, natural finish. 3 cm high, 100 cm wide, 230 cm deep.",
   "reserve": 190,
   "attrs": {
    "category": "rug",
@@ -30344,8 +30344,8 @@
    "style": "rustic",
    "colour": "natural",
    "height_cm": 3,
-   "width_cm": 230,
-   "depth_cm": 100
+   "width_cm": 100,
+   "depth_cm": 230
   }
  },
  {
@@ -30659,7 +30659,7 @@
  {
   "id": "C01798",
   "name": "Vedo Art Deco Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in wrought iron metal, charcoal finish. 97 cm high, 96 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in wrought iron metal, charcoal finish. 97 cm high, 96 cm wide, 4 cm deep.",
   "reserve": 97,
   "attrs": {
    "category": "mirror",
@@ -30676,7 +30676,7 @@
  {
   "id": "C01799",
   "name": "Sadolu Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 195 x 285 cm. Minimalist style in flat-woven cotton, natural finish. 3 cm high, 195 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 195 cm wide and 285 cm long. Minimalist style in flat-woven cotton, natural finish. 3 cm high, 195 cm wide, 285 cm deep.",
   "reserve": 151,
   "attrs": {
    "category": "rug",
@@ -31000,7 +31000,7 @@
  {
   "id": "C01818",
   "name": "Vesedo Scandinavian Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid oak wood, honey finish. 100 cm high, 71 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid oak wood, honey finish. 100 cm high, 71 cm wide, 5 cm deep.",
   "reserve": 143,
   "attrs": {
    "category": "mirror",
@@ -31017,7 +31017,7 @@
  {
   "id": "C01819",
   "name": "Nedo Mid-Century Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 190 x 175 cm. Mid-century style in natural jute fibre, charcoal finish. 3 cm high, 190 cm wide, 175 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 175 cm wide and 190 cm long. Mid-century style in natural jute fibre, charcoal finish. 3 cm high, 175 cm wide, 190 cm deep.",
   "reserve": 142,
   "attrs": {
    "category": "rug",
@@ -31026,8 +31026,8 @@
    "style": "mid-century",
    "colour": "charcoal",
    "height_cm": 3,
-   "width_cm": 190,
-   "depth_cm": 175
+   "width_cm": 175,
+   "depth_cm": 190
   }
  },
  {
@@ -31341,7 +31341,7 @@
  {
   "id": "C01838",
   "name": "Ralo Mid-Century Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in solid brass metal, white finish. 49 cm high, 35 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in solid brass metal, white finish. 49 cm high, 35 cm wide, 3 cm deep.",
   "reserve": 75,
   "attrs": {
    "category": "mirror",
@@ -31358,7 +31358,7 @@
  {
   "id": "C01839",
   "name": "Velo Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 140 cm. Minimalist style in natural jute fibre, white finish. 1 cm high, 155 cm wide, 140 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 140 cm wide and 155 cm long. Minimalist style in natural jute fibre, white finish. 1 cm high, 140 cm wide, 155 cm deep.",
   "reserve": 82,
   "attrs": {
    "category": "rug",
@@ -31367,8 +31367,8 @@
    "style": "minimalist",
    "colour": "white",
    "height_cm": 1,
-   "width_cm": 155,
-   "depth_cm": 140
+   "width_cm": 140,
+   "depth_cm": 155
   }
  },
  {
@@ -31682,7 +31682,7 @@
  {
   "id": "C01858",
   "name": "Done Farmhouse Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in woven rattan wicker, white finish. 40 cm high, 97 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in woven rattan wicker, white finish. 40 cm high, 97 cm wide, 2 cm deep.",
   "reserve": 63,
   "attrs": {
    "category": "mirror",
@@ -31699,7 +31699,7 @@
  {
   "id": "C01859",
   "name": "Nase Mid-Century Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 175 x 135 cm. Mid-century style in flat-woven cotton, natural finish. 1 cm high, 175 cm wide, 135 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 135 cm wide and 175 cm long. Mid-century style in flat-woven cotton, natural finish. 1 cm high, 135 cm wide, 175 cm deep.",
   "reserve": 94,
   "attrs": {
    "category": "rug",
@@ -31708,8 +31708,8 @@
    "style": "mid-century",
    "colour": "natural",
    "height_cm": 1,
-   "width_cm": 175,
-   "depth_cm": 135
+   "width_cm": 135,
+   "depth_cm": 175
   }
  },
  {
@@ -32023,7 +32023,7 @@
  {
   "id": "C01878",
   "name": "Kivilu Modern Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in wrought iron metal, charcoal finish. 88 cm high, 35 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in wrought iron metal, charcoal finish. 88 cm high, 35 cm wide, 5 cm deep.",
   "reserve": 78,
   "attrs": {
    "category": "mirror",
@@ -32040,7 +32040,7 @@
  {
   "id": "C01879",
   "name": "Orsedo Industrial Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 220 x 130 cm. Industrial style in natural jute fibre, sage green finish. 3 cm high, 220 cm wide, 130 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 220 cm long. Industrial style in natural jute fibre, sage green finish. 3 cm high, 130 cm wide, 220 cm deep.",
   "reserve": 148,
   "attrs": {
    "category": "rug",
@@ -32049,8 +32049,8 @@
    "style": "industrial",
    "colour": "sage green",
    "height_cm": 3,
-   "width_cm": 220,
-   "depth_cm": 130
+   "width_cm": 130,
+   "depth_cm": 220
   }
  },
  {
@@ -32364,7 +32364,7 @@
  {
   "id": "C01898",
   "name": "Sarais Industrial Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in solid brass metal, white finish. 170 cm high, 71 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid brass metal, white finish. 170 cm high, 71 cm wide, 5 cm deep.",
   "reserve": 182,
   "attrs": {
    "category": "mirror",
@@ -32381,7 +32381,7 @@
  {
   "id": "C01899",
   "name": "Riki Bohemian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 205 cm. Bohemian style in hand-tufted wool, charcoal finish. 2 cm high, 115 cm wide, 205 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 205 cm long. Bohemian style in hand-tufted wool, charcoal finish. 2 cm high, 115 cm wide, 205 cm deep.",
   "reserve": 201,
   "attrs": {
    "category": "rug",
@@ -32705,7 +32705,7 @@
  {
   "id": "C01918",
   "name": "Sevine Minimalist Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in woven rattan wicker, white finish. 109 cm high, 36 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in woven rattan wicker, white finish. 109 cm high, 36 cm wide, 3 cm deep.",
   "reserve": 81,
   "attrs": {
    "category": "mirror",
@@ -32722,7 +32722,7 @@
  {
   "id": "C01919",
   "name": "Kivi Farmhouse Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 185 x 190 cm. Farmhouse style in flat-woven cotton, charcoal finish. 2 cm high, 185 cm wide, 190 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 185 cm wide and 190 cm long. Farmhouse style in flat-woven cotton, charcoal finish. 2 cm high, 185 cm wide, 190 cm deep.",
   "reserve": 143,
   "attrs": {
    "category": "rug",
@@ -33046,7 +33046,7 @@
  {
   "id": "C01938",
   "name": "Setaki Scandinavian Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid oak wood, cream finish. 124 cm high, 37 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid oak wood, cream finish. 124 cm high, 37 cm wide, 4 cm deep.",
   "reserve": 100,
   "attrs": {
    "category": "mirror",
@@ -33063,7 +33063,7 @@
  {
   "id": "C01939",
   "name": "Lose Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 75 x 220 cm. Minimalist style in flat-woven cotton, grey finish. 1 cm high, 75 cm wide, 220 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 75 cm wide and 220 cm long. Minimalist style in flat-woven cotton, grey finish. 1 cm high, 75 cm wide, 220 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "rug",
@@ -33387,7 +33387,7 @@
  {
   "id": "C01958",
   "name": "Domo Rustic Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Rustic style in woven rattan wicker, black finish. 72 cm high, 36 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in woven rattan wicker, black finish. 72 cm high, 36 cm wide, 5 cm deep.",
   "reserve": 71,
   "attrs": {
    "category": "mirror",
@@ -33404,7 +33404,7 @@
  {
   "id": "C01959",
   "name": "Rita Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 220 cm. Rustic style in hand-tufted wool, honey finish. 1 cm high, 155 cm wide, 220 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 220 cm long. Rustic style in hand-tufted wool, honey finish. 1 cm high, 155 cm wide, 220 cm deep.",
   "reserve": 144,
   "attrs": {
    "category": "rug",
@@ -33728,7 +33728,7 @@
  {
   "id": "C01978",
   "name": "Naan Minimalist Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Minimalist style in powder-coated steel metal, white finish. 183 cm high, 91 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in powder-coated steel metal, white finish. 183 cm high, 91 cm wide, 5 cm deep.",
   "reserve": 111,
   "attrs": {
    "category": "mirror",
@@ -33745,7 +33745,7 @@
  {
   "id": "C01979",
   "name": "Luormo Mid-Century Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 70 x 200 cm. Mid-century style in hand-tufted wool, charcoal finish. 3 cm high, 70 cm wide, 200 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 70 cm wide and 200 cm long. Mid-century style in hand-tufted wool, charcoal finish. 3 cm high, 70 cm wide, 200 cm deep.",
   "reserve": 199,
   "attrs": {
    "category": "rug",
@@ -34069,7 +34069,7 @@
  {
   "id": "C01998",
   "name": "Veorra Bohemian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid walnut wood, honey finish. 113 cm high, 32 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid walnut wood, honey finish. 113 cm high, 32 cm wide, 4 cm deep.",
   "reserve": 125,
   "attrs": {
    "category": "mirror",
@@ -34086,7 +34086,7 @@
  {
   "id": "C01999",
   "name": "Ansa Japanese Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 170 x 150 cm. Japanese style in hand-tufted wool, black finish. 2 cm high, 170 cm wide, 150 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 170 cm long. Japanese style in hand-tufted wool, black finish. 2 cm high, 150 cm wide, 170 cm deep.",
   "reserve": 194,
   "attrs": {
    "category": "rug",
@@ -34095,8 +34095,8 @@
    "style": "Japanese",
    "colour": "black",
    "height_cm": 2,
-   "width_cm": 170,
-   "depth_cm": 150
+   "width_cm": 150,
+   "depth_cm": 170
   }
  },
  {
@@ -34410,7 +34410,7 @@
  {
   "id": "C02018",
   "name": "Lutara Industrial Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in powder-coated steel metal, cream finish. 63 cm high, 79 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in powder-coated steel metal, cream finish. 63 cm high, 79 cm wide, 3 cm deep.",
   "reserve": 76,
   "attrs": {
    "category": "mirror",
@@ -34427,7 +34427,7 @@
  {
   "id": "C02019",
   "name": "Luisis Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 105 x 340 cm. Industrial style in hand-tufted wool, cream finish. 1 cm high, 105 cm wide, 340 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 340 cm long. Industrial style in hand-tufted wool, cream finish. 1 cm high, 105 cm wide, 340 cm deep.",
   "reserve": 149,
   "attrs": {
    "category": "rug",
@@ -34751,7 +34751,7 @@
  {
   "id": "C02038",
   "name": "Sasa Modern Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in wrought iron metal, charcoal finish. 43 cm high, 37 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in wrought iron metal, charcoal finish. 43 cm high, 37 cm wide, 2 cm deep.",
   "reserve": 42,
   "attrs": {
    "category": "mirror",
@@ -34768,7 +34768,7 @@
  {
   "id": "C02039",
   "name": "Isis Minimalist Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 140 x 345 cm. Minimalist style in hand-tufted wool, navy finish. 2 cm high, 140 cm wide, 345 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 140 cm wide and 345 cm long. Minimalist style in hand-tufted wool, navy finish. 2 cm high, 140 cm wide, 345 cm deep.",
   "reserve": 216,
   "attrs": {
    "category": "rug",
@@ -35092,7 +35092,7 @@
  {
   "id": "C02058",
   "name": "Setana Scandinavian Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Scandinavian style in solid oak wood, natural finish. 158 cm high, 99 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid oak wood, natural finish. 158 cm high, 99 cm wide, 5 cm deep.",
   "reserve": 170,
   "attrs": {
    "category": "mirror",
@@ -35109,7 +35109,7 @@
  {
   "id": "C02059",
   "name": "Orluri Art Deco Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 250 cm. Art deco style in hand-tufted wool, terracotta finish. 2 cm high, 65 cm wide, 250 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 250 cm long. Art deco style in hand-tufted wool, terracotta finish. 2 cm high, 65 cm wide, 250 cm deep.",
   "reserve": 146,
   "attrs": {
    "category": "rug",
@@ -35433,7 +35433,7 @@
  {
   "id": "C02078",
   "name": "Mara Modern Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Modern style in solid brass metal, honey finish. 152 cm high, 64 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid brass metal, honey finish. 152 cm high, 64 cm wide, 4 cm deep.",
   "reserve": 159,
   "attrs": {
    "category": "mirror",
@@ -35450,7 +35450,7 @@
  {
   "id": "C02079",
   "name": "Maki Rustic Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 145 x 105 cm. Rustic style in natural jute fibre, white finish. 1 cm high, 145 cm wide, 105 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 145 cm long. Rustic style in natural jute fibre, white finish. 1 cm high, 105 cm wide, 145 cm deep.",
   "reserve": 85,
   "attrs": {
    "category": "rug",
@@ -35459,8 +35459,8 @@
    "style": "rustic",
    "colour": "white",
    "height_cm": 1,
-   "width_cm": 145,
-   "depth_cm": 105
+   "width_cm": 105,
+   "depth_cm": 145
   }
  },
  {
@@ -35774,7 +35774,7 @@
  {
   "id": "C02098",
   "name": "Elmo Bohemian Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in woven rattan wicker, black finish. 102 cm high, 82 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in woven rattan wicker, black finish. 102 cm high, 82 cm wide, 4 cm deep.",
   "reserve": 113,
   "attrs": {
    "category": "mirror",
@@ -35791,7 +35791,7 @@
  {
   "id": "C02099",
   "name": "Saanri Modern Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 320 cm. Modern style in flat-woven cotton, cream finish. 3 cm high, 125 cm wide, 320 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 125 cm wide and 320 cm long. Modern style in flat-woven cotton, cream finish. 3 cm high, 125 cm wide, 320 cm deep.",
   "reserve": 151,
   "attrs": {
    "category": "rug",
@@ -36115,7 +36115,7 @@
  {
   "id": "C02118",
   "name": "Luelma Modern Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid brass metal, white finish. 63 cm high, 37 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid brass metal, white finish. 63 cm high, 37 cm wide, 4 cm deep.",
   "reserve": 109,
   "attrs": {
    "category": "mirror",
@@ -36132,7 +36132,7 @@
  {
   "id": "C02119",
   "name": "Naselu Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 105 cm. Industrial style in hand-tufted wool, honey finish. 1 cm high, 125 cm wide, 105 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 125 cm long. Industrial style in hand-tufted wool, honey finish. 1 cm high, 105 cm wide, 125 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "rug",
@@ -36141,8 +36141,8 @@
    "style": "industrial",
    "colour": "honey",
    "height_cm": 1,
-   "width_cm": 125,
-   "depth_cm": 105
+   "width_cm": 105,
+   "depth_cm": 125
   }
  },
  {
@@ -36456,7 +36456,7 @@
  {
   "id": "C02138",
   "name": "Iskiki Scandinavian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid walnut wood, sage green finish. 74 cm high, 48 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid walnut wood, sage green finish. 74 cm high, 48 cm wide, 2 cm deep.",
   "reserve": 92,
   "attrs": {
    "category": "mirror",
@@ -36473,7 +36473,7 @@
  {
   "id": "C02139",
   "name": "Orel Scandinavian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 125 x 240 cm. Scandinavian style in natural jute fibre, navy finish. 1 cm high, 125 cm wide, 240 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 125 cm wide and 240 cm long. Scandinavian style in natural jute fibre, navy finish. 1 cm high, 125 cm wide, 240 cm deep.",
   "reserve": 111,
   "attrs": {
    "category": "rug",
@@ -36797,7 +36797,7 @@
  {
   "id": "C02158",
   "name": "Iski Modern Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in solid oak wood, honey finish. 41 cm high, 78 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid oak wood, honey finish. 41 cm high, 78 cm wide, 5 cm deep.",
   "reserve": 93,
   "attrs": {
    "category": "mirror",
@@ -36814,7 +36814,7 @@
  {
   "id": "C02159",
   "name": "Kivema Scandinavian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 230 cm. Scandinavian style in flat-woven cotton, sage green finish. 2 cm high, 115 cm wide, 230 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 230 cm long. Scandinavian style in flat-woven cotton, sage green finish. 2 cm high, 115 cm wide, 230 cm deep.",
   "reserve": 117,
   "attrs": {
    "category": "rug",
@@ -37138,7 +37138,7 @@
  {
   "id": "C02178",
   "name": "Rira Mid-Century Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in wrought iron metal, white finish. 131 cm high, 36 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in wrought iron metal, white finish. 131 cm high, 36 cm wide, 5 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "mirror",
@@ -37155,7 +37155,7 @@
  {
   "id": "C02179",
   "name": "Rivi Scandinavian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 125 cm. Scandinavian style in flat-woven cotton, navy finish. 2 cm high, 115 cm wide, 125 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 125 cm long. Scandinavian style in flat-woven cotton, navy finish. 2 cm high, 115 cm wide, 125 cm deep.",
   "reserve": 95,
   "attrs": {
    "category": "rug",
@@ -37479,7 +37479,7 @@
  {
   "id": "C02198",
   "name": "Anve Japanese Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Japanese style in solid walnut wood, black finish. 181 cm high, 57 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid walnut wood, black finish. 181 cm high, 57 cm wide, 2 cm deep.",
   "reserve": 147,
   "attrs": {
    "category": "mirror",
@@ -37496,7 +37496,7 @@
  {
   "id": "C02199",
   "name": "Ririel Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 330 cm. Minimalist style in flat-woven cotton, sage green finish. 3 cm high, 65 cm wide, 330 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 330 cm long. Minimalist style in flat-woven cotton, sage green finish. 3 cm high, 65 cm wide, 330 cm deep.",
   "reserve": 111,
   "attrs": {
    "category": "rug",
@@ -37820,7 +37820,7 @@
  {
   "id": "C02218",
   "name": "Kiis Art Deco Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Art deco style in woven rattan wicker, charcoal finish. 185 cm high, 71 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in woven rattan wicker, charcoal finish. 185 cm high, 71 cm wide, 2 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "mirror",
@@ -37837,7 +37837,7 @@
  {
   "id": "C02219",
   "name": "Nenena Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 105 x 130 cm. Rustic style in hand-tufted wool, navy finish. 3 cm high, 105 cm wide, 130 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 130 cm long. Rustic style in hand-tufted wool, navy finish. 3 cm high, 105 cm wide, 130 cm deep.",
   "reserve": 198,
   "attrs": {
    "category": "rug",
@@ -38161,7 +38161,7 @@
  {
   "id": "C02238",
   "name": "Mase Art Deco Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in solid walnut wood, grey finish. 60 cm high, 99 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in solid walnut wood, grey finish. 60 cm high, 99 cm wide, 2 cm deep.",
   "reserve": 120,
   "attrs": {
    "category": "mirror",
@@ -38178,7 +38178,7 @@
  {
   "id": "C02239",
   "name": "Iski Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 135 x 350 cm. Industrial style in hand-tufted wool, charcoal finish. 3 cm high, 135 cm wide, 350 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 135 cm wide and 350 cm long. Industrial style in hand-tufted wool, charcoal finish. 3 cm high, 135 cm wide, 350 cm deep.",
   "reserve": 230,
   "attrs": {
    "category": "rug",
@@ -38502,7 +38502,7 @@
  {
   "id": "C02258",
   "name": "Navi Scandinavian Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Scandinavian style in powder-coated steel metal, honey finish. 146 cm high, 58 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in powder-coated steel metal, honey finish. 146 cm high, 58 cm wide, 5 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "mirror",
@@ -38519,7 +38519,7 @@
  {
   "id": "C02259",
   "name": "Orrasa Industrial Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 145 x 305 cm. Industrial style in flat-woven cotton, sage green finish. 3 cm high, 145 cm wide, 305 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 145 cm wide and 305 cm long. Industrial style in flat-woven cotton, sage green finish. 3 cm high, 145 cm wide, 305 cm deep.",
   "reserve": 152,
   "attrs": {
    "category": "rug",
@@ -38843,7 +38843,7 @@
  {
   "id": "C02278",
   "name": "Kior Scandinavian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in solid walnut wood, cream finish. 131 cm high, 67 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid walnut wood, cream finish. 131 cm high, 67 cm wide, 2 cm deep.",
   "reserve": 141,
   "attrs": {
    "category": "mirror",
@@ -38860,7 +38860,7 @@
  {
   "id": "C02279",
   "name": "Isna Minimalist Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 130 x 130 cm. Minimalist style in hand-tufted wool, natural finish. 2 cm high, 130 cm wide, 130 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 130 cm long. Minimalist style in hand-tufted wool, natural finish. 2 cm high, 130 cm wide, 130 cm deep.",
   "reserve": 157,
   "attrs": {
    "category": "rug",
@@ -39184,7 +39184,7 @@
  {
   "id": "C02298",
   "name": "Sase Industrial Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in woven rattan wicker, cream finish. 127 cm high, 95 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, cream finish. 127 cm high, 95 cm wide, 2 cm deep.",
   "reserve": 101,
   "attrs": {
    "category": "mirror",
@@ -39201,7 +39201,7 @@
  {
   "id": "C02299",
   "name": "Neta Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 105 x 210 cm. Minimalist style in natural jute fibre, honey finish. 3 cm high, 105 cm wide, 210 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 105 cm wide and 210 cm long. Minimalist style in natural jute fibre, honey finish. 3 cm high, 105 cm wide, 210 cm deep.",
   "reserve": 120,
   "attrs": {
    "category": "rug",
@@ -39525,7 +39525,7 @@
  {
   "id": "C02318",
   "name": "Ismosa Industrial Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in wrought iron metal, navy finish. 56 cm high, 91 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in wrought iron metal, navy finish. 56 cm high, 91 cm wide, 4 cm deep.",
   "reserve": 81,
   "attrs": {
    "category": "mirror",
@@ -39542,7 +39542,7 @@
  {
   "id": "C02319",
   "name": "Rase Scandinavian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 300 cm. Scandinavian style in flat-woven cotton, navy finish. 1 cm high, 155 cm wide, 300 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 300 cm long. Scandinavian style in flat-woven cotton, navy finish. 1 cm high, 155 cm wide, 300 cm deep.",
   "reserve": 116,
   "attrs": {
    "category": "rug",
@@ -39866,7 +39866,7 @@
  {
   "id": "C02338",
   "name": "Hatama Scandinavian Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Scandinavian style in solid oak wood, white finish. 157 cm high, 75 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in solid oak wood, white finish. 157 cm high, 75 cm wide, 3 cm deep.",
   "reserve": 141,
   "attrs": {
    "category": "mirror",
@@ -39883,7 +39883,7 @@
  {
   "id": "C02339",
   "name": "Anse Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 95 x 155 cm. Rustic style in flat-woven cotton, terracotta finish. 1 cm high, 95 cm wide, 155 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 155 cm long. Rustic style in flat-woven cotton, terracotta finish. 1 cm high, 95 cm wide, 155 cm deep.",
   "reserve": 88,
   "attrs": {
    "category": "rug",
@@ -40207,7 +40207,7 @@
  {
   "id": "C02358",
   "name": "Isri Rustic Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Rustic style in powder-coated steel metal, navy finish. 73 cm high, 71 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in powder-coated steel metal, navy finish. 73 cm high, 71 cm wide, 3 cm deep.",
   "reserve": 75,
   "attrs": {
    "category": "mirror",
@@ -40224,7 +40224,7 @@
  {
   "id": "C02359",
   "name": "Move Mid-Century Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 75 x 350 cm. Mid-century style in flat-woven cotton, sage green finish. 1 cm high, 75 cm wide, 350 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 75 cm wide and 350 cm long. Mid-century style in flat-woven cotton, sage green finish. 1 cm high, 75 cm wide, 350 cm deep.",
   "reserve": 105,
   "attrs": {
    "category": "rug",
@@ -40548,7 +40548,7 @@
  {
   "id": "C02378",
   "name": "Kine Art Deco Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in woven rattan wicker, terracotta finish. 43 cm high, 31 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in woven rattan wicker, terracotta finish. 43 cm high, 31 cm wide, 2 cm deep.",
   "reserve": 55,
   "attrs": {
    "category": "mirror",
@@ -40565,7 +40565,7 @@
  {
   "id": "C02379",
   "name": "Nasari Farmhouse Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 120 x 300 cm. Farmhouse style in natural jute fibre, charcoal finish. 3 cm high, 120 cm wide, 300 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 120 cm wide and 300 cm long. Farmhouse style in natural jute fibre, charcoal finish. 3 cm high, 120 cm wide, 300 cm deep.",
   "reserve": 140,
   "attrs": {
    "category": "rug",
@@ -40889,7 +40889,7 @@
  {
   "id": "C02398",
   "name": "Vianma Modern Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Modern style in powder-coated steel metal, sage green finish. 103 cm high, 50 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in powder-coated steel metal, sage green finish. 103 cm high, 50 cm wide, 2 cm deep.",
   "reserve": 57,
   "attrs": {
    "category": "mirror",
@@ -40906,7 +40906,7 @@
  {
   "id": "C02399",
   "name": "Dosa Minimalist Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 130 x 195 cm. Minimalist style in flat-woven cotton, navy finish. 1 cm high, 130 cm wide, 195 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 195 cm long. Minimalist style in flat-woven cotton, navy finish. 1 cm high, 130 cm wide, 195 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "rug",
@@ -41230,7 +41230,7 @@
  {
   "id": "C02418",
   "name": "Istari Rustic Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Rustic style in powder-coated steel metal, cream finish. 133 cm high, 30 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in powder-coated steel metal, cream finish. 133 cm high, 30 cm wide, 5 cm deep.",
   "reserve": 68,
   "attrs": {
    "category": "mirror",
@@ -41247,7 +41247,7 @@
  {
   "id": "C02419",
   "name": "Nena Farmhouse Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 150 x 240 cm. Farmhouse style in hand-tufted wool, terracotta finish. 2 cm high, 150 cm wide, 240 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 240 cm long. Farmhouse style in hand-tufted wool, terracotta finish. 2 cm high, 150 cm wide, 240 cm deep.",
   "reserve": 183,
   "attrs": {
    "category": "rug",
@@ -41571,7 +41571,7 @@
  {
   "id": "C02438",
   "name": "Luve Industrial Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in solid oak wood, grey finish. 61 cm high, 77 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid oak wood, grey finish. 61 cm high, 77 cm wide, 5 cm deep.",
   "reserve": 126,
   "attrs": {
    "category": "mirror",
@@ -41588,7 +41588,7 @@
  {
   "id": "C02439",
   "name": "Nais Industrial Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 205 x 90 cm. Industrial style in hand-tufted wool, grey finish. 3 cm high, 205 cm wide, 90 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 90 cm wide and 205 cm long. Industrial style in hand-tufted wool, grey finish. 3 cm high, 90 cm wide, 205 cm deep.",
   "reserve": 219,
   "attrs": {
    "category": "rug",
@@ -41597,8 +41597,8 @@
    "style": "industrial",
    "colour": "grey",
    "height_cm": 3,
-   "width_cm": 205,
-   "depth_cm": 90
+   "width_cm": 90,
+   "depth_cm": 205
   }
  },
  {
@@ -41912,7 +41912,7 @@
  {
   "id": "C02458",
   "name": "Kiha Industrial Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in woven rattan wicker, charcoal finish. 183 cm high, 60 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, charcoal finish. 183 cm high, 60 cm wide, 3 cm deep.",
   "reserve": 101,
   "attrs": {
    "category": "mirror",
@@ -41929,7 +41929,7 @@
  {
   "id": "C02459",
   "name": "Lomo Mid-Century Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 190 x 185 cm. Mid-century style in natural jute fibre, sage green finish. 3 cm high, 190 cm wide, 185 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 185 cm wide and 190 cm long. Mid-century style in natural jute fibre, sage green finish. 3 cm high, 185 cm wide, 190 cm deep.",
   "reserve": 165,
   "attrs": {
    "category": "rug",
@@ -41938,8 +41938,8 @@
    "style": "mid-century",
    "colour": "sage green",
    "height_cm": 3,
-   "width_cm": 190,
-   "depth_cm": 185
+   "width_cm": 185,
+   "depth_cm": 190
   }
  },
  {
@@ -42253,7 +42253,7 @@
  {
   "id": "C02478",
   "name": "Morimo Rustic Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Rustic style in powder-coated steel metal, white finish. 166 cm high, 71 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in powder-coated steel metal, white finish. 166 cm high, 71 cm wide, 2 cm deep.",
   "reserve": 80,
   "attrs": {
    "category": "mirror",
@@ -42270,7 +42270,7 @@
  {
   "id": "C02479",
   "name": "Luisve Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 155 x 180 cm. Bohemian style in natural jute fibre, navy finish. 3 cm high, 155 cm wide, 180 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 155 cm wide and 180 cm long. Bohemian style in natural jute fibre, navy finish. 3 cm high, 155 cm wide, 180 cm deep.",
   "reserve": 159,
   "attrs": {
    "category": "rug",
@@ -42594,7 +42594,7 @@
  {
   "id": "C02498",
   "name": "Oror Industrial Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in powder-coated steel metal, black finish. 133 cm high, 46 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in powder-coated steel metal, black finish. 133 cm high, 46 cm wide, 2 cm deep.",
   "reserve": 71,
   "attrs": {
    "category": "mirror",
@@ -42611,7 +42611,7 @@
  {
   "id": "C02499",
   "name": "Domois Art Deco Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 100 x 325 cm. Art deco style in flat-woven cotton, white finish. 2 cm high, 100 cm wide, 325 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 100 cm wide and 325 cm long. Art deco style in flat-woven cotton, white finish. 2 cm high, 100 cm wide, 325 cm deep.",
   "reserve": 133,
   "attrs": {
    "category": "rug",
@@ -42935,7 +42935,7 @@
  {
   "id": "C02518",
   "name": "Loludo Scandinavian Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Scandinavian style in woven rattan wicker, white finish. 114 cm high, 68 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Scandinavian style in woven rattan wicker, white finish. 114 cm high, 68 cm wide, 5 cm deep.",
   "reserve": 103,
   "attrs": {
    "category": "mirror",
@@ -42952,7 +42952,7 @@
  {
   "id": "C02519",
   "name": "Dotamo Mid-Century Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 175 x 255 cm. Mid-century style in hand-tufted wool, charcoal finish. 2 cm high, 175 cm wide, 255 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 175 cm wide and 255 cm long. Mid-century style in hand-tufted wool, charcoal finish. 2 cm high, 175 cm wide, 255 cm deep.",
   "reserve": 220,
   "attrs": {
    "category": "rug",
@@ -43276,7 +43276,7 @@
  {
   "id": "C02538",
   "name": "Nalu Modern Walnut Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Modern style in solid walnut wood, terracotta finish. 189 cm high, 93 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in solid walnut wood, terracotta finish. 189 cm high, 93 cm wide, 3 cm deep.",
   "reserve": 163,
   "attrs": {
    "category": "mirror",
@@ -43293,7 +43293,7 @@
  {
   "id": "C02539",
   "name": "Haan Rustic Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 135 x 95 cm. Rustic style in natural jute fibre, natural finish. 2 cm high, 135 cm wide, 95 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 95 cm wide and 135 cm long. Rustic style in natural jute fibre, natural finish. 2 cm high, 95 cm wide, 135 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "rug",
@@ -43302,8 +43302,8 @@
    "style": "rustic",
    "colour": "natural",
    "height_cm": 2,
-   "width_cm": 135,
-   "depth_cm": 95
+   "width_cm": 95,
+   "depth_cm": 135
   }
  },
  {
@@ -43617,7 +43617,7 @@
  {
   "id": "C02558",
   "name": "Hahane Japanese Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Japanese style in solid oak wood, sage green finish. 171 cm high, 44 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid oak wood, sage green finish. 171 cm high, 44 cm wide, 4 cm deep.",
   "reserve": 109,
   "attrs": {
    "category": "mirror",
@@ -43634,7 +43634,7 @@
  {
   "id": "C02559",
   "name": "Elis Rustic Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 150 x 200 cm. Rustic style in natural jute fibre, black finish. 2 cm high, 150 cm wide, 200 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 200 cm long. Rustic style in natural jute fibre, black finish. 2 cm high, 150 cm wide, 200 cm deep.",
   "reserve": 116,
   "attrs": {
    "category": "rug",
@@ -43958,7 +43958,7 @@
  {
   "id": "C02578",
   "name": "Morivi Japanese Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Japanese style in solid brass metal, cream finish. 93 cm high, 55 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Japanese style in solid brass metal, cream finish. 93 cm high, 55 cm wide, 3 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "mirror",
@@ -43975,7 +43975,7 @@
  {
   "id": "C02579",
   "name": "Nalodo Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 195 x 305 cm. Rustic style in flat-woven cotton, cream finish. 2 cm high, 195 cm wide, 305 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 195 cm wide and 305 cm long. Rustic style in flat-woven cotton, cream finish. 2 cm high, 195 cm wide, 305 cm deep.",
   "reserve": 152,
   "attrs": {
    "category": "rug",
@@ -44299,7 +44299,7 @@
  {
   "id": "C02598",
   "name": "Naor Minimalist Iron Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Minimalist style in wrought iron metal, terracotta finish. 182 cm high, 47 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in wrought iron metal, terracotta finish. 182 cm high, 47 cm wide, 5 cm deep.",
   "reserve": 84,
   "attrs": {
    "category": "mirror",
@@ -44316,7 +44316,7 @@
  {
   "id": "C02599",
   "name": "Veor Modern Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 175 x 315 cm. Modern style in natural jute fibre, terracotta finish. 3 cm high, 175 cm wide, 315 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 175 cm wide and 315 cm long. Modern style in natural jute fibre, terracotta finish. 3 cm high, 175 cm wide, 315 cm deep.",
   "reserve": 175,
   "attrs": {
    "category": "rug",
@@ -44640,7 +44640,7 @@
  {
   "id": "C02618",
   "name": "Mavi Bohemian Walnut Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Bohemian style in solid walnut wood, white finish. 133 cm high, 41 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in solid walnut wood, white finish. 133 cm high, 41 cm wide, 2 cm deep.",
   "reserve": 106,
   "attrs": {
    "category": "mirror",
@@ -44657,7 +44657,7 @@
  {
   "id": "C02619",
   "name": "Luve Scandinavian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 135 cm. Scandinavian style in natural jute fibre, sage green finish. 2 cm high, 115 cm wide, 135 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 135 cm long. Scandinavian style in natural jute fibre, sage green finish. 2 cm high, 115 cm wide, 135 cm deep.",
   "reserve": 95,
   "attrs": {
    "category": "rug",
@@ -44981,7 +44981,7 @@
  {
   "id": "C02638",
   "name": "Lota Industrial Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in powder-coated steel metal, charcoal finish. 177 cm high, 54 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in powder-coated steel metal, charcoal finish. 177 cm high, 54 cm wide, 5 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "mirror",
@@ -44998,7 +44998,7 @@
  {
   "id": "C02639",
   "name": "Doravi Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 65 x 295 cm. Rustic style in flat-woven cotton, sage green finish. 3 cm high, 65 cm wide, 295 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 65 cm wide and 295 cm long. Rustic style in flat-woven cotton, sage green finish. 3 cm high, 65 cm wide, 295 cm deep.",
   "reserve": 126,
   "attrs": {
    "category": "rug",
@@ -45322,7 +45322,7 @@
  {
   "id": "C02658",
   "name": "Hasemo Modern Iron Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Modern style in wrought iron metal, cream finish. 169 cm high, 63 cm wide, 5 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Modern style in wrought iron metal, cream finish. 169 cm high, 63 cm wide, 5 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "mirror",
@@ -45339,7 +45339,7 @@
  {
   "id": "C02659",
   "name": "Isri Mid-Century Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 250 x 185 cm. Mid-century style in hand-tufted wool, cream finish. 1 cm high, 250 cm wide, 185 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 185 cm wide and 250 cm long. Mid-century style in hand-tufted wool, cream finish. 1 cm high, 185 cm wide, 250 cm deep.",
   "reserve": 157,
   "attrs": {
    "category": "rug",
@@ -45348,8 +45348,8 @@
    "style": "mid-century",
    "colour": "cream",
    "height_cm": 1,
-   "width_cm": 250,
-   "depth_cm": 185
+   "width_cm": 185,
+   "depth_cm": 250
   }
  },
  {
@@ -45663,7 +45663,7 @@
  {
   "id": "C02678",
   "name": "Hasamo Industrial Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in woven rattan wicker, charcoal finish. 121 cm high, 35 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, charcoal finish. 121 cm high, 35 cm wide, 4 cm deep.",
   "reserve": 71,
   "attrs": {
    "category": "mirror",
@@ -45680,7 +45680,7 @@
  {
   "id": "C02679",
   "name": "Tave Rustic Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 140 x 135 cm. Rustic style in flat-woven cotton, grey finish. 1 cm high, 140 cm wide, 135 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 135 cm wide and 140 cm long. Rustic style in flat-woven cotton, grey finish. 1 cm high, 135 cm wide, 140 cm deep.",
   "reserve": 92,
   "attrs": {
    "category": "rug",
@@ -45689,8 +45689,8 @@
    "style": "rustic",
    "colour": "grey",
    "height_cm": 1,
-   "width_cm": 140,
-   "depth_cm": 135
+   "width_cm": 135,
+   "depth_cm": 140
   }
  },
  {
@@ -46004,7 +46004,7 @@
  {
   "id": "C02698",
   "name": "Haha Minimalist Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Minimalist style in wrought iron metal, navy finish. 121 cm high, 91 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Minimalist style in wrought iron metal, navy finish. 121 cm high, 91 cm wide, 5 cm deep.",
   "reserve": 114,
   "attrs": {
    "category": "mirror",
@@ -46021,7 +46021,7 @@
  {
   "id": "C02699",
   "name": "Mota Bohemian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 180 x 295 cm. Bohemian style in natural jute fibre, charcoal finish. 1 cm high, 180 cm wide, 295 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 180 cm wide and 295 cm long. Bohemian style in natural jute fibre, charcoal finish. 1 cm high, 180 cm wide, 295 cm deep.",
   "reserve": 135,
   "attrs": {
    "category": "rug",
@@ -46345,7 +46345,7 @@
  {
   "id": "C02718",
   "name": "Maelor Farmhouse Brass Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in solid brass metal, navy finish. 125 cm high, 93 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in solid brass metal, navy finish. 125 cm high, 93 cm wide, 5 cm deep.",
   "reserve": 160,
   "attrs": {
    "category": "mirror",
@@ -46362,7 +46362,7 @@
  {
   "id": "C02719",
   "name": "Rama Art Deco Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 240 x 210 cm. Art deco style in hand-tufted wool, honey finish. 3 cm high, 240 cm wide, 210 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 210 cm wide and 240 cm long. Art deco style in hand-tufted wool, honey finish. 3 cm high, 210 cm wide, 240 cm deep.",
   "reserve": 222,
   "attrs": {
    "category": "rug",
@@ -46371,8 +46371,8 @@
    "style": "art deco",
    "colour": "honey",
    "height_cm": 3,
-   "width_cm": 240,
-   "depth_cm": 210
+   "width_cm": 210,
+   "depth_cm": 240
   }
  },
  {
@@ -46686,7 +46686,7 @@
  {
   "id": "C02738",
   "name": "Ismoma Art Deco Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Art deco style in solid oak wood, charcoal finish. 66 cm high, 74 cm wide, 2 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Art deco style in solid oak wood, charcoal finish. 66 cm high, 74 cm wide, 2 cm deep.",
   "reserve": 100,
   "attrs": {
    "category": "mirror",
@@ -46703,7 +46703,7 @@
  {
   "id": "C02739",
   "name": "Elor Bohemian Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 80 x 270 cm. Bohemian style in flat-woven cotton, grey finish. 1 cm high, 80 cm wide, 270 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 80 cm wide and 270 cm long. Bohemian style in flat-woven cotton, grey finish. 1 cm high, 80 cm wide, 270 cm deep.",
   "reserve": 91,
   "attrs": {
    "category": "rug",
@@ -47027,7 +47027,7 @@
  {
   "id": "C02758",
   "name": "Mari Rustic Brass Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Rustic style in solid brass metal, natural finish. 183 cm high, 65 cm wide, 4 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Rustic style in solid brass metal, natural finish. 183 cm high, 65 cm wide, 4 cm deep.",
   "reserve": 153,
   "attrs": {
    "category": "mirror",
@@ -47044,7 +47044,7 @@
  {
   "id": "C02759",
   "name": "Molo Scandinavian Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 115 x 220 cm. Scandinavian style in hand-tufted wool, black finish. 1 cm high, 115 cm wide, 220 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 115 cm wide and 220 cm long. Scandinavian style in hand-tufted wool, black finish. 1 cm high, 115 cm wide, 220 cm deep.",
   "reserve": 143,
   "attrs": {
    "category": "rug",
@@ -47368,7 +47368,7 @@
  {
   "id": "C02778",
   "name": "Oror Mid-Century Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in wrought iron metal, sage green finish. 115 cm high, 61 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in wrought iron metal, sage green finish. 115 cm high, 61 cm wide, 3 cm deep.",
   "reserve": 71,
   "attrs": {
    "category": "mirror",
@@ -47385,7 +47385,7 @@
  {
   "id": "C02779",
   "name": "Takiha Rustic Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 90 x 95 cm. Rustic style in hand-tufted wool, natural finish. 2 cm high, 90 cm wide, 95 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 90 cm wide and 95 cm long. Rustic style in hand-tufted wool, natural finish. 2 cm high, 90 cm wide, 95 cm deep.",
   "reserve": 126,
   "attrs": {
    "category": "rug",
@@ -47709,7 +47709,7 @@
  {
   "id": "C02798",
   "name": "Manara Industrial Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in wrought iron metal, sage green finish. 47 cm high, 32 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in wrought iron metal, sage green finish. 47 cm high, 32 cm wide, 4 cm deep.",
   "reserve": 48,
   "attrs": {
    "category": "mirror",
@@ -47726,7 +47726,7 @@
  {
   "id": "C02799",
   "name": "Oranse Scandinavian Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 90 x 90 cm. Scandinavian style in natural jute fibre, white finish. 2 cm high, 90 cm wide, 90 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 90 cm wide and 90 cm long. Scandinavian style in natural jute fibre, white finish. 2 cm high, 90 cm wide, 90 cm deep.",
   "reserve": 76,
   "attrs": {
    "category": "rug",
@@ -48050,7 +48050,7 @@
  {
   "id": "C02818",
   "name": "Molo Industrial Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in solid oak wood, natural finish. 64 cm high, 60 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid oak wood, natural finish. 64 cm high, 60 cm wide, 3 cm deep.",
   "reserve": 98,
   "attrs": {
    "category": "mirror",
@@ -48067,7 +48067,7 @@
  {
   "id": "C02819",
   "name": "Tais Minimalist Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 130 x 295 cm. Minimalist style in natural jute fibre, sage green finish. 3 cm high, 130 cm wide, 295 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 295 cm long. Minimalist style in natural jute fibre, sage green finish. 3 cm high, 130 cm wide, 295 cm deep.",
   "reserve": 139,
   "attrs": {
    "category": "rug",
@@ -48391,7 +48391,7 @@
  {
   "id": "C02838",
   "name": "Saan Mid-Century Steel Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in powder-coated steel metal, charcoal finish. 55 cm high, 32 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in powder-coated steel metal, charcoal finish. 55 cm high, 32 cm wide, 5 cm deep.",
   "reserve": 59,
   "attrs": {
    "category": "mirror",
@@ -48408,7 +48408,7 @@
  {
   "id": "C02839",
   "name": "Elna Mid-Century Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 110 x 265 cm. Mid-century style in natural jute fibre, navy finish. 2 cm high, 110 cm wide, 265 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 110 cm wide and 265 cm long. Mid-century style in natural jute fibre, navy finish. 2 cm high, 110 cm wide, 265 cm deep.",
   "reserve": 128,
   "attrs": {
    "category": "rug",
@@ -48732,7 +48732,7 @@
  {
   "id": "C02858",
   "name": "Havi Farmhouse Oak Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Farmhouse style in solid oak wood, sage green finish. 143 cm high, 41 cm wide, 3 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in solid oak wood, sage green finish. 143 cm high, 41 cm wide, 3 cm deep.",
   "reserve": 107,
   "attrs": {
    "category": "mirror",
@@ -48749,7 +48749,7 @@
  {
   "id": "C02859",
   "name": "Anelve Modern Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 180 x 315 cm. Modern style in natural jute fibre, sage green finish. 1 cm high, 180 cm wide, 315 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 180 cm wide and 315 cm long. Modern style in natural jute fibre, sage green finish. 1 cm high, 180 cm wide, 315 cm deep.",
   "reserve": 145,
   "attrs": {
    "category": "rug",
@@ -49073,7 +49073,7 @@
  {
   "id": "C02878",
   "name": "Orve Industrial Rattan Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Industrial style in woven rattan wicker, cream finish. 142 cm high, 45 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, cream finish. 142 cm high, 45 cm wide, 2 cm deep.",
   "reserve": 68,
   "attrs": {
    "category": "mirror",
@@ -49090,7 +49090,7 @@
  {
   "id": "C02879",
   "name": "Eldodo Farmhouse Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 80 x 220 cm. Farmhouse style in natural jute fibre, sage green finish. 1 cm high, 80 cm wide, 220 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 80 cm wide and 220 cm long. Farmhouse style in natural jute fibre, sage green finish. 1 cm high, 80 cm wide, 220 cm deep.",
   "reserve": 92,
   "attrs": {
    "category": "rug",
@@ -49414,7 +49414,7 @@
  {
   "id": "C02898",
   "name": "Tado Industrial Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in wrought iron metal, sage green finish. 107 cm high, 85 cm wide, 3 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in wrought iron metal, sage green finish. 107 cm high, 85 cm wide, 3 cm deep.",
   "reserve": 89,
   "attrs": {
    "category": "mirror",
@@ -49431,7 +49431,7 @@
  {
   "id": "C02899",
   "name": "Seri Industrial Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 160 x 130 cm. Industrial style in natural jute fibre, cream finish. 2 cm high, 160 cm wide, 130 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 130 cm wide and 160 cm long. Industrial style in natural jute fibre, cream finish. 2 cm high, 130 cm wide, 160 cm deep.",
   "reserve": 116,
   "attrs": {
    "category": "rug",
@@ -49440,8 +49440,8 @@
    "style": "industrial",
    "colour": "cream",
    "height_cm": 2,
-   "width_cm": 160,
-   "depth_cm": 130
+   "width_cm": 130,
+   "depth_cm": 160
   }
  },
  {
@@ -49755,7 +49755,7 @@
  {
   "id": "C02918",
   "name": "Sadosa Industrial Oak Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in solid oak wood, cream finish. 88 cm high, 74 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in solid oak wood, cream finish. 88 cm high, 74 cm wide, 4 cm deep.",
   "reserve": 111,
   "attrs": {
    "category": "mirror",
@@ -49772,7 +49772,7 @@
  {
   "id": "C02919",
   "name": "Neriel Farmhouse Wool Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 230 x 165 cm. Farmhouse style in hand-tufted wool, sage green finish. 1 cm high, 230 cm wide, 165 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 165 cm wide and 230 cm long. Farmhouse style in hand-tufted wool, sage green finish. 1 cm high, 165 cm wide, 230 cm deep.",
   "reserve": 161,
   "attrs": {
    "category": "rug",
@@ -49781,8 +49781,8 @@
    "style": "farmhouse",
    "colour": "sage green",
    "height_cm": 1,
-   "width_cm": 230,
-   "depth_cm": 165
+   "width_cm": 165,
+   "depth_cm": 230
   }
  },
  {
@@ -50096,7 +50096,7 @@
  {
   "id": "C02938",
   "name": "Seri Bohemian Steel Mirror",
-  "description": "A full-length mirror for checking an outfit, to hang on the wall or lean against it. Bohemian style in powder-coated steel metal, natural finish. 186 cm high, 40 cm wide, 2 cm deep.",
+  "description": "A full-length mirror for checking an outfit with a frame, to see yourself in; hang it on the wall or lean it against it. Bohemian style in powder-coated steel metal, natural finish. 186 cm high, 40 cm wide, 2 cm deep.",
   "reserve": 79,
   "attrs": {
    "category": "mirror",
@@ -50113,7 +50113,7 @@
  {
   "id": "C02939",
   "name": "Isvilo Mid-Century Jute Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 245 x 230 cm. Mid-century style in natural jute fibre, sage green finish. 1 cm high, 245 cm wide, 230 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 230 cm wide and 245 cm long. Mid-century style in natural jute fibre, sage green finish. 1 cm high, 230 cm wide, 245 cm deep.",
   "reserve": 121,
   "attrs": {
    "category": "rug",
@@ -50122,8 +50122,8 @@
    "style": "mid-century",
    "colour": "sage green",
    "height_cm": 1,
-   "width_cm": 245,
-   "depth_cm": 230
+   "width_cm": 230,
+   "depth_cm": 245
   }
  },
  {
@@ -50437,7 +50437,7 @@
  {
   "id": "C02958",
   "name": "Vidoha Farmhouse Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Farmhouse style in woven rattan wicker, honey finish. 97 cm high, 74 cm wide, 4 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Farmhouse style in woven rattan wicker, honey finish. 97 cm high, 74 cm wide, 4 cm deep.",
   "reserve": 104,
   "attrs": {
    "category": "mirror",
@@ -50454,7 +50454,7 @@
  {
   "id": "C02959",
   "name": "Riki Art Deco Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 150 x 285 cm. Art deco style in flat-woven cotton, charcoal finish. 1 cm high, 150 cm wide, 285 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 150 cm wide and 285 cm long. Art deco style in flat-woven cotton, charcoal finish. 1 cm high, 150 cm wide, 285 cm deep.",
   "reserve": 94,
   "attrs": {
    "category": "rug",
@@ -50778,7 +50778,7 @@
  {
   "id": "C02978",
   "name": "Loha Industrial Rattan Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Industrial style in woven rattan wicker, navy finish. 43 cm high, 95 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Industrial style in woven rattan wicker, navy finish. 43 cm high, 95 cm wide, 5 cm deep.",
   "reserve": 77,
   "attrs": {
    "category": "mirror",
@@ -50795,7 +50795,7 @@
  {
   "id": "C02979",
   "name": "Dovi Mid-Century Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 245 x 160 cm. Mid-century style in flat-woven cotton, charcoal finish. 3 cm high, 245 cm wide, 160 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 160 cm wide and 245 cm long. Mid-century style in flat-woven cotton, charcoal finish. 3 cm high, 160 cm wide, 245 cm deep.",
   "reserve": 161,
   "attrs": {
    "category": "rug",
@@ -50804,8 +50804,8 @@
    "style": "mid-century",
    "colour": "charcoal",
    "height_cm": 3,
-   "width_cm": 245,
-   "depth_cm": 160
+   "width_cm": 160,
+   "depth_cm": 245
   }
  },
  {
@@ -51119,7 +51119,7 @@
  {
   "id": "C02998",
   "name": "Risasa Mid-Century Iron Mirror",
-  "description": "A wall mirror, to hang on the wall or lean against it. Mid-century style in wrought iron metal, terracotta finish. 111 cm high, 48 cm wide, 5 cm deep.",
+  "description": "A wall mirror with a frame, to see yourself in; hang it on the wall or lean it against it. Mid-century style in wrought iron metal, terracotta finish. 111 cm high, 48 cm wide, 5 cm deep.",
   "reserve": 77,
   "attrs": {
    "category": "mirror",
@@ -51136,7 +51136,7 @@
  {
   "id": "C02999",
   "name": "Loor Japanese Cotton Rug",
-  "description": "A rug carpet for the floor of a living room or bedroom, 140 x 225 cm. Japanese style in flat-woven cotton, natural finish. 2 cm high, 140 cm wide, 225 cm deep.",
+  "description": "A rug carpet for the floor of a living room or bedroom, 140 cm wide and 225 cm long. Japanese style in flat-woven cotton, natural finish. 2 cm high, 140 cm wide, 225 cm deep.",
   "reserve": 124,
   "attrs": {
    "category": "rug",

@@ -287,13 +287,13 @@ def mirror(rng):
     full = h >= 140
     a = dict(height_cm=h, width_cm=w, depth_cm=rng.randint(2, 5), full_length=full)
     kind = "full-length mirror for checking an outfit" if full else "wall mirror"
-    return a, f"A {kind}, to hang on the wall or lean against it."
+    return a, f"A {kind} with a frame, to see yourself in; hang it on the wall or lean it against it."
 
 
 def rug(rng):
-    w, d = r5(rng.randint(60, 250)), r5(rng.randint(90, 350))
+    w, d = sorted((r5(rng.randint(60, 250)), r5(rng.randint(90, 350))))  # depth is the long side
     a = dict(height_cm=rng.randint(1, 3), width_cm=w, depth_cm=d)
-    return a, f"A rug carpet for the floor of a living room or bedroom, {w} x {d} cm."
+    return a, f"A rug carpet for the floor of a living room or bedroom, {w} cm wide and {d} cm long."
 
 
 CATEGORIES = {
