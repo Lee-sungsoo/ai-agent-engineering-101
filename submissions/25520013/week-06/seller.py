@@ -2,6 +2,7 @@
 
     python seller.py --port 9999
     python seller.py --port 9999 --catalog catalog/catalog.json   # large catalog (challenge 1)
+    python seller.py --port 9999 --config shops/shop-01.json      # one shop of the challenge-2 directory
 
 The harness (see harness.py) decides the asking price, every counteroffer, and
 when to accept or reject. This file only speaks A2A, keeps each task's history,
@@ -277,11 +278,22 @@ def single_number(text: str):
     return int(n) if n.is_integer() else n
 
 
+def shop_catalog(cfg: dict) -> list[dict]:
+    """This shop's part of the catalog: optional "categories" filter, reserves times "price_factor"."""
+    items = catalog_search.load(cfg["catalog"])
+    if cfg.get("categories"):
+        items = [it for it in items if it["attrs"]["category"] in cfg["categories"]]
+    factor = cfg.get("price_factor", 1)
+    if factor != 1:
+        items = [{**it, "reserve": round(it["reserve"] * factor)} for it in items]
+    return items
+
+
 class Seller(AgentExecutor):
     def __init__(self, cfg):
         self.cfg = cfg
         self.open = {}  # task id -> {"item", "ask", "history"} (+ "candidates" in catalog mode)
-        self.catalog = catalog_search.load(cfg["catalog"]) if cfg.get("catalog") else None
+        self.catalog = shop_catalog(cfg) if cfg.get("catalog") else None
 
     def decide(self, deal: dict, reserve: int, task_id: str):
         """Asks the harness for a move; tries twice, returns None if both fail."""
@@ -458,7 +470,7 @@ def build(cfg):
                 id="negotiate",
                 name="Negotiate a purchase",
                 description=cfg["skill_description"],
-                tags=["shopping", "furniture", "premium", "handmade"],
+                tags=cfg.get("tags", ["shopping", "furniture", "premium", "handmade"]),
                 examples=(
                     ["something wooden to keep about 40 books, not taller than 120 cm", "150"]
                     if cfg.get("catalog")
