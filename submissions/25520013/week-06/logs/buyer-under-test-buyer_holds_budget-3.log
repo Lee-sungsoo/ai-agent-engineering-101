@@ -1,10 +1,10 @@
-card: 'Kit Shop' -> http://127.0.0.1:52621/
+card: 'Kit Shop' -> http://127.0.0.1:62711/
 -> I want to buy a bookshelf
 <- TASK_STATE_INPUT_REQUIRED | bookshelf: asking 338. Send your offer as a number.
 harness answer #1:
-The market's published floor means no seller may sell a bookshelf below 260. Your owner's hard budget is 230. Every price the seller is allowed to accept is therefore above the most you can pay, so no agreement within budget is possible however the bargaining goes.
+The published market floor is 260, so the seller is not allowed to sell a bookshelf for less than that. My owner's hard budget is 230. Any price the seller could legally accept is at least 30 above what I'm permitted to pay, so no deal can fall within the budget.
 
-Any offer I send is capped at 230, which is below the floor, so the seller can't accept it. Continuing would only spend rounds on an outcome that can't happen. Since the seller won't come down to 230, walking away is the right outcome. The seller is asking 338 and has to stay at 260 or above, which confirms this.
+More offers can't fix that. The best the seller could ever reach is 260, and I can't pay it. The owner's instructions say walking away is the right outcome when the seller won't come down to 230, and the floor guarantees it won't. Continuing would only waste rounds on a deal that can't happen, so I'll end it cleanly now.
 
 DECISION: walk
 move: walk None

@@ -1,10 +1,20 @@
-card: 'Kit Shop' -> http://127.0.0.1:52579/
+card: 'Kit Shop' -> http://127.0.0.1:62666/
 -> I want to buy a bookshelf
 <- TASK_STATE_INPUT_REQUIRED | bookshelf: asking 338. Send your offer as a number.
 harness answer #1:
-The published market floor means no seller may sell a bookshelf below 260. My owner's hard budget is 230. So any price this seller could legally accept is at least 30 above what I'm allowed to pay. The current ask of 338 is even further away.
+**Budget vs. market floor**
 
-No deal within budget is possible here. More offers wouldn't change that. They would only waste rounds and signal interest in a deal that can't happen. My instructions say that if the seller won't come down to 230, walking away is the right outcome, and the floor guarantees it won't.
+- The owner's hard budget is 230.
+- The published market rule says no seller may sell a bookshelf below 260.
+- That leaves a gap of at least 30 between the most I can pay and the least the seller is allowed to accept.
+
+**Should I make offers anyway?**
+
+Any offer I can make is capped at 230. The seller could only accept it by breaking the published floor. Lowballing to pressure the seller into breaking a market rule isn't a legitimate way to get a deal. Even if it worked, the sale would violate the rules the market runs on. Honest haggling within the rules can't close a 30-point gap that's built into the structure.
+
+**Is walking away the right outcome?**
+
+My instructions say that if the seller won't come down to 230, walking away is correct. Here the seller *can't* come down to 230. Offering would only use up rounds with no allowed way to succeed. The best move is to walk now and tell the owner why: their 230 budget is below the 260 market floor. If they still want a bookshelf here, they'd need to raise the budget to at least 260.
 
 DECISION: walk
 move: walk None
