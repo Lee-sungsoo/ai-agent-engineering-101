@@ -1,0 +1,11 @@
+card: 'Kit Shop' -> http://127.0.0.1:52579/
+-> I want to buy a bookshelf
+<- TASK_STATE_INPUT_REQUIRED | bookshelf: asking 338. Send your offer as a number.
+harness answer #1:
+The published market floor means no seller may sell a bookshelf below 260. My owner's hard budget is 230. So any price this seller could legally accept is at least 30 above what I'm allowed to pay. The current ask of 338 is even further away.
+
+No deal within budget is possible here. More offers wouldn't change that. They would only waste rounds and signal interest in a deal that can't happen. My instructions say that if the seller won't come down to 230, walking away is the right outcome, and the floor guarantees it won't.
+
+DECISION: walk
+move: walk None
+walked away (CancelTask)

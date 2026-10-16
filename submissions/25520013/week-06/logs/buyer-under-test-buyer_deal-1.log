@@ -1,0 +1,14 @@
+card: 'Kit Shop' -> http://127.0.0.1:52408/
+-> I want to buy a lamp
+<- TASK_STATE_INPUT_REQUIRED | lamp: asking 130. Send your offer as a number.
+harness answer #1:
+The seller is asking 130, which is above our budget of 120. Published market rules say no lamp can sell below 100, so the deal has to land somewhere between 100 and 120.
+
+We have up to 12 offers, and the seller doesn't know our budget. That means we can start low and concede in small steps. The best anchor is the floor, 100. It's a credible offer because it's the legal minimum, so it doesn't look unserious. It also leaves us 20 points of room for small concessions, such as 100 → 105 → 109 → 112, before we reach our ceiling.
+
+The seller might end the talks after an unknown number of rounds. Because of that, I won't drag concessions out too long. But a first offer at the floor carries little risk.
+
+DECISION: offer 100
+move: offer 100
+<- TASK_STATE_COMPLETED | Deal: lamp at 100.
+   artifact receipt: [{'item': 'lamp', 'price': 100.0, 'seller': 'Kit Shop'}]

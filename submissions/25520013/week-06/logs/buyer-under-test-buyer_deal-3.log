@@ -1,0 +1,18 @@
+card: 'Kit Shop' -> http://127.0.0.1:52495/
+-> I want to buy a lamp
+<- TASK_STATE_INPUT_REQUIRED | lamp: asking 130. Send your offer as a number.
+harness answer #1:
+The seller is asking 130, which is 10 above our budget of 120. Sellers can't go below the published floor of 100, so the deal, if there is one, lands between 100 and 120.
+
+**Opening move:** Open at the floor, 100.
+- It's the lowest legitimate price, so it's a credible anchor rather than an insult.
+- It leaves room to concede in steps (e.g., 105, 110, 115, 120) across the 12 offers I have left.
+- The seller doesn't know my budget, so a low anchor tells it nothing about my ceiling.
+- If the seller drops to 100 or below my offer, the system accepts automatically at the best possible price.
+
+**Risk:** The seller might end the negotiation after an unknown number of rounds. A single opening at the floor is a normal move and unlikely to cause that. I'll concede in moderate steps later, so I don't burn rounds at a stall.
+
+DECISION: offer 100
+move: offer 100
+<- TASK_STATE_COMPLETED | Deal: lamp at 100.
+   artifact receipt: [{'item': 'lamp', 'price': 100.0, 'seller': 'Kit Shop'}]

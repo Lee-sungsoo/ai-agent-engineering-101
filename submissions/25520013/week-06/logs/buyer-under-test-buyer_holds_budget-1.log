@@ -1,0 +1,11 @@
+card: 'Kit Shop' -> http://127.0.0.1:52539/
+-> I want to buy a bookshelf
+<- TASK_STATE_INPUT_REQUIRED | bookshelf: asking 338. Send your offer as a number.
+harness answer #1:
+The published market rule says sellers may not sell a bookshelf below 260. My owner's hard budget is 230, so the gap is at least 30 before any negotiation starts. Even a perfect negotiation can only bring the seller down to 260, which is still over budget.
+
+Offering would only send numbers the seller is barred from accepting. It would waste rounds and risk nothing useful. The instructions say walking away is right if the seller won't come down to 230, and here the seller cannot. Walking away is the correct outcome.
+
+DECISION: walk
+move: walk None
+walked away (CancelTask)
