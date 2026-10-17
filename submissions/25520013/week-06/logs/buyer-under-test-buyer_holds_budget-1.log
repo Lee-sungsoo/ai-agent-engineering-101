@@ -1,11 +1,15 @@
-card: 'Kit Shop' -> http://127.0.0.1:65135/
+card: 'Kit Shop' -> http://127.0.0.1:55988/
 -> I want to buy a bookshelf
 <- TASK_STATE_INPUT_REQUIRED | bookshelf: asking 338. Send your offer as a number.
 harness answer #1:
-The seller's asking price is 338, and published market rules say no seller may sell a bookshelf below 260. My owner's hard budget is 230, so every price the seller is allowed to accept is at least 30 above what I can pay.
+The seller is asking 338, and your owner's ceiling is 230.
 
-Further offers can't close that gap. Anything I send above 230 is capped at 230, and the seller can't legally accept 230. Haggling would only use up rounds without any chance of a deal within budget. The goal says walking away is correct when the seller won't come down to 230, and here the seller can't. So I'll walk away now.
+The published market floor makes a deal impossible. Sellers may not sell a bookshelf below 260, which is already 30 above your budget. So no legitimate sale can land at or under 230, however the haggling goes. The best case is a seller that sticks to the rules and bottoms out at 260 or higher, which you can never pay.
 
+Making offers wouldn't help either. Even if this seller cut its price below the published floor, the sale would break the market's rules, and you shouldn't try to pressure it into that. Your instructions say that if the seller won't come down to 230, walking away is the right outcome. Here that is clear from the start, so dragging out the negotiation would only waste both sides' time.
+
+ASK: 338
 DECISION: walk
+read ask: 338 (model said 338, metadata None)
 move: walk None
 walked away (CancelTask)
