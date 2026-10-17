@@ -586,6 +586,7 @@ def serve_long_seller(port: int, rng: random.Random, record: dict):
             host="127.0.0.1",
             port=port,
             log_level="warning",
+            log_config=None,  # uvicorn's default formatter calls isatty(), which Tee (our stdout) lacks
         )
     )
     threading.Thread(target=server.run, daemon=True).start()
