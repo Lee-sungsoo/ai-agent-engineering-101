@@ -1,12 +1,12 @@
-card: 'Kit Shop' -> http://127.0.0.1:65135/
+card: 'Kit Shop' -> http://127.0.0.1:64989/
 -> I want to buy a lamp
 <- TASK_STATE_INPUT_REQUIRED | lamp: asking 130. Send your offer as a number.
 harness answer #1:
-The seller is asking 130, which is above the 120 budget, so accepting now isn't possible. The published floor is 100, so no seller can go below that. An offer below 100 would signal nothing useful and might waste a round.
+The seller is asking 130, which is above the 120 budget, so I can't accept yet. I have up to 12 offers, so there's room to make concessions step by step.
 
-With up to 12 offers available, I can start low and raise in small steps. Opening at the floor (100) anchors as low as is credible and keeps room to concede gradually toward 120. It also hides how high I can actually go.
+Sellers can't go below 100, so 100 is the lowest offer that makes sense. Starting there anchors the talks as low as possible and leaves room to move up toward 120 if the seller holds firm. I don't know how many rounds the seller will allow, but an opening offer at the published floor is reasonable and shouldn't end things. I'll raise in moderate steps after this so I reach my limit before either side runs out of rounds. The seller never sees my budget, so offering 100 reveals nothing about it.
 
 DECISION: offer 100
 move: offer 100
 <- TASK_STATE_COMPLETED | Deal: lamp at 100.
-   artifact receipt: [{'price': 100.0, 'item': 'lamp', 'seller': 'Kit Shop'}]
+   artifact receipt: [{'item': 'lamp', 'price': 100.0, 'seller': 'Kit Shop'}]
