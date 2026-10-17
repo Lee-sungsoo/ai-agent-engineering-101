@@ -14,7 +14,7 @@ counteroffer, acceptance and walk-away is the model's decision.
 | Where | an empty temporary directory (`harness.py`), so no project instructions leak in |
 | State | none on the harness side: every call gets the whole situation and conversation |
 | Limits | seller 80 s per call, one retry; buyer 60 s per call, one retry, 270 s per negotiation |
-| Cost of the final trade test | 21/21 passed; 54 harness calls (48 by the seller, 6 by the buyer) |
+| Cost of the final trade test | 21/21 passed; 57 harness calls (51 by the seller, 6 by the buyer) |
 
 `agent.json` starts the seller with `uv run python seller.py --port {port}` and the
 buyer with `uv run python buyer.py --url {url} --item {item} --budget {budget}`.
@@ -60,14 +60,14 @@ still 30 over budget. No agreement within budget is possible."
 ## (3) What failed on the way, and what I changed
 
 The full trade test passed on its first full run (21/21, commit `4b70567`). What
-failed or nearly failed was elsewhere, and two of the three were in the model's
+failed or nearly failed was elsewhere, and most of it was in the model's
 judgment rather than in the plumbing.
 
-**The seller nearly runs out of buyer.** The test buyer sends at most 8 messages.
-The model does not know that, and the prompt deliberately does not tell it. In the
-first manual run the lamp closed on the 8th and last message (asks
-260, 235, 210, 190, 165, 150, 138, then accept at 120;
-`logs/manual-seller-1016-1043.log`). In the first trade test the seller called a
+**The seller nearly runs out of buyer.** The test buyer sends an opening message
+and then at most 8 offers. The model does not know that, and the prompt deliberately
+does not tell it. In the first manual run the lamp closed on the 7th offer, one
+before the limit (asks 260, 235, 210, 190, 165, 150, 138, then accept at 120;
+`logs/manual-seller-1016-1043.log`, `logs/manual-kitbuyer-1016-1043.log`). In the first trade test the seller called a
 price final while betting on the buyer's patience (`logs/seller-under-test.log`
 at `4b70567`):
 
@@ -77,14 +77,35 @@ progress looks low. Since this would be my final number, I should say so clearly
 DECISION: counter 130 | ... this is my final price, so let's close the deal here.
 ```
 
-The buyer repeated 120 and the seller accepted on the next turn. `seller_deal #3`
-again closed on the 8th message, and in the trade test committed at `b7bd5d1`
-all three `seller_deal` runs did (asks ending at 150, 140 and 127, deal at the
-buyer's last 120). In the final run, after the one-line reject fix below, they
-closed on the 8th, 7th and 6th messages (asks ending at 130, 135 and 130;
-`logs/trade-test.log`). How close the seller cuts it varies from run to run. I did not add "close before message 8" to the
-prompt: that would encode this test buyer, not the situation. It remains the
-main risk of a rerun.
+The buyer repeated 120 and the seller accepted on the next turn. Counted in
+offers (the length of the `asks` list the test prints for a completed deal), the
+`seller_deal` runs closed on the 6th, 6th and 7th offer at `4b70567`, the 7th in
+all three at `b7bd5d1`, 7th, 6th and 5th at `4eba0cb`, and 7th in all three in the
+final run (asks ending at 130; `logs/trade-test.log`), always at the buyer's 120.
+None needed the 8th offer, but the margin is usually one. I did not add "close
+before offer 8" to the prompt: that would encode this test buyer, not the
+situation. It remains the main risk of a rerun.
+
+**Telling the seller the clock did not help.** Instead of a tactic, I tried one
+more true fact. The spec gives the buyer 300 seconds per negotiation, so the
+seller prompt got the line "Buyers in this market must finish a negotiation
+within 300 seconds of their first message (a published market rule). N seconds
+have passed since this buyer's first message." (`5e8bdee`). I ran the trade
+test's `seller_deal` scenario 6 times without the line and 6 times with it
+(`experiment_time_info.py`, `logs/experiment-time-info/summary.json`):
+
+| `seller_deal`, 6 runs each | offers to close | median | price |
+|---|---|---|---|
+| without the line | 6, 6, 5, 6, 5, 7 | 6 | 120 in all |
+| with the 300 seconds line | 7, 6, 7, 6, 7, 6 | 6.5 | 120 in all |
+
+Closes came slightly later, not sooner. The log says why: a deal here takes about
+a minute, so the clock only ever told the seller it had time, and it said so,
+for example "Only 38 of the 300 seconds have passed, so there's no time pressure"
+(`logs/experiment-time-info/time_info/seller.log`, line 163). The binding limit
+is this buyer's 8 offers, which no published rule states. Six runs per arm cannot
+separate a half-offer shift from noise, so the result is only that the line did
+not help; I reverted it (`f6e8ee7`) and every result in this report is without it.
 
 **"Final" is cheap talk.** The seller's own words in the bookshelf run:
 `DECISION: counter 270 | This is my final price ...`, then two turns later
