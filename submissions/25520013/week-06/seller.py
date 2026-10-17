@@ -16,6 +16,7 @@ import asyncio
 import json
 import math
 import re
+import time
 
 import uvicorn
 from a2a.helpers import (
@@ -84,6 +85,8 @@ What you know and do not know:
 - Floor prices in this market are published, so the buyer may know that {reserve} is your floor.
 - You do not know the buyer's budget, or how many more messages they will send before walking away.
 - The buyer has sent {turn} message(s) so far.
+- Buyers in this market must finish a negotiation within 300 seconds of their first message \
+(a published market rule). {elapsed} seconds have passed since this buyer's first message.
 
 Rules the shop's system enforces after you decide:
 - You never ask for or accept less than {reserve}; a lower counter is raised to {reserve}.
@@ -126,6 +129,8 @@ What you know and do not know:
 - The buyer does not know your catalog or your floor prices; it sees only your messages, the item you offer and your asking price.
 - You do not know the buyer's budget, or how many more messages they will send before walking away.
 - The buyer has sent {turn} message(s) so far.
+- Buyers in this market must finish a negotiation within 300 seconds of their first message \
+(a published market rule). {elapsed} seconds have passed since this buyer's first message.
 
 Rules the shop's system enforces after you decide:
 {item_rule}- You never ask for or accept less than the item's floor; a lower counter is raised to the floor.
@@ -173,7 +178,7 @@ DECISION_LINE = re.compile(
 )
 
 
-def build_seller_prompt(item: str, reserve: int, history: list[dict]) -> str:
+def build_seller_prompt(item: str, reserve: int, history: list[dict], elapsed: int) -> str:
     """Builds the prompt that asks the harness for the seller's next move.
 
     Args:
@@ -181,6 +186,7 @@ def build_seller_prompt(item: str, reserve: int, history: list[dict]) -> str:
         reserve: The lowest price the shop may accept for this item.
         history: Every message so far, oldest first, as
             {"role": "buyer" | "seller", "text": str, "price": int | float | None}.
+        elapsed: Seconds since the buyer's first message.
 
     Returns:
         The full prompt for harness.ask().
@@ -193,7 +199,11 @@ def build_seller_prompt(item: str, reserve: int, history: list[dict]) -> str:
         )
     turn = sum(1 for m in history if m["role"] == "buyer")
     return SELLER_PROMPT.format(
-        item=item, reserve=reserve, turn=turn, conversation="\n".join(lines)
+        item=item,
+        reserve=reserve,
+        turn=turn,
+        elapsed=elapsed,
+        conversation="\n".join(lines),
     )
 
 
@@ -231,6 +241,7 @@ def build_catalog_prompt(cfg: dict, deal: dict) -> str:
         description=cfg["description"],
         item_section=section,
         turn=turn,
+        elapsed=int(time.monotonic() - deal["started"]),
         item_rule=rule,
         conversation="\n".join(lines),
         forms=forms,
@@ -298,7 +309,9 @@ class Seller(AgentExecutor):
     def decide(self, deal: dict, reserve: int, task_id: str):
         """Asks the harness for a move; tries twice, returns None if both fail."""
         if self.catalog is None:
-            prompt = build_seller_prompt(deal["item"], reserve, deal["history"])
+            prompt = build_seller_prompt(
+                deal["item"], reserve, deal["history"], int(time.monotonic() - deal["started"])
+            )
         else:
             prompt = build_catalog_prompt(self.cfg, deal)
         for attempt in (1, 2):
@@ -381,7 +394,7 @@ class Seller(AgentExecutor):
                     say("We only sell: " + ", ".join(self.cfg["reserve"]) + ".")
                 )
                 return
-            deal = self.open[tid] = {"item": item, "ask": None, "history": []}
+            deal = self.open[tid] = {"item": item, "ask": None, "history": [], "started": time.monotonic()}
         elif deal is None:  # catalog mode: the first message describes the item
             candidates = catalog_search.search(self.catalog, text, k=CANDIDATES)
             log(f"[{tid[:8]}] search: {[c['id'] for c in candidates]}")
@@ -393,6 +406,7 @@ class Seller(AgentExecutor):
                 "candidates": candidates,
                 "ask": None,
                 "history": [],
+                "started": time.monotonic(),
             }
         # The first message names or describes the item; its numbers ("about 40 books") are not an offer.
         offer = single_number(text) if deal["history"] else None
