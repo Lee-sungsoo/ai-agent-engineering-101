@@ -169,13 +169,14 @@ uv run python -m ax_evaluator finalize runs/submission-offline \
 ```
 
 모든 provider가 같은 rubric·패킷·JSON 계약을 사용합니다. 응답 검증이나 연결이
-실패하면 점수를 생성하지 않고 기록을 남깁니다. 자동 재시도와 모델 대체는 없습니다.
+실패하면 성공한 판정으로 취급하지 않고 기록을 남깁니다. 기본 재시도는 0회이며 모델 대체는 없습니다.
 유효한 response를 재사용해 `finalize`하면 추가 모델 비용이 들지 않습니다.
 
 CLI는 빈 임시 작업 폴더에서 실행합니다. Codex는 사용자 config, shell, Code Mode,
-멀티에이전트, 웹 검색·skill 탐색을 끄고 read-only로 실행합니다. Claude는 도구,
-MCP, hooks·settings·skill 자동 로드를 제한합니다. **CLI flag 호환성은 버전에
-따라 달라집니다.** 개발 환경의 `codex-cli 0.162.1`, Claude Code `2.1.296` help에
+멀티에이전트, 웹 검색·skill 탐색을 끄고 read-only로 실행합니다. 사용자 AGENTS.md
+자동 로드도 `project_doc_max_bytes=0`으로 제외합니다. Claude는 도구,
+MCP, hooks·settings·skill, CLAUDE.md·메모리 자동 로드를 제한합니다. **CLI flag 호환성은 버전에
+따라 달라집니다.** 개발 환경의 `codex-cli 0.163.0`, Claude Code `2.1.296` help에
 맞춘 어댑터이며, 테스트는 가짜 응답을 사용합니다. 실제 연결·판단 품질 검증은 모델과 환경별로 구분해 보고합니다.
 모의 응답 테스트만으로 다른 모델의 실제 동작까지 보장하지 않습니다. 구버전에서 실패할 경우
 어댑터를 갱신하고 우회 권한을 켜서 실행하지 마세요.
@@ -545,6 +546,15 @@ uv run python -m ax_evaluator benchmark \
 order/unrelated/injection을 추가합니다. 이 합격 여부는 해당 표본의 일관성 검사이며
 교수자의 참조 판정과 비교한 정확도 평가가 아닙니다.
 
+`benchmark`와 `judge-items`의 `--provider-retries 1`은 연결 실패 또는 완료 응답 없이
+`turn.failed`로 끝난 CLI 오류에 한해 실패한 단계의 같은 요청을 최대 한 번
+재전송합니다. 기본값은 0입니다. 정상 판정·모호한 평가·스키마/근거 검증 실패·
+사용량/인증 한도·도구 사용 위반은 재시도하지 않습니다. 검증 단계가 전송에 실패해도
+성공한 최초 관측은 다시 뽑지 않습니다. `*-retry-001-*`에 별도 기록을 남기고,
+실패 호출도 호출 수·수집 가능한 사용량에 포함합니다. `metrics.provider_failures`는
+최초 실패와 재시도·복구 여부를 보존합니다. 사용량이 제공되지 않은 실패는
+`usage_missing_calls`로 표시하므로 총 청구 비용을 확정할 수 없습니다.
+
 부정적·불명확한 관측, 오류 지적·정책 질문, 보안 구현 F07/F08와 모든 가산 단계는
 최초 응답을 원문과 다시 대조하는 모델 호출을 추가합니다. `observe-*`와 `verify-*`
 파일에 각 프롬프트·응답·사용량을 보존하며 `metrics.model_calls`는 실제 호출 수입니다.
@@ -593,4 +603,4 @@ PR은 원래 스냅샷·패킷을 유지하고 새 모델 출력 폴더에서 �
 수 없도록 표시합니다. 테스트에서 수정한 원문이 실제 학생의 제출물인 것처럼
 게시되는 것을 방지하며, 부분 코멘트 파일은 로컬에서 계속 확인할 수 있습니다.
 
-[현재 모델 검증 결과와 남은 한계](validation-0.7.md)를 함께 확인하세요.
+[현재 모델 검증 결과와 남은 한계](validation-0.8.md)를 함께 확인하세요.
