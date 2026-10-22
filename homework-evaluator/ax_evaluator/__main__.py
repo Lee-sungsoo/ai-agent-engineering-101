@@ -93,6 +93,7 @@ def main(argv=None):
     units.add_argument("--workers", type=int, default=4)
     units.add_argument("--max-task-chars", type=int, default=400_000)
     units.add_argument("--retry-failed", action="store_true")
+    units.add_argument("--provider-retries", type=int, choices=[0, 1], default=0)
     replay = commands.add_parser(
         "replay-items", help="Reassemble saved judgments offline"
     )
@@ -148,6 +149,7 @@ def main(argv=None):
     bench.add_argument("--workers", type=int, default=4)
     bench.add_argument("--max-task-chars", type=int, default=400_000)
     bench.add_argument("--no-variants", action="store_true")
+    bench.add_argument("--provider-retries", type=int, choices=[0, 1], default=0)
     human = commands.add_parser(
         "import-review", help="Validate a manually completed response template"
     )
@@ -257,6 +259,7 @@ def main(argv=None):
                 args.workers,
                 args.max_task_chars,
                 args.retry_failed,
+                args.provider_retries,
             )
             print(f"validated response: {args.out / 'response.json'}")
             return 1 if response["provenance"]["metrics"]["failures"] else 0
@@ -304,6 +307,7 @@ def main(argv=None):
                 args.workers,
                 args.max_task_chars,
                 not args.no_variants,
+                args.provider_retries,
             )
             print(f"Benchmark report: {args.out / 'report.md'}")
             return 0 if acceptance(results, not args.no_variants)["passed"] else 1

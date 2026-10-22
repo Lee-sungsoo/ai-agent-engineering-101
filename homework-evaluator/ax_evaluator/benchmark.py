@@ -169,6 +169,7 @@ def run_benchmark(
     workers=4,
     max_task_chars=400000,
     variants=True,
+    provider_retries=0,
 ):
     root = Path(out)
     if root.exists():
@@ -189,6 +190,7 @@ def run_benchmark(
             "provider": config,
             "workers": workers,
             "max_task_chars": max_task_chars,
+            "provider_retries": provider_retries,
             "design": (
                 "Two fresh calls per criterion plus saved-result replay. "
                 "Diagnostic convenience sample; no population accuracy claim."
@@ -216,6 +218,7 @@ def run_benchmark(
             ledger,
             workers,
             max_task_chars,
+            provider_retries=provider_retries,
         )
         report = finalize(run_root / "packet", response, run_root / "final")
         return report, {

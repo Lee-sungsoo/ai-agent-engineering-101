@@ -736,12 +736,15 @@ def judge_items(
     workers=4,
     max_task_chars=400000,
     retry_failed=False,
+    provider_retries=0,
 ):
     """Judge a frozen submission. No student execution or implicit model retries."""
     verify_bundle(bundle)
     validate_config(config)
     if not 1 <= workers <= 16 or max_task_chars <= 0:
         raise ValueError("workers must be 1..16 and task size positive")
+    if type(provider_retries) is not int or provider_retries not in {0, 1}:
+        raise ValueError("provider_retries must be 0 or 1")
     if any(
         v["state"] not in {"full", "unreadable"} for v in bundle["coverage"].values()
     ):
@@ -763,6 +766,7 @@ def judge_items(
         {p.name: p.read_text() for p in sorted((ROOT / "ax_evaluator").glob("*.py"))}
     )
     results, failures, attempts, integration_conflicts = {}, [], [], []
+    provider_failures = []
     unavailable = threading.Event()
     if (
         bundle["rubric"]["checker"] == "week05"
@@ -908,6 +912,7 @@ def judge_items(
             "instructions": INSTRUCTIONS,
             "verification_instructions": VERIFICATION,
             "verification_policy": "negative-assertions-security-and-bonuses-v1",
+            "execution_policy": {"provider_retries": provider_retries},
             "criterion": rule,
             "stage": stage,
             "policy": task_policy,
@@ -944,6 +949,7 @@ def judge_items(
                             "schema",
                             "implementation",
                             "instructions",
+                            "execution_policy",
                         }
                     }
                 )
@@ -965,20 +971,48 @@ def judge_items(
                         + "\n"
                         + prompt
                     )
-                write_new(attempt / f"{phase}-prompt.txt", phase_prompt)
-                try:
-                    text, metadata = transport(config, phase_prompt, schema)
-                except ProviderFailure as error:
-                    if error.metadata:
-                        write_new(attempt / f"{phase}-metadata.json", error.metadata)
-                    write_new(
-                        attempt / f"{phase}-failure.json", {"category": error.category}
-                    )
-                    if isinstance(error, ProviderUnavailable):
-                        unavailable.set()
-                    raise
-                write_new(attempt / f"{phase}-response.txt", text)
-                write_new(attempt / f"{phase}-metadata.json", metadata)
+                retried = []
+                for retry in range(provider_retries + 1):
+                    stem = phase if not retry else f"{phase}-retry-{retry:03d}"
+                    write_new(attempt / f"{stem}-prompt.txt", phase_prompt)
+                    try:
+                        text, metadata = transport(config, phase_prompt, schema)
+                    except ProviderFailure as error:
+                        if error.metadata:
+                            write_new(attempt / f"{stem}-metadata.json", error.metadata)
+                        entry = {
+                            "task": task_id,
+                            "part": part,
+                            "phase": phase,
+                            "retry": retry,
+                            "category": error.category,
+                            "will_retry": retry < provider_retries
+                            and not isinstance(error, ProviderUnavailable)
+                            and "turn.completed"
+                            not in error.metadata.get("event_types", [])
+                            and (
+                                error.category == "connection"
+                                or (
+                                    error.category == "cli-error"
+                                    and "turn.failed"
+                                    in error.metadata.get("event_types", [])
+                                )
+                            ),
+                            "recovered": False,
+                        }
+                        write_new(attempt / f"{stem}-failure.json", entry)
+                        provider_failures.append(entry)
+                        if isinstance(error, ProviderUnavailable):
+                            unavailable.set()
+                        if not entry["will_retry"]:
+                            raise
+                        retried.append(entry)
+                        continue
+                    write_new(attempt / f"{stem}-response.txt", text)
+                    write_new(attempt / f"{stem}-metadata.json", metadata)
+                    for entry in retried:
+                        entry["recovered"] = True
+                    break
                 stages.append(metadata)
                 # An invalid first draft is not silently repaired by another call.
                 observed = parse_json_text(text)
@@ -1287,12 +1321,14 @@ def judge_items(
         "evidence_rendered_once": len(evidence_cache),
         "integration_conflicts": integration_conflicts,
         "provider_unavailable": unavailable.is_set(),
+        "provider_retries": provider_retries,
+        "provider_failures": provider_failures,
     }
     usage = {}
     cost = 0
     for attempt in attempts:
         for path in attempt.glob("*-metadata.json"):
-            if path.name not in {"observe-metadata.json", "verify-metadata.json"}:
+            if not path.name.startswith(("observe-", "verify-")):
                 continue
             metadata = read_json(path)
             cost += metadata.get("reported_cost_usd") or 0

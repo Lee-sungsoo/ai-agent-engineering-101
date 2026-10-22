@@ -1,6 +1,7 @@
 """Regress real false positives and make failed benchmarks observable."""
 
 import copy
+import io
 import json
 import tempfile
 import unittest
@@ -10,6 +11,7 @@ from unittest.mock import patch
 from test_checks import fixture, set_rows
 from test_itemwise import fake_response
 
+from ax_evaluator.__main__ import main
 from ax_evaluator.assessment import catalog_candidates, implementation_anchors
 from ax_evaluator.benchmark import acceptance
 from ax_evaluator.checks import compare_log_results
@@ -20,6 +22,7 @@ from ax_evaluator.facts import (
     trace_facts,
 )
 from ax_evaluator.itemwise import full_bundle, judge_items
+from ax_evaluator.providers import ProviderFailure, ProviderUnavailable
 from ax_evaluator.snapshot import document
 from ax_evaluator.storage import canonical, digest, read_json
 
@@ -325,8 +328,136 @@ class AcceptanceTest(unittest.TestCase):
             row["checks"]["fresh"][key] = value
             self.assertFalse(acceptance([row], False)["passed"])
 
+    def test_benchmark_cli_returns_failure_for_real_decision_drift(self):
+        arguments = [
+            "benchmark",
+            "--snapshots",
+            "snapshot.json",
+            "--rubric",
+            "rubric.json",
+            "--policy",
+            "policy.json",
+            "--config",
+            "provider.json",
+            "--out",
+            "unused-benchmark",
+            "--no-variants",
+            "--provider-retries",
+            "1",
+        ]
+        for drift in (False, True):
+            row = self.row()
+            row["checks"]["fresh"]["score_equal"] = not drift
+            with (
+                self.subTest(drift=drift),
+                patch("ax_evaluator.__main__.read_json", return_value={}),
+                patch("ax_evaluator.__main__.run_benchmark", return_value=[row]) as run,
+                patch("sys.stdout", new_callable=io.StringIO),
+            ):
+                self.assertEqual(main(arguments), int(drift))
+                self.assertEqual(run.call_args.args[-1], 1)
+
 
 class VerificationTest(unittest.TestCase):
+    def run_transport(self, transport, retries):
+        snapshot, _, rubric = fixture()
+        snapshot["id"] = digest(snapshot)
+        rubric["items"] = [
+            i for i in rubric["items"] if i["mode"] == "auto" or i["id"] == "I03"
+        ]
+        rubric.pop("audit_groups", None)
+        rubric["bonus_policy"].update(open_ended=False, explicit_criteria=[])
+        with (
+            tempfile.TemporaryDirectory() as temp,
+            patch("ax_evaluator.itemwise.cli_review", side_effect=transport),
+            patch("ax_evaluator.itemwise.subprocess.run") as process,
+        ):
+            process.return_value.stdout = "fixture"
+            root = Path(temp)
+            response = judge_items(
+                full_bundle(snapshot, rubric),
+                snapshot,
+                {"kind": "codex", "model": "fixture"},
+                root / "model",
+                root / "ledger",
+                provider_retries=retries,
+            )
+            artifacts = {
+                p.name: p.read_text()
+                for p in (root / "ledger/judgments").glob("*/attempt-001/*")
+                if p.is_file()
+            }
+            return response, artifacts
+
+    def test_explicit_retry_keeps_failed_call_usage_and_identical_prompt(self):
+        calls = []
+
+        def transport(config, prompt, schema):
+            calls.append(prompt)
+            if len(calls) == 1:
+                raise ProviderFailure("connection", {"usage": {"output_tokens": 3}})
+            return fake_response(prompt, schema)
+
+        response, artifacts = self.run_transport(transport, 1)
+        metrics = response["provenance"]["metrics"]
+        self.assertEqual(calls[0], calls[1])
+        self.assertEqual(metrics["model_calls"], 2)
+        self.assertEqual(metrics["usage"]["output_tokens"], 13)
+        self.assertEqual(metrics["failures"], [])
+        self.assertTrue(metrics["provider_failures"][0]["recovered"])
+        self.assertIn("observe-failure.json", artifacts)
+        self.assertIn("observe-retry-001-response.txt", artifacts)
+
+    def test_provider_retry_does_not_resample_valid_observation_or_grade(self):
+        calls = []
+
+        def transport(config, prompt, schema):
+            calls.append(prompt)
+            if len(calls) == 2:
+                raise ProviderFailure("connection")
+            text, metadata = fake_response(prompt, schema)
+            value = json.loads(text)
+            value["finding"]["observations"]["comparison"]["status"] = "contradicted"
+            return canonical(value), metadata
+
+        response, _ = self.run_transport(transport, 1)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(calls[1], calls[2])
+        self.assertEqual(response["review"]["items"][0]["status"], "fail")
+
+    def test_retry_bound_default_and_nontransport_failures(self):
+        cases = [
+            (0, ProviderFailure("connection"), 1),
+            (1, ProviderFailure("connection"), 2),
+            (1, ProviderUnavailable("usage-limit"), 1),
+            (1, ProviderFailure("schema-rejected"), 1),
+            (1, ProviderFailure("context-limit"), 1),
+            (1, ProviderFailure("prohibited-tool-action"), 1),
+            (1, ProviderFailure("cli-error"), 1),
+            (
+                1,
+                ProviderFailure("cli-error", {"event_types": ["turn.failed"]}),
+                2,
+            ),
+            (
+                1,
+                ProviderFailure("connection", {"event_types": ["turn.completed"]}),
+                1,
+            ),
+            (1, ValueError("Invalid grade"), 1),
+        ]
+        for retries, error, expected in cases:
+            with self.subTest(error=str(error), retries=retries):
+                calls = []
+
+                def transport(*args):
+                    calls.append(1)
+                    raise error
+
+                response, _ = self.run_transport(transport, retries)
+                self.assertEqual(len(calls), expected)
+                self.assertTrue(response["provenance"]["metrics"]["failures"])
+
     def test_verifier_corrects_draft_and_both_calls_are_preserved(self):
         snapshot, _, rubric = fixture()
         snapshot["id"] = digest(snapshot)
