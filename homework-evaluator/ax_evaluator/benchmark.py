@@ -76,6 +76,11 @@ def compare(left, right):
         "model_total": len(model_ids),
         "status_matched": sum(a[key][0] == b[key][0] for key in model_ids),
         "feedback_matched": sum(a[key][1] == b[key][1] for key in model_ids),
+        "comment_ready_equal": comment_complete(left) == comment_complete(right),
+        "audit_status_equal": {k: v["status"] for k, v in left["success_audit"].items()}
+        == {k: v["status"] for k, v in right["success_audit"].items()},
+        "bonus_decisions_equal": sorted((b["id"], b["status"]) for b in left["bonuses"])
+        == sorted((b["id"], b["status"]) for b in right["bonuses"]),
     }
 
 

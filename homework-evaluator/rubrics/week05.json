@@ -1,5 +1,5 @@
 {
-  "version": "week05-required-3",
+  "version": "week05-required-4",
   "week": "week-05",
   "status": "unofficial-review-draft",
   "base_point_per_item": 1,
@@ -75,7 +75,16 @@
       "source_section": "What to submit",
       "pass_rule": "auth_checks.txt records actual results for missing token (401 and WWW-Authenticate), wrong negotiation, wrong turn, token limit. Text alone does not prove universal behavior.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / auth_checks.txt: four checks against the running server with status/header/errors."
+      "source_requirement": "What to submit / auth_checks.txt: four checks against the running server with status/header/errors.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "checks",
+            "rule": "auth_checks records missing-token status/header, cross-negotiation, wrong-turn and own-limit server checks. Actual submitted responses are required, not just a test plan."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "F07",
@@ -86,7 +95,24 @@
       "source_section": "The market server",
       "pass_rule": "Streamable HTTP and five required tools; role comes from token, server holds state; runner creates negotiations/tokens outside agent tools. Do not require a specific SDK or provider.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "The market server: Streamable HTTP, five tools, token-derived role, server-held state; runner mints tokens outside agent tools."
+      "source_requirement": "The market server: Streamable HTTP, five tools, token-derived role, server-held state; runner mints tokens outside agent tools.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "transport",
+            "rule": "The server implements MCP Streamable HTTP and all five specified negotiation tools."
+          },
+          {
+            "id": "authority",
+            "rule": "Role comes from bearer token, state is server-held, and runner/admin creates negotiations and tokens outside agent tools."
+          },
+          {
+            "id": "host",
+            "rule": "Host and runner connect both roles to the market and record the experiment. CLI hosts and other SDKs are equally eligible."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "F08",
@@ -97,7 +123,20 @@
       "source_section": "The market server",
       "pass_rule": "Code and available logs support negotiation binding, turn enforcement, and both propose/accept own-limit checks in server conditions. Do not claim runtime verification.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "The market server / Conditions: negotiation binding, turn enforcement, own-limit enforcement on propose and accept."
+      "source_requirement": "The market server / Conditions: negotiation binding, turn enforcement, own-limit enforcement on propose and accept.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "binding",
+            "rule": "Server rejects a token used for another negotiation and moves made out of turn."
+          },
+          {
+            "id": "limits",
+            "rule": "In server conditions, both propose and accept enforce the caller own limit; prompt conditions do not silently inherit token-limit enforcement."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "F09",
@@ -108,7 +147,20 @@
       "source_requirement": "REPORT.md part 2: one row per condition with correct, violations, attempted violations, refused calls, mean turns, plus the per-episode table.",
       "rule": "Check the required condition summary metrics and per-episode table are present and materially represent the submitted experiment.",
       "pass_rule": "Both required report tables and metrics are supplied and the core experiment is represented. Local metric-source wording errors belong in C04 feedback, not a deduction here.",
-      "fail_rule": "A required table/metric is missing or materially misrepresents the core experiment. Cite the concrete unmet deliverable; do not also deduct a metric error already scored under C01/C02/C03."
+      "fail_rule": "A required table/metric is missing or materially misrepresents the core experiment. Cite the concrete unmet deliverable; do not also deduct a metric error already scored under C01/C02/C03.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "tables",
+            "rule": "REPORT supplies condition summaries with all requested metrics and the per-episode table. A linked included table can supply rows."
+          },
+          {
+            "id": "coverage",
+            "rule": "The main experiment and both required conditions are materially represented; local metric-source corrections belong in C04, not a second deduction."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "C01",
@@ -141,7 +193,20 @@
       "source_section": "What to submit",
       "pass_rule": "Match per-episode results and tool calls/results including refusals, attempts, turns and recoveries; distinguish missing parser coverage from missing student evidence; preserve retries/crashes.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / logs/: every tool call/result including refusals and every episode result; Measure, per episode: attempted_violations, refused_calls, turns, tool_calls."
+      "source_requirement": "What to submit / logs/: every tool call/result including refusals and every episode result; Measure, per episode: attempted_violations, refused_calls, turns, tool_calls.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "episodes",
+            "rule": "Submitted logs support the recorded episodes/results including preserved crashes or retries, or explicitly explained offline re-scoring."
+          },
+          {
+            "id": "calls",
+            "rule": "Relevant tool calls/results, refusals, attempted violations and successful moves are visible and materially agree with recorded counts. Unsupported parser format is not a missing student log."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "C04",
@@ -151,7 +216,16 @@
       "rule": "Check aggregates and per-episode table, claims about code behavior, source versions and any explained re-scoring; do not infer dishonesty from a mismatch. Review all material claims, including optional work, without assigning points or creating new scored items.",
       "source_section": "What to submit",
       "pass_rule": "Main experimental results, calculations and implementation descriptions agree. Explained historical re-scoring is permitted. Local wording errors that do not change the main results can receive revision feedback while this item passes.",
-      "fail_rule": "Unexplained contradictions materially change reported results, reproducibility or the central conclusion. Do not fail for a local phrasing error or one corrected metric-source description alone."
+      "fail_rule": "Unexplained contradictions materially change reported results, reproducibility or the central conclusion. Do not fail for a local phrasing error or one corrected metric-source description alone.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "central",
+            "rule": "Central report/PR claims, main aggregates, episode results and implementation descriptions materially agree, allowing explicit historical corrections. Local factual errors go in issues while this obligation remains supported if central conclusions stand."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "C05",
@@ -162,7 +236,20 @@
       "source_section": "Conditions",
       "pass_rule": "Same scenarios/system prompts/host/model/eight moves; exact injection string in buyer view of each seller proposal, raised=max(reserve,budget)+30; condition not leaked to model except refusal.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "Conditions: same scenarios/prompts/host/model/turn limit; exact injected notice and raised=max(reserve,budget)+30."
+      "source_requirement": "Conditions: same scenarios/prompts/host/model/turn limit; exact injected notice and raised=max(reserve,budget)+30.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "controls",
+            "rule": "Same scenarios, prompts, host, model and 8 successful-move ceiling across required conditions; condition is not disclosed beyond specified token behavior/refusal."
+          },
+          {
+            "id": "injection",
+            "rule": "Buyer view of each seller proposal receives the exact required market notice, with raised=max(reserve,budget)+30. The required sentence is APPENDED to an existing seller proposal note; surrounding seller content is allowed and does not violate the exact-sentence requirement. Compare the assembled sentence, not Python source formatting or the entire returned object."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "C06",
@@ -173,7 +260,20 @@
       "source_section": "What to submit",
       "pass_rule": "Scenarios committed before runs; inspect available ancestry and artifacts. Timestamps and commit count alone do not prove when execution happened. Preserve failed attempts; local snapshots lack history.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / scenarios.json: commit before runs; results.csv: failed episodes stay."
+      "source_requirement": "What to submit / scenarios.json: commit before runs; results.csv: failed episodes stay.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "history",
+            "rule": "Available commit ancestry supports scenarios defined before main result/log commits; execution dates cannot be proved from timestamps alone. Missing ancestry is unknown, not proof of misconduct."
+          },
+          {
+            "id": "attempts",
+            "rule": "Visible failures and retries are preserved and distinguished from successful main episodes; no evidence of silent replacement of graded failures."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "I01",
@@ -184,7 +284,20 @@
       "source_section": "REPORT.md",
       "pass_rule": "Host/model/temperature or explicitly not settable, token minting/claims and run commands; no provider preference and no requirement to expose secrets. Verify the required host/model notes in results.csv.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / REPORT.md part 1: host, model, temperature, token minting/claims, run instructions."
+      "source_requirement": "What to submit / REPORT.md part 1: host, model, temperature, token minting/claims, run instructions.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "settings",
+            "rule": "Host/model, temperature or explicitly unavailable controls, token minting/claims and commands/settings needed to reconstruct the experiment are stated. No API secrets or provider-specific host required."
+          },
+          {
+            "id": "notes",
+            "rule": "Submitted results notes identify host and model as required."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "I02",
@@ -194,7 +307,16 @@
       "rule": "Explain observed outcomes using the assignment question about prompt vs server enforcement; experimental success rate is not assignment quality. This is unscored qualitative feedback; the required interpretation deliverable is assessed under I05.",
       "source_section": "Grading",
       "pass_rule": "Explain observed outcomes using the assignment question about prompt vs server enforcement; experimental success rate is not assignment quality.",
-      "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome."
+      "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "interpretation",
+            "rule": "The central interpretation addresses prompt versus server enforcement using observed outcomes. No attempts is a valid negative finding; it does not establish an observed blocking effect. Do not grade experiment success rate."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "I03",
@@ -205,7 +327,16 @@
       "source_section": "REPORT.md",
       "pass_rule": "Six dimensions: caller/authority, act, content, limit enforcement, external verification, observed failures. Distinguish concept from personal experimental evidence.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / REPORT.md part 3: FIPA-ACL comparison table with six specified dimensions."
+      "source_requirement": "What to submit / REPORT.md part 3: FIPA-ACL comparison table with six specified dimensions.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "comparison",
+            "rule": "FIPA-ACL comparison covers sender/authority, act, content, limit enforcement, external verification and observed failures. Conceptual comparison need not invent a personal FIPA runtime experiment."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "I04",
@@ -216,7 +347,16 @@
       "source_section": "REPORT.md",
       "pass_rule": "Count refusals followed by valid moves in same turn; distinguish refused calls from recovered turns, model revision from deterministic fallback. Zero is valid with supporting coverage.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / REPORT.md part 4: count refusals followed by a valid move in the same turn."
+      "source_requirement": "What to submit / REPORT.md part 4: count refusals followed by a valid move in the same turn.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "recoveries",
+            "rule": "REPORT counts refusals followed by a valid successful move within the SAME TURN and evidence supports that count or explicitly describes recoveries absent. A zero count is valid. Distinguish refused calls, recovered turns, model revisions and programmed fallbacks."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "I05",
@@ -227,7 +367,16 @@
       "source_section": "Grading",
       "pass_rule": "Concrete log evidence for which layer held under injection; lack of attempts does not demonstrate an observed blocking effect.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "What to submit / REPORT.md part 4: interpretation of which layer held under injection, with log lines as evidence."
+      "source_requirement": "What to submit / REPORT.md part 4: interpretation of which layer held under injection, with log lines as evidence.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "evidence",
+            "rule": "Interpretation cites identifiable submitted log events for observed injection behavior and which layer held; honest absence of observed attempts/blocking is allowed if stated and tied to records. No new experiment is required solely to force an attack to succeed."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     },
     {
       "id": "I06",
@@ -237,7 +386,16 @@
       "rule": "Do not overgeneralize small samples or unobserved intent; separate diagnostic tests, pilots, failures and main experiment. Honest negative findings are valid.",
       "source_section": "Grading",
       "pass_rule": "Central conclusions stay within observed evidence, and major scope limits/failed attempts are disclosed. A local overstatement may need revision without failing the criterion when the main conclusion remains supported.",
-      "fail_rule": "The central conclusion rests on unsupported causal/general claims or concealed material limitations. Explain its consequence; do not fail merely because one sentence needs softer wording."
+      "fail_rule": "The central conclusion rests on unsupported causal/general claims or concealed material limitations. Explain its consequence; do not fail merely because one sentence needs softer wording.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "scope",
+            "rule": "Central conclusions respect observed samples and distinguish main runs, pilots/probes, failures and limitations. Local overstatements needing correction go in issues without failing this obligation if central conclusions remain supported."
+          }
+        ],
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+      }
     }
   ],
   "checker": "week05",
@@ -247,5 +405,24 @@
     "open_points": 1,
     "cap": null
   },
-  "scoring_policy": "requirements-only-v1"
+  "scoring_policy": "requirements-only-v1",
+  "audit_groups": {
+    "final_answer": [
+      "C01",
+      "C02",
+      "C03",
+      "C04"
+    ],
+    "judge_logic": [
+      "F07",
+      "F08",
+      "C05"
+    ],
+    "verification": [
+      "F06",
+      "C03",
+      "I04",
+      "I05"
+    ]
+  }
 }

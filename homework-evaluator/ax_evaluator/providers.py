@@ -72,9 +72,10 @@ def validate_config(config):
     if config.get("timeout", 600) <= 0:
         raise ValueError("timeout must be positive")
     if "effort" in config and (
-        config["kind"] != "claude" or config["effort"] not in {"low", "medium", "high"}
+        config["kind"] not in {"claude", "codex"}
+        or config["effort"] not in {"low", "medium", "high"}
     ):
-        raise ValueError("effort is supported only for Claude CLI: low/medium/high")
+        raise ValueError("effort is supported only for CLI: low/medium/high")
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -172,6 +173,7 @@ def cli_review(config, prompt, schema):
                 "exec",
                 "--ignore-user-config",
                 "--ephemeral",
+                "--json",
                 "--skip-git-repo-check",
                 "--sandbox",
                 "read-only",
@@ -231,7 +233,11 @@ def cli_review(config, prompt, schema):
             [kind, "--version"], capture_output=True, text=True, timeout=15, check=True
         ).stdout.strip()
         if "effort" in config:
-            args += ["--effort", config["effort"]]
+            args += (
+                ["--effort", config["effort"]]
+                if kind == "claude"
+                else ["-c", 'model_reasoning_effort="' + config["effort"] + '"']
+            )
         result = subprocess.run(
             args,
             input=prompt,
@@ -255,7 +261,37 @@ def cli_review(config, prompt, schema):
         if kind == "codex":
             if not output.is_file():
                 raise ValueError("Codex did not produce a final response file")
-            return output.read_text(), {"cli_version": version, "transport": "cli"}
+            events = [
+                json.loads(line) for line in result.stdout.splitlines() if line.strip()
+            ]
+            totals = {}
+            for event in events:
+                if event.get("type") == "turn.completed":
+                    for key, value in event.get("usage", {}).items():
+                        if isinstance(value, (int, float)):
+                            totals[key] = totals.get(key, 0) + value
+                if event.get("item", {}).get("type") in {
+                    "command_execution",
+                    "mcp_tool_call",
+                    "web_search",
+                    "file_change",
+                    "dynamic_tool_call",
+                }:
+                    raise ValueError("Reviewer attempted a prohibited tool action")
+            return output.read_text(), {
+                "cli_version": version,
+                "transport": "cli",
+                "usage": totals or None,
+                "requested_model": config["model"],
+                "response_models": sorted(
+                    {
+                        event["model"]
+                        for event in events
+                        if isinstance(event.get("model"), str)
+                    }
+                ),
+                "event_types": sorted({e["type"] for e in events if "type" in e}),
+            }
         envelope = json.loads(result.stdout)
         if envelope.get("is_error"):
             raise ValueError("Claude returned an error result; no retry was made")

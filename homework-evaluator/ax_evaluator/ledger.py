@@ -65,6 +65,52 @@ class QuestionBox:
     def __init__(self, root):
         self.root = Path(root) / "questions"
 
+    def equivalent_keys(self, key):
+        keys = {key}
+        links = [
+            read_json(p)["questions"]
+            for p in (self.root / "equivalences").glob("*.json")
+        ]
+        while True:
+            extended = keys | {k for group in links if keys & set(group) for k in group}
+            if extended == keys:
+                return sorted(keys)
+            keys = extended
+
+    def effective_answer(self, key):
+        answers = [
+            read_json(self.root / k / "answer.json")
+            for k in self.equivalent_keys(key)
+            if (self.root / k / "answer.json").exists()
+        ]
+        if len({a["value"] for a in answers}) > 1:
+            raise ValueError("Equivalent policies have conflicting answers")
+        return answers[0] if answers else None
+
+    def link(self, keys, reviewer):
+        """Only an instructor can declare differently phrased questions equivalent."""
+        if len(set(keys)) < 2 or not reviewer.strip():
+            raise ValueError("Link needs at least two questions and a reviewer")
+        with locked(self.root / ".policy.lock"):
+            questions = [
+                read_json(self.root / k / "question.json")
+                for k in keys
+                if len(k) == 64 and all(c in "0123456789abcdef" for c in k)
+            ]
+            if (
+                len(questions) != len(keys)
+                or len({tuple(sorted(q["options"])) for q in questions}) != 1
+            ):
+                raise ValueError("Equivalent questions need identical answer options")
+            answers = [self.effective_answer(k) for k in keys]
+            if len({a["value"] for a in answers if a}) > 1:
+                raise ValueError("Resolve conflicting answers before linking questions")
+            entry = {"questions": sorted(set(keys)), "reviewer": reviewer}
+            path = self.root / "equivalences" / f"{digest(entry)}.json"
+            if not path.exists():
+                write_new(path, entry)
+        return entry
+
     def register(self, question, task, waiter=None):
         key = digest(question)
         root = self.root / key
@@ -79,23 +125,33 @@ class QuestionBox:
         return key
 
     def policies(self, task):
+        with locked(self.root / ".policy.lock"):
+            return self._policies(task)
+
+    def _policies(self, task):
         policies = {}
         for root in sorted(self.root.glob("*")):
+            if not (root / "question.json").exists():
+                continue
             if not any(
                 read_json(p)["task"] == task for p in (root / "waiters").glob("*.json")
             ):
                 continue
             question = read_json(root / "question.json")
-            answer_path = root / "answer.json"
             policies[question["policy"]] = {
                 "question": question,
-                "answer": read_json(answer_path) if answer_path.exists() else None,
+                "answer": self.effective_answer(root.name),
             }
         return policies
 
     def answer(self, key, value, reviewer):
         if len(key) != 64 or any(c not in "0123456789abcdef" for c in key):
             raise ValueError("Use the full question SHA256")
+        with locked(self.root / ".policy.lock"):
+            for linked in self.equivalent_keys(key):
+                self.answer_one(linked, value, reviewer)
+
+    def answer_one(self, key, value, reviewer):
         root = self.root / key
         with locked(root / ".lock"):
             question = read_json(root / "question.json")
@@ -113,13 +169,21 @@ class QuestionBox:
             temporary.replace(path)
 
     def list(self):
+        with locked(self.root / ".policy.lock"):
+            return self._list()
+
+    def tasks(self):
+        return sorted(
+            {read_json(p)["task"] for p in self.root.glob("*/waiters/*.json")}
+        )
+
+    def _list(self):
         return [
             {
                 "id": root.name,
                 "question": read_json(root / "question.json"),
-                "answer": read_json(root / "answer.json")
-                if (root / "answer.json").exists()
-                else None,
+                "answer": self.effective_answer(root.name),
+                "equivalent_questions": self.equivalent_keys(root.name),
                 "waiting_tasks": len(list((root / "waiters").glob("*.json"))),
             }
             for root in sorted(self.root.glob("*"))

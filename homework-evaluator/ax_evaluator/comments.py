@@ -19,21 +19,50 @@ def pending_kind(key, finding):
     return "not-reviewed"
 
 
+def publication_blockers(report):
+    """Separate missing review work, student evidence and unsettled policy."""
+    blockers = []
+    failed = {
+        f["task"]
+        for f in report.get("provenance", {}).get("metrics", {}).get("failures", [])
+    }
+    for key, item in report["items"].items():
+        kind = pending_kind(key, item)
+        if kind not in {"", "policy"}:
+            blockers.append(
+                {"task": key, "kind": "evaluation-failure" if key in failed else kind}
+            )
+    if not report["bonus_review_complete"]:
+        blockers.append(
+            {
+                "task": "bonus",
+                "kind": "evaluation-failure"
+                if any(k.startswith("@") for k in failed)
+                else "incomplete-bonus-review",
+            }
+        )
+    blockers += [
+        {"task": b["id"], "kind": "bonus-evidence"}
+        for b in report["bonuses"]
+        if b["status"] == "pending"
+    ]
+    blockers += [
+        {"task": ",".join(c["items"]), "kind": "integration-conflict"}
+        for c in report.get("integration_conflicts", [])
+    ]
+    if not report.get("success_audit"):
+        blockers.append({"task": "audits", "kind": "not-reviewed"})
+    else:
+        blockers += [
+            {"task": area, "kind": "incomplete-audit"}
+            for area, audit in report["success_audit"].items()
+            if audit["status"] == "insufficient"
+        ]
+    return blockers
+
+
 def comment_complete(report):
-    return (
-        not report.get("integration_conflicts")
-        and report["bonus_review_complete"]
-        and all(
-            pending_kind(key, item) in {"", "policy"}
-            for key, item in report["items"].items()
-        )
-        and not any(b["status"] == "pending" for b in report["bonuses"])
-        and bool(report.get("success_audit"))
-        and all(
-            audit["status"] != "insufficient"
-            for audit in report["success_audit"].values()
-        )
-    )
+    return not publication_blockers(report)
 
 
 def source_links(finding, metadata):
@@ -90,6 +119,24 @@ def render_comment(report, bundle, snapshot):
             "평가 미완료 — 게시할 수 없습니다. "
             "미검토·증거 보류·성공 판정 검토를 확인하세요.",
             "확인된 피드백만 담은 부분 초안입니다.",
+            "",
+        ]
+        labels = {
+            "evaluation-failure": "평가 처리 미완료",
+            "evidence": "제출 근거 확인 필요",
+            "not-reviewed": "미검토",
+            "incomplete-bonus-review": "추가 시도 검토 미완료",
+            "bonus-evidence": "가산 근거 확인 필요",
+            "integration-conflict": "항목 간 모순 확인 필요",
+            "incomplete-audit": "관련 항목 검토 미완료",
+        }
+        lines[3:3] = [
+            "게시 전 확인: "
+            + "; ".join(
+                b["task"] + " (" + labels.get(b["kind"], b["kind"]) + ")"
+                for b in publication_blockers(report)
+            ),
+            "평가 처리 실패는 학생의 결함이나 감점 사유가 아닙니다.",
             "",
         ]
     lines += [" ".join(f["feedback"] for f in strengths), ""] if strengths else []
@@ -172,6 +219,7 @@ def write_comment(out, report, bundle, snapshot):
         "bundle_id": bundle["id"],
         "body_id": digest(body),
         "complete": comment_complete(report),
+        "blockers": publication_blockers(report),
         "benchmark_only": bool(
             meta.get("benchmark_only")
             or report.get("provenance", {}).get("benchmark_only")

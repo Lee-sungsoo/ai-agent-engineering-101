@@ -396,7 +396,7 @@ ownership CI는 루트 경로 변경을 거부하므로 향후 PR에서 해당 �
 - [OpenAI Chat Completions](https://developers.openai.com/api/reference/resources/chat)
 - [Ollama OpenAI 호환 API](https://docs.ollama.com/api/openai-compatibility)
 
-## 항목별 평가와 판정 기록장 (0.6)
+## 항목별 평가와 판정 기록장 (0.7)
 
 `batch --itemwise --ledger runs/judgments`는 PR별 항목 작업을 병렬 실행합니다.
 `--workers`는 PR 내부 동시 호출 상한(1~16, 기본 4)입니다. PR 목록은 순차 처리합니다.
@@ -417,6 +417,10 @@ uv run python -m ax_evaluator finalize runs/submission-items \
 ```
 
 `file-manifest.json`에는 각 항목에 포함·제외한 파일과 선택 규칙이 남습니다.
+`itemwise-v3`는 제공한 원문을 생략하지 않고 최대 40줄마다 EVIDENCE_BLOCK ID를
+붙입니다. 모델은 스키마에 열거된 ID만 선택하며, Python이 파일과 실제 행 범위로
+변환합니다. 잘못 만든 줄 번호·정확히 복사하지 못한 인용문을 보정해서 채택하지
+않습니다. 근거 구간이 실제 주장을 지지하는지는 별도 의미 판단입니다.
 기본 제공 과제의 선택 규칙은 `rubrics/evidence-groups.json`입니다. 다른 과제는
 각 평가항목에 `evidence_groups`(source/report/results/auth/history/logs/extras/all)와
 선택적인 `evidence_globs`를 지정합니다. 미지정 항목은 모든 파일을 대상으로 합니다.
@@ -436,17 +440,42 @@ CLI 버전, 하네스 구현이 포함됩니다. 파일 순서는 정규화합�
 응답·실패·정책 답변 이력은 보존합니다. 실패한 모델 요청의 재호출은
 `judge-items --retry-failed` 또는 `batch --resume --retry-failed`로 명시합니다.
 
-판정 내용과 severity·rerun_basis는 모델이 판단하고, feedback_type·rerun 상태·
-감점 사유의 적용 여부·점수는 코드가 정합니다. 통과/pending에서 기본 감점을
-제거하고, 경미한 문제는 suggestion, 중요한 오류는 revision으로 분류합니다.
-같은 원인의 코멘트는 공통 revision_key로 모으며 상세 근거는 보존합니다.
-종합 검토의 모순·중복 감점 의심은 확인 대상으로 남기며 자동으로 감점을 추가하거나
-학생의 결함을 통과로 덮어쓰지 않습니다. 의미상 중복을 찾는 판단은 모델에 남습니다.
+`assessment.obligations`가 있으면 그 목록을 고정하고, 없으면 해당 항목의
+`pass_rule` 하나를 core 의무로 사용합니다. 모델은 각 의무에 대해 supported,
+contradicted, unknown과 근거를 반환합니다. contradicted는 중요한 미충족이
+입증된 경우이며, 단순 불확실성이나 선택적 개선 사항은 해당하지 않습니다.
+모델의 파일 읽기 자기신고는 요구하지 않습니다. 제공 목록·원문·해시는 도구가
+보존하고 의무별 관측은 고정 키로 받아 중복·누락을 막습니다. 코드는 반박된 의무가
+있으면 fail, 없고 unknown이 있으면 pending, 모두 지지되면
+pass로 변환합니다. 중복·누락된 의무나 새로 만들어 낸 의무는 거부합니다.
+
+국소적인 오류는 별도 issues에 해당 의무·오류 종류·근거·수정 방법을 기록합니다.
+코드는 사실 오류·근거 없는 주장·구현 결함을 revision, 선택적 개선을 suggestion으로
+분류하고 severity·revision_key·감점 적용 여부·점수를 계산합니다. 동작 변경과
+기존 기록으로 가능한 수정은 rerun_basis로 구분합니다. 같은 근거와 오류 종류의
+수정 요청은 묶되, 표현이나 근거 위치가 다른 문제의 의미상 동일성을 보장하지 않습니다.
+
+`success_audit`는 평가표의 `audit_groups`에 연결된 기존 항목에서 조립합니다.
+reviewed는 결함이 없다는 뜻이 아니라 제출 근거 검토를 마쳤다는 뜻입니다.
+과제에 없는 CI 실행 기록·검증기·채점자의 직접 재실행을 새 요건으로 만들지 않습니다.
+별도의 종합 모델이 점수나 새로운 수정 요청을 추가하지 않습니다.
+
+추가 시도는 후보 발견과 자격 평가를 분리합니다. `bonus-candidates.json`에 근거와
+후보 ID를 고정하고, 후보별 작업이 필수사항 초과·독립 기여·구현·검증·과제 관련성을
+평가합니다. 관련 파일과 로컬 의존 파일, 요청된 원본 로그를 온전히 제공하며
+로그는 파일 단위로 나눕니다. 다른 부분의 불확실성과 반례는 보수적으로 유지합니다.
+그 작업은 후보를 늘리거나 나눌 수 없습니다. 명시 가산 기준은
+미구현이어도 한 번 평가하며, 없는 선택 기능 때문에 학생에게 수정을 요구하지 않습니다.
+구현된 추가 작업에 실제 오류가 있으면 별도 수정 요청은 가능합니다. 후보 발견과
+의미상 중복·기여 가치 판단은 여전히 모델에 의존하므로 변형·신규 호출 검증이 필요합니다.
 
 `metrics.json`에는 실제 호출 수·캐시 재사용·실패·시간·입출력 사용량과 CLI가 보고한
 모델별 비용 추정이 기록됩니다. 구독 CLI의 보고 비용은 추가로 청구된 금액을 뜻하지
 않습니다. 캐시 입력·추론 토큰의 상세 원문은 판정 기록장의 provider-metadata.json에
 보존하며, 사용량을 수집하지 못한 요청도 별도로 표시합니다.
+Codex CLI는 [공식 비대화형 실행 문서](https://learn.chatgpt.com/docs/non-interactive-mode)의
+`--json` 완료 이벤트에서 입력·캐시 입력·출력·추론 토큰을 수집합니다. CLI가 실제
+응답 모델 식별자를 제공하지 않으면 요청 모델과 구분해 빈 목록으로 보존합니다.
 
 ## 정책 질문에 답하기
 
@@ -454,15 +483,23 @@ CLI 버전, 하네스 구현이 포함됩니다. 파일 순서는 정규화합�
 uv run python -m ax_evaluator questions --ledger runs/judgments
 uv run python -m ax_evaluator answer-policy QUESTION_SHA ANSWER \
   --reviewer instructor --ledger runs/judgments
+uv run python -m ax_evaluator link-questions QUESTION_SHA_1 QUESTION_SHA_2 \
+  --reviewer instructor --ledger runs/judgments
+uv run python -m ax_evaluator refresh-policy \
+  --packets runs/submission-items-1 runs/submission-items-2 \
+  --ledger runs/judgments --out runs/policy-updated \
+  --config runs/provider.json
 ```
 
 ANSWER는 질문의 options 중 하나여야 합니다. 기존 자동검사의 미정 정책도 같은
-질문함에 등록합니다. 교수자 답변을 적용하려면 `prepare --ledger`로 새 패킷을
-준비하거나 새 일괄 묶음을 만듭니다. 기존 묶음의 스냅샷·패킷·판정을 소급 변경하지
-않습니다. 정책의 영향을 받지 않는 항목의 기록은 재사용합니다.
+질문함에 등록합니다. `refresh-policy`는 지정된 여러 패킷의 고정된 제출물에 답변을
+반영하고 영향을 받지 않는 항목은 기록을 재사용합니다. `--config` 없이 실행하면
+모델을 호출하지 않고 새 패킷만 준비합니다. 기존 원문·패킷·판정은 소급 수정하지 않습니다.
 
 이름이 정해진 질문은 같은 ID와 정의로 통합합니다. 새 질문은 질문·선택지의 해시로
-보관하므로 표현이 다른 질문의 의미적 동등성까지 자동 보장하지 않습니다.
+보관합니다. 표현이 다른 질문은 교수자가 `link-questions`로 같은 의미임을 명시할
+수 있습니다. 선택지가 같은 질문만 연결하며 기존 답변 충돌은 거부합니다.
+연결 후 한 번의 답변과 이후 변경은 관련 질문에 공유됩니다. 자동 의미 통합은 하지 않습니다.
 학생 문서에 적힌 희망 배점이나 지시는 교수자 답변으로 등록하지 않습니다.
 
 ## 교수자 배점으로 환산
@@ -541,4 +578,4 @@ PR은 원래 스냅샷·패킷을 유지하고 새 모델 출력 폴더에서 �
 수 없도록 표시합니다. 테스트에서 수정한 원문이 실제 학생의 제출물인 것처럼
 게시되는 것을 방지하며, 부분 코멘트 파일은 로컬에서 계속 확인할 수 있습니다.
 
-[실제 모델 검증 결과와 남은 한계](validation-0.6.md)를 함께 확인하세요.
+[현재 모델 검증 결과와 남은 한계](validation-0.7.md)를 함께 확인하세요.

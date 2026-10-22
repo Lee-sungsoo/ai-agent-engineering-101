@@ -27,38 +27,30 @@ from ax_evaluator.snapshot import document
 from ax_evaluator.storage import canonical, digest, read_json
 
 
-def fake_response(prompt, schema):
+def fake_response(*args):
+    prompt, schema = args[-2:]
     packet = json.loads(prompt.split("UNTRUSTED_FULL_FILES_JSON:\n")[1])
     path = "REPORT.md" if "REPORT.md" in packet else next(iter(packet))
-    ref = {"path": path, "start": 1, "end": 1}
-    result = {"inspected_files": list(packet), "questions": []}
+    ref = {"block": packet[path]["text"].splitlines()[0].split(" ", 1)[1]}
+    result = {"questions": []}
     if "finding" in schema["properties"]:
+        finding = schema["properties"]["finding"]["properties"]
         result["finding"] = {
-            "id": schema["properties"]["finding"]["properties"]["id"]["enum"][0],
-            "status": "pass",
-            "reason": "필수 근거 확인",
-            "evidence": [ref],
-            "feedback_type": "strength",
-            "feedback": "근거를 확인했습니다.",
-            "severity": "none",
-            "rerun": "not-needed",
-            "rerun_basis": "not-applicable",
-            "rerun_reason": "수정 없음",
-            "revision_key": "",
-            "deduction_reason": "",
-            "pending_reason": "",
-        }
-    else:
-        result.update(
-            success_audit={
-                k: {"status": "reviewed", "reason": "근거 확인", "evidence": [ref]}
-                for k in ["final_answer", "judge_logic", "verification"]
+            "id": finding["id"]["enum"][0],
+            "observations": {
+                key: {
+                    "status": "supported",
+                    "note": "필수 근거 확인",
+                    "evidence": [ref],
+                }
+                for key in finding["observations"]["properties"]
             },
-            bonuses=[],
-            bonus_review_complete=True,
-            summary="검토 완료",
-            conflicts=[],
-        )
+            "issues": [],
+        }
+    elif "candidates" in schema["properties"]:
+        result["candidates"] = []
+    else:
+        result["assessments"] = []
     return canonical(result), {"usage": {"output_tokens": 10}}
 
 
@@ -365,7 +357,7 @@ class FailureAndPolicyIntegrationTest(unittest.TestCase):
                 response["provenance"]["metrics"]["usage_missing_calls"], 1
             )
 
-    def test_policy_answer_updates_only_dependent_automatic_score_and_synthesis(self):
+    def test_policy_answer_updates_only_dependent_automatic_score(self):
         from test_checks import set_rows
 
         from ax_evaluator.review import score
@@ -405,7 +397,7 @@ class FailureAndPolicyIntegrationTest(unittest.TestCase):
             changed = resolve_policies(rubric, root / "ledger")
             transport.reset_mock()
             second = self.run_model(root, "policy", snapshot, changed)
-            self.assertEqual(transport.call_count, 1)
+            self.assertEqual(transport.call_count, 0)
             self.assertEqual(
                 score(full_bundle(snapshot, changed), second["review"])["items"]["C02"][
                     "status"

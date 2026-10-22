@@ -8,7 +8,7 @@ from .batch import run_batch
 from .benchmark import run_benchmark
 from .comments import publish
 from .grading import weighted_score
-from .itemwise import judge_items, replay_items, resolve_policies
+from .itemwise import judge_items, refresh_policies, replay_items, resolve_policies
 from .ledger import QuestionBox
 from .policy import apply_policy, interview
 from .providers import judge
@@ -111,6 +111,26 @@ def main(argv=None):
     answer.add_argument("value")
     answer.add_argument("--reviewer", required=True)
     answer.add_argument("--ledger", type=Path, required=True)
+    link = commands.add_parser(
+        "link-questions", help="Instructor declares policy questions equivalent"
+    )
+    link.add_argument("questions", nargs="+")
+    link.add_argument("--reviewer", required=True)
+    link.add_argument("--ledger", type=Path, required=True)
+    refresh = commands.add_parser(
+        "refresh-policy",
+        help="Apply answers to explicit packets; optionally evaluate affected tasks",
+    )
+    refresh.add_argument("--packets", type=Path, nargs="+", required=True)
+    refresh.add_argument("--ledger", type=Path, required=True)
+    refresh.add_argument("--out", type=Path, required=True)
+    refresh.add_argument(
+        "--config",
+        type=Path,
+        help="Explicitly call model where cached judgments no longer apply",
+    )
+    refresh.add_argument("--workers", type=int, default=4)
+    refresh.add_argument("--max-task-chars", type=int, default=400000)
     rescore = commands.add_parser(
         "rescore", help="Apply explicit group weights offline"
     )
@@ -228,7 +248,7 @@ def main(argv=None):
             )
             print(f"prepared {bundle['id']}; no model called")
         elif args.command == "judge-items":
-            judge_items(
+            response = judge_items(
                 read_json(args.run / "bundle.json"),
                 read_json(args.run / "snapshot.json"),
                 read_json(args.config),
@@ -239,8 +259,23 @@ def main(argv=None):
                 args.retry_failed,
             )
             print(f"validated response: {args.out / 'response.json'}")
+            return 1 if response["provenance"]["metrics"]["failures"] else 0
         elif args.command == "questions":
             print(canonical(QuestionBox(args.ledger).list()))
+        elif args.command == "link-questions":
+            print(
+                canonical(QuestionBox(args.ledger).link(args.questions, args.reviewer))
+            )
+        elif args.command == "refresh-policy":
+            rows = refresh_policies(
+                args.packets,
+                args.ledger,
+                args.out,
+                read_json(args.config) if args.config else None,
+                args.workers,
+                args.max_task_chars,
+            )
+            print(canonical(rows))
         elif args.command == "replay-items":
             replay_items(
                 args.packet,
@@ -271,11 +306,23 @@ def main(argv=None):
                 not args.no_variants,
             )
             print(f"Benchmark report: {args.out / 'report.md'}")
-            return 1 if any(row.get("incomplete_provider") for row in results) else 0
+            return (
+                1
+                if any(
+                    row.get("incomplete_provider")
+                    or any(
+                        "error" in run or run.get("metrics", {}).get("failures")
+                        for run in row["runs"].values()
+                    )
+                    for row in results
+                )
+                else 0
+            )
         elif args.command == "answer-policy":
             QuestionBox(args.ledger).answer(args.question, args.value, args.reviewer)
             print(
-                "Policy saved. Prepare a new run; unaffected item records are reused."
+                "Policy saved. Use refresh-policy --packets ... to propagate "
+                "it; unaffected item records are reused."
             )
         elif args.command == "judge":
             judge(

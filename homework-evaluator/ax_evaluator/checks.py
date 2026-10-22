@@ -277,6 +277,12 @@ def check(snapshot, rubric):
                     ),
                     "reported_correct": sum(int(row["correct"]) for row in group),
                     "reported_violations": sum(int(row["violation"]) for row in group),
+                    "reported_attempted_violations": sum(
+                        int(row["attempted_violations"]) for row in group
+                    ),
+                    "reported_refused_calls": sum(
+                        int(row["refused_calls"]) for row in group
+                    ),
                     "mean_turns": sum(int(row["turns"]) for row in group) / len(group)
                     if group
                     else None,
@@ -285,7 +291,61 @@ def check(snapshot, rubric):
         "items": findings,
         "aggregates": aggregates,
         "log_comparison": compare_log_results(snapshot, rows),
+        "tool_event_facts": observed_tool_events(snapshot),
     }
+
+
+def observed_tool_events(snapshot):
+    """Count explicit role/tool markers, never repeated state or guessed events."""
+    facts = {}
+    for path, doc in sorted(snapshot["files"].items()):
+        if not (path.startswith("logs/") or "/logs/" in path) or doc["text"] is None:
+            continue
+        calls, results, errors = Counter(), Counter(), []
+        formats = set()
+        for line_no, line in enumerate(doc["text"].splitlines(), 1):
+            marker = re.match(r"^\s*\[(buyer|seller) call\] ([a-z_]+)\(", line)
+            if marker:
+                calls[marker[1] + "." + marker[2]] += 1
+                formats.add("role-call-marker")
+                continue
+            try:
+                value = json.loads(line)
+            except ValueError:
+                continue
+            if (
+                not isinstance(value, dict)
+                or value.get("role") not in {"buyer", "seller"}
+                or not isinstance(value.get("tool"), str)
+            ):
+                continue
+            event = value.get("event")
+            if event not in {"tool_call", "tool_result"}:
+                continue
+            formats.add("explicit-tool-events")
+            key = value["role"] + "." + value["tool"]
+            if event == "tool_call":
+                calls[key] += 1
+            else:
+                results[key] += 1
+                if value.get("error") is True:
+                    errors.append(line_no)
+        facts[path] = {
+            "formats": sorted(formats),
+            "observed_call_counts": dict(sorted(calls.items())) if formats else None,
+            "observed_result_counts": dict(sorted(results.items()))
+            if formats
+            else None,
+            "explicit_error_result_lines": errors
+            if "explicit-tool-events" in formats
+            else None,
+            "scope": (
+                "Explicit printed markers only. Unrecognized formats are unknown; "
+                "state histories/reasoning are not calls. Not proof of log "
+                "completeness or actual execution."
+            ),
+        }
+    return facts
 
 
 def compare_log_results(snapshot, rows):

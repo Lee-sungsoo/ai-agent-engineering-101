@@ -42,6 +42,23 @@ def validate_rubric(rubric):
         for key in ("id", "title", "category", "rule", "pass_rule", "fail_rule"):
             if not isinstance(item.get(key), str) or not item[key].strip():
                 raise ValueError(f"Criterion needs {key}")
+        if "assessment" in item:
+            obligations = item["assessment"]["obligations"]
+            if (
+                not obligations
+                or len({o["id"] for o in obligations}) != len(obligations)
+                or any(
+                    not o["id"].strip() or not o["rule"].strip() for o in obligations
+                )
+            ):
+                raise ValueError("Assessment needs distinct, explicit obligations")
+    if "audit_groups" in rubric:
+        groups = rubric["audit_groups"]
+        if set(groups) != set(SUCCESS_AREAS) or any(
+            not ids or not set(ids) <= {i["id"] for i in items}
+            for ids in groups.values()
+        ):
+            raise ValueError("Audit groups must reference existing criteria")
     if rubric["checker"] == "review-only":
         if any(i["mode"] != "review" for i in items):
             raise ValueError("review-only has no automatic checks")

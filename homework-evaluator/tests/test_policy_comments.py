@@ -214,6 +214,7 @@ class PolicyTest(unittest.TestCase):
         snapshot, bundle, _ = complete_fixture()
         rubric = copy.deepcopy(bundle["rubric"])
         rubric.update(week="week-06", checker="review-only")
+        rubric.pop("audit_groups", None)
         rubric["items"] = [{**rubric["items"][0], "id": "R1", "mode": "review"}]
         other = build_bundle(snapshot, rubric)
         self.assertEqual(list(other["checks"]["items"]), ["R1"])

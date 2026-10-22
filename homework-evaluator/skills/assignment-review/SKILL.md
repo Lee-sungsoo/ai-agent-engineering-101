@@ -23,6 +23,10 @@ Do not invent new grading requirements from style preferences or SDK conventions
 3. Review every review-mode criterion, with `pass`, `fail` or `pending` and exact
    source line references. Consult full snapshot evidence when preparing a larger
    packet; never cite a line the current packet does not contain.
+   In itemwise-v3, return supported/contradicted/unknown for each frozen rubric
+   obligation and grounded issues; code derives the criterion decision. Do not
+   invent obligations. A local correction can coexist with a supported central
+   conclusion. Only a material violation of the assigned obligation is contradicted.
 4. Run `finalize` to validate the response and calculate draft points. Keep the
    response, model provenance and input hashes. Human corrections use a new output
    directory and `import-review`, with the reviewer's name; preserve prior results.
@@ -72,6 +76,12 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   Put defects discovered here into the relevant qualitative/required/bonus
   finding with a concrete revision request. The audit itself adds no points and
   never automatically changes a submitted experimental success label.
+- Apply those audit questions only to mechanisms present in the assignment and
+  submission. A negotiation task does not require an answer verifier or CI run
+  output. Missing an unrequested runtime trace is not an unmet requirement.
+  In itemwise-v3, `audit_groups` links these checks to existing criteria; code
+  assembles audit completion from their decisions. `reviewed` means inspected,
+  including a documented defect, not proven correct or independently executed.
 - OpenRouter, Claude CLI and Codex hosts are equally eligible when the spec permits
   them. Temperature/seed explicitly not settable is not an omission. Do not require
   a particular filename, SDK or implementation layout beyond the actual contract.
@@ -141,6 +151,13 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   contribution once, not once per file, feature or paragraph. Absent extras do not
   reduce the base score. Apply the rubric's configurable cap; do not let bonuses
   cancel revision requests. `bonus_review_complete=false` if coverage is incomplete.
+  Itemwise-v3 first freezes artifact-backed candidates, then separately assesses
+  whether each is beyond requirements, distinct, implemented, validated and
+  meaningful. The eligibility worker cannot add/split candidates or choose points.
+  Merely adding optional conditions or more text is not sufficient. A substantial
+  optional experiment with an observed, relevant contribution can qualify.
+  Candidate discovery and semantic eligibility remain model judgments and must
+  be included in fresh-call and injection tests, not hidden by replay caching.
 - `bonus_policy.explicit_criteria` supplies optional named rules, each worth 1 point.
   Assess each once; `criterion_id` is that rule ID, or an empty string for a
   meaningful open-ended contribution. Code computes points, never the model.

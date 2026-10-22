@@ -119,6 +119,42 @@ class ProviderTest(unittest.TestCase):
                 read_json(out / "failure.json")["status"], "no-score-produced"
             )
 
+    def test_codex_usage_includes_cache_and_reasoning_without_tool_actions(self):
+        calls = []
+
+        def run(args, **kwargs):
+            calls.append(args)
+            if "--version" in args:
+                return subprocess.CompletedProcess(args, 0, "fixture", "")
+            Path(args[args.index("--output-last-message") + 1]).write_text(
+                '{"ok":true}'
+            )
+            return subprocess.CompletedProcess(
+                args,
+                0,
+                json.dumps(
+                    {
+                        "type": "turn.completed",
+                        "usage": {
+                            "input_tokens": 100,
+                            "cached_input_tokens": 50,
+                            "output_tokens": 20,
+                            "reasoning_output_tokens": 5,
+                        },
+                    }
+                ),
+                "",
+            )
+
+        with patch("subprocess.run", side_effect=run):
+            _, meta = cli_review(
+                {"kind": "codex", "model": "fixture", "effort": "low"}, "evidence", {}
+            )
+        self.assertIn("--json", calls[-1])
+        self.assertIn('model_reasoning_effort="low"', calls[-1])
+        self.assertEqual(meta["usage"]["cached_input_tokens"], 50)
+        self.assertEqual(meta["usage"]["reasoning_output_tokens"], 5)
+
     def test_transport_failure_never_retries(self):
         snapshot, bundle, _ = review_fixture()
         with tempfile.TemporaryDirectory() as temp:

@@ -39,7 +39,19 @@
       "rule": "ReAct maintains an iterative action-observation loop; Plan-then-Execute separates planning and execution. Code exposes their actual differences.",
       "pass_rule": "ReAct maintains an iterative action-observation loop; Plan-then-Execute separates planning and execution. Code exposes their actual differences.",
       "fail_rule": "A required harness is absent or the implementations do not actually differ in the required pattern.",
-      "source_requirement": "Assignment: compare ReAct and Plan-then-Execute harnesses."
+      "source_requirement": "Assignment: compare ReAct and Plan-then-Execute harnesses.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "architectures",
+            "rule": "ReAct has an action-observation loop and Plan-then-Execute separates planning/execution; inspect actual implementations."
+          },
+          {
+            "id": "return-paths",
+            "rule": "If answer verification/revision is implemented, trace its acceptance/rejection/revision return paths in submitted source. The harness returns the intended final answer rather than a verifier control token/prose. If no verifier exists, that is allowed. Do not demand new execution traces solely to prove all branches."
+          }
+        ]
+      }
     },
     {
       "id": "F04",
@@ -88,7 +100,19 @@
       "title": "원시 결과와 로그의 일치",
       "rule": "Raw CSV values agree with the report table; success and iterations agree with visible execution traces, and any recorded usage meters do not contradict tokens. Do not require extra provider usage dumps that the assignment did not request; explicitly limit token verification to available records.",
       "pass_rule": "Raw CSV values agree with the report table; success and iterations agree with visible execution traces, and any recorded usage meters do not contradict tokens. Do not require extra provider usage dumps that the assignment did not request; explicitly limit token verification to available records.",
-      "fail_rule": "An unexplained mismatch materially changes measured outcomes."
+      "fail_rule": "An unexplained mismatch materially changes measured outcomes.",
+      "assessment": {
+        "obligations": [
+          {
+            "id": "measurements",
+            "rule": "Raw CSV values agree with the report table; success and iterations agree with visible execution traces, and any recorded usage meters do not contradict tokens. Do not require extra provider usage dumps that the assignment did not request; explicitly limit token verification to available records."
+          },
+          {
+            "id": "answers",
+            "rule": "Inspect actual final answers and promised success logic against TASK expected lines and supplied reference data, not just success labels. Substring matches, intermediate answers or verifier prose alone do not prove a correct final answer. A correct hour with a wrong count is still a factual defect. Local reporting errors can need correction without invalidating the whole comparison."
+          }
+        ]
+      }
     },
     {
       "id": "C03",
@@ -139,5 +163,23 @@
       "source_requirement": "REPORT.md part 3 / Grading: which harness affected which metric and why, with log evidence."
     }
   ],
-  "scoring_policy": "requirements-only-v1"
+  "scoring_policy": "requirements-only-v1",
+  "audit_groups": {
+    "final_answer": [
+      "F02",
+      "F05",
+      "C02",
+      "C03"
+    ],
+    "judge_logic": [
+      "F01",
+      "F03",
+      "C02"
+    ],
+    "verification": [
+      "F03",
+      "F05",
+      "C02"
+    ]
+  }
 }
