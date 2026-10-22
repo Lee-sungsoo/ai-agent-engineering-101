@@ -52,6 +52,12 @@ def validate_rubric(rubric):
                 )
             ):
                 raise ValueError("Assessment needs distinct, explicit obligations")
+            adapters = item["assessment"].get("deterministic", {})
+            if adapters and (
+                adapters != {"history": "scenario-ancestry-v1"}
+                or "history" not in {o["id"] for o in obligations}
+            ):
+                raise ValueError("Unsupported deterministic obligation adapter")
     if "audit_groups" in rubric:
         groups = rubric["audit_groups"]
         if set(groups) != set(SUCCESS_AREAS) or any(

@@ -84,6 +84,82 @@ def compare(left, right):
     }
 
 
+def acceptance(rows, variants=True):
+    """Strict diagnostic acceptance: drift, missing runs and failed work fail."""
+    conditions = {"first", "replay", "fresh"} | (
+        {"order", "unrelated", "injection"} if variants else set()
+    )
+    failures = []
+    if not rows:
+        failures.append({"reason": "no-cases"})
+    for row in rows:
+        case = row.get("metadata", {}).get("pr", row.get("student"))
+        for condition in sorted(conditions):
+            run = row.get("runs", {}).get(condition)
+            if not run or "error" in run:
+                failures.append(
+                    {
+                        "case": case,
+                        "condition": condition,
+                        "reason": "missing-or-failed-run",
+                    }
+                )
+                continue
+            metrics = run.get("metrics", {})
+            if metrics.get("failures") or metrics.get("provider_unavailable"):
+                failures.append(
+                    {
+                        "case": case,
+                        "condition": condition,
+                        "reason": "incomplete-evaluation",
+                    }
+                )
+            if condition == "first":
+                continue
+            comparison = row.get("checks", {}).get(condition, {})
+            if not comparison or comparison.get("matched") != comparison.get("total"):
+                failures.append(
+                    {
+                        "case": case,
+                        "condition": condition,
+                        "reason": "item-drift",
+                        "changed": comparison.get("changed", []),
+                    }
+                )
+            for field in (
+                "score_equal",
+                "comment_ready_equal",
+                "audit_status_equal",
+                "bonus_decisions_equal",
+            ):
+                if comparison.get(field) is not True:
+                    failures.append(
+                        {"case": case, "condition": condition, "reason": field}
+                    )
+            if condition in {"replay", "order"} and metrics.get("model_calls") != 0:
+                failures.append(
+                    {
+                        "case": case,
+                        "condition": condition,
+                        "reason": "unexpected-replay-call",
+                    }
+                )
+            if condition == "fresh" and not metrics.get("model_calls"):
+                failures.append(
+                    {
+                        "case": case,
+                        "condition": condition,
+                        "reason": "fresh-was-not-fresh",
+                    }
+                )
+    return {
+        "passed": not failures,
+        "failures": failures,
+        "scope": "Observed decision invariance, not grading accuracy "
+        "or a guarantee on unseen inputs.",
+    }
+
+
 def run_benchmark(
     snapshots,
     rubric,
@@ -128,7 +204,7 @@ def run_benchmark(
             snapshot,
             rubric,
             run_root / "packet",
-            sum(map(len, texts)) + 1,
+            sum(len(t) + 1 for t in texts),
             max(map(len, texts), default=0) + 1,
         )
         bundle = read_json(run_root / "packet/bundle.json")
@@ -213,6 +289,7 @@ def run_benchmark(
         if row.get("incomplete_provider"):
             break
     write_new(root / "results.json", rows)
+    write_new(root / "acceptance.json", acceptance(rows, variants))
     render_benchmark(rows, root / "report.md")
     return rows
 
@@ -242,15 +319,30 @@ def render_benchmark(rows, path):
             f"| {m.get('usage', {}).get('output_tokens', '미수집')} "
             f"| {m.get('model_calls')} | {len(m.get('failures', []))} |"
         )
-    lines += ["", "| 조건 | 일치 항목/전체 | 점수 동일 학생 |", "|---|---|---|"]
+    lines += [
+        "",
+        "| 조건 | 모델 상태 | 모델 상태+유형 | 전체 상태+유형 | 점수 동일 |",
+        "|---|---|---|---|---|",
+    ]
     for kind in ["replay", "fresh", "order", "unrelated", "injection"]:
         comparisons = [r["checks"][kind] for r in rows if kind in r["checks"]]
         if comparisons:
             lines.append(
-                f"| {kind} | {sum(c['matched'] for c in comparisons)}"
+                f"| {kind} | {sum(c['status_matched'] for c in comparisons)}"
+                f"/{sum(c['model_total'] for c in comparisons)} "
+                f"| {sum(c['model_matched'] for c in comparisons)}"
+                f"/{sum(c['model_total'] for c in comparisons)} "
+                f"| {sum(c['matched'] for c in comparisons)}"
                 f"/{sum(c['total'] for c in comparisons)} "
                 f"| {sum(c['score_equal'] for c in comparisons)}/{len(comparisons)} |"
             )
+    lines += [
+        "",
+        "replay/order는 정규화된 입력의 저장 판정 재사용입니다.",
+        "신규 호출·입력 변형의 일치율은 채점 정확도가 아닙니다.",
+        "acceptance.json은 누락·처리 실패와 "
+        "판정/점수/가산 후보 ID 차이도 실패로 기록합니다.",
+    ]
     lines += [
         "",
         "판정 일치는 status와 feedback_type을 비교합니다. "

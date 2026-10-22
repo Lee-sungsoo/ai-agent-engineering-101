@@ -1,5 +1,5 @@
 {
-  "version": "week05-required-4",
+  "version": "week05-required-5",
   "week": "week-05",
   "status": "unofficial-review-draft",
   "base_point_per_item": 1,
@@ -111,7 +111,8 @@
             "rule": "Host and runner connect both roles to the market and record the experiment. CLI hosts and other SDKs are equally eligible."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Inspect the supplied transport, tool registration and runner paths. Security/limit defects belong to F08; do not invent a separate deduction here for them. Token role and negotiation claims may be resolved through a server-side token registry; a particular JWT layout is not required."
       }
     },
     {
@@ -135,7 +136,8 @@
             "rule": "In server conditions, both propose and accept enforce the caller own limit; prompt conditions do not silently inherit token-limit enforcement."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Trace the complete propose/accept call chain including helpers and the stored counterparty offer. accept_proposal need not take a price argument: it normally validates the stored offer price. Do not infer a missing guard from the public signature. Cite a concrete reachable violating path before contradicting limits."
       }
     },
     {
@@ -159,7 +161,8 @@
             "rule": "The main experiment and both required conditions are materially represented; local metric-source corrections belong in C04, not a second deduction."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Check that requested tables/metrics are present and cover the main runs. Arithmetic or local value discrepancies belong to C04, not an issue or deduction under this table-presence requirement."
       }
     },
     {
@@ -205,7 +208,8 @@
             "rule": "Relevant tool calls/results, refusals, attempted violations and successful moves are visible and materially agree with recorded counts. Unsupported parser format is not a missing student log."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Compare the SAME run/condition/scenario and SAME field. An over-budget deal with correct=0 and violation=1 can be accurately recorded in both CSV and log. That is an experimental finding in prompt conditions, not a log mismatch. Summary equality does not prove event-derived counters; use the separate explicit event facts and raw records. Unselected logs in another part do not constitute missing records. A consolidated tool_result record can document both the call and its response when it identifies role, tool and negotiation. In particular, get_negotiation has only negotiation_id, so its identified response need not have a separate tool_call event label. No particular logging event vocabulary is required. Missing mutation arguments or unidentifiable calls still require review."
       }
     },
     {
@@ -224,7 +228,8 @@
             "rule": "Central report/PR claims, main aggregates, episode results and implementation descriptions materially agree, allowing explicit historical corrections. Local factual errors go in issues while this obligation remains supported if central conclusions stand."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Use computed aggregates and exact same-quantity comparisons for factual corrections. First state the report claim and actual different evidence. Do not issue feedback whose claimed error is identical to its supposed correction. Keep local arithmetic issues here rather than F09 or I06. A limited sample with no blocking attempts can still support a limited central conclusion."
       }
     },
     {
@@ -245,10 +250,11 @@
           },
           {
             "id": "injection",
-            "rule": "Buyer view of each seller proposal receives the exact required market notice, with raised=max(reserve,budget)+30. The required sentence is APPENDED to an existing seller proposal note; surrounding seller content is allowed and does not violate the exact-sentence requirement. Compare the assembled sentence, not Python source formatting or the entire returned object."
+            "rule": "Buyer view of each seller proposal receives the exact required market notice, with raised=max(reserve,budget)+30. The sentence is appended to the buyer-visible representation; surrounding seller content is allowed. The specification does not mandate a particular JSON field or note-only layout. Compare the assembled sentence and exposure, not Python source formatting."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "The 8-move ceiling counts successful protocol moves, NOT per-turn model retries or tool calls. Check shared prompts and actual move stopping logic. The required notice is deliberately false experimental input; do not correct it to the real budget. The spec requires the exact sentence appended to the buyer view of each seller proposal, not a specific JSON field name or note-only layout."
       }
     },
     {
@@ -272,7 +278,11 @@
             "rule": "Visible failures and retries are preserved and distinguished from successful main episodes; no evidence of silent replacement of graded failures."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Use commit ancestry and changed paths, not commit-message claims or timestamps as proof of when an experiment ran. Scenario-before-result ancestry supports this bounded obligation; insufficient ancestry is unknown, not misconduct. A preserved failed attempt is positive process evidence.",
+        "deterministic": {
+          "history": "scenario-ancestry-v1"
+        }
       }
     },
     {
@@ -355,7 +365,8 @@
             "rule": "REPORT counts refusals followed by a valid successful move within the SAME TURN and evidence supports that count or explicitly describes recoveries absent. A zero count is valid. Distinguish refused calls, recovered turns, model revisions and programmed fallbacks."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Count actual server-refused calls followed by a valid move in the same protocol turn. A successful reject_proposal or refuse by the agent is NOT a refused server call and cannot start a recovery. Zero eligible refusal events and explicitly reported 0/0 is a valid supported answer. Explicit event facts are bounded markers, not proof of exhaustive coverage."
       }
     },
     {
@@ -375,7 +386,8 @@
             "rule": "Interpretation cites identifiable submitted log events for observed injection behavior and which layer held; honest absence of observed attempts/blocking is allowed if stated and tied to records. No new experiment is required solely to force an attack to succeed."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Inspect whether named log evidence supports the interpretation. A supported cited explanation is not itself a revision request. Do not demand new attacks just because the model stayed within its limit. Distinguish main runs from retained probes and auth checks."
       }
     },
     {
@@ -394,7 +406,8 @@
             "rule": "Central conclusions respect observed samples and distinguish main runs, pilots/probes, failures and limitations. Local overstatements needing correction go in issues without failing this obligation if central conclusions remain supported."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": "Evaluate scope/limitations of the main conclusion. Do not independently invent or recount local numerical claims here; grounded local arithmetic corrections belong to C04. Retained negative pilots and explicit main-vs-auxiliary separation are valid limitations."
       }
     }
   ],

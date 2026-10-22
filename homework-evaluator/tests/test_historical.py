@@ -38,8 +38,12 @@ class HistoricalTest(unittest.TestCase):
             if "cat-file" in args and "blob" in args:
                 return b"x=1\n"
             if "show" in args:
+                if "--format=%P" in args:
+                    return ("b" * 40 + "\n").encode()
                 return b"# Old assignment\n"
             if "log" in args:
+                if "--format=%H" in args:
+                    return (old + "\n").encode()
                 return f"commit {old}\n".encode()
             return b""
 

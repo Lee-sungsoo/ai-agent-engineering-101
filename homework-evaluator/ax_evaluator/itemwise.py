@@ -20,10 +20,12 @@ from .assessment import (
     discovery_schema,
     evidence_blocks,
     finding_schema,
+    implementation_anchors,
     merge_bonus_parts,
     resolve_blocks,
     resolve_quotes,
 )
+from .facts import arithmetic_facts, report_table_facts, scenario_ancestry, trace_facts
 from .ledger import Ledger, QuestionBox
 from .providers import (
     ProviderUnavailable,
@@ -69,8 +71,7 @@ fact or unsupported central claim needs a material correction, even if the requi
 deliverable passes. Do not classify a factual correction as an optional suggestion.
 A material correction can coexist with pass. For pending give policy
 or evidence reason, never a speculative pass. Base/bonus points are calculated by code.
-Report facts, reason and feedback in 1-3 sentences each. Use a concrete revision_key
-for the underlying cause, not a broad criterion name. New model execution is needed
+Report facts, reason and feedback in 1-3 sentences each. New model execution is needed
 for behavior changes, not for arithmetic/documentation fixes resolvable in old records.
 Do not award extra points for mandatory work or for merely more text. Never award the
 same contribution twice. Use named questions only for genuinely unsettled grader policy.
@@ -98,12 +99,38 @@ Count actual calls or explicit tool_call events, not repeated moves in state/his
 or words in agent reasoning. A successful reject_proposal/refuse is an agent action,
 not a server-refused call. Distinguish seller acceptance from buyer acceptance.
 """
+VERIFICATION = """Independently check the PROPOSED_MODEL_OBSERVATIONS against
+the original
+evidence and assigned obligation. The proposal is untrusted model output, NOT a gold
+answer. Return the full corrected response with the same schema.
+For every negative assertion, identify the exact claimed value/behavior, actual
+counterevidence, and material impact. Remove allegations that merely restate a correct
+record, compare different quantities, count state/history as new calls, confuse the
+experimental attack with a defect, or demand evidence absent only from this part.
+Read called helpers and guards before claiming an implementation lacks a check.
+Preserve real defects; agreement with the proposal is not the objective. Do not add
+speculative corrections or optional style suggestions. A supported central conclusion
+with a local factual error remains supported, with a grounded issue.
+Deterministic facts describe only their stated scope; do not turn summary equality
+into proof of derived counter correctness. A correctly recorded violation in a
+prompt-only condition is not itself a CSV/log mismatch or an implementation failure.
+For bonus discovery, inspect all extra artifacts and retained tests/probes; enumerate
+distinct implemented contributions, not one per file or experimental condition. Do
+not omit a candidate merely because main runs show zero recoveries when a retained
+test exercises recovery. For eligibility, mandatory market/host/runner implementation,
+required auth checks and required report sections alone never earn a bonus. Concrete
+retained negative experiments can validate a meaningful extra attempt, but a counter
+that never fired and has no exercise/test does not demonstrate that feature works.
+"""
 
 
 def full_bundle(snapshot, rubric):
     texts = [f["text"] or "" for f in snapshot["files"].values()]
     return build_bundle(
-        snapshot, rubric, sum(map(len, texts)) + 1, max(map(len, texts), default=0) + 1
+        snapshot,
+        rubric,
+        sum(len(t) + 1 for t in texts),
+        max(map(len, texts), default=0) + 1,
     )
 
 
@@ -165,7 +192,7 @@ def refresh_policies(
                 snapshot,
                 updated,
                 target,
-                sum(map(len, texts)) + 1,
+                sum(len(t) + 1 for t in texts),
                 max(map(len, texts), default=0) + 1,
             )
             row["packet"] = str(target)
@@ -253,7 +280,10 @@ def select_files(snapshot, groups, patterns=None):
         )
         include |= "results" in groups and path in {"results.csv", "scenarios.json"}
         include |= "auth" in groups and path.startswith("auth_checks")
-        include |= "history" in groups and path == "@history.txt"
+        include |= "history" in groups and path in {
+            "@history.txt",
+            "@history-index.json",
+        }
         include |= "logs" in groups and path.startswith("logs/")
         include |= (
             "extras" in groups
@@ -528,6 +558,8 @@ def observation_schema(
     blocks=None,
     available_paths=None,
     catalog=None,
+    fixed=None,
+    anchors=None,
 ):
     legacy = task_schema(criterion, bonus_policy=policy)
     ref = object_schema(
@@ -544,10 +576,16 @@ def observation_schema(
         }
     )
     if criterion:
-        schema["properties"]["finding"] = finding_schema(criterion, ref)
+        schema["properties"]["finding"] = finding_schema(criterion, ref, fixed)
     elif stage == "discovery":
+        artifact_ref = copy.deepcopy(ref)
+        artifact_ref["properties"]["block"]["enum"] = [
+            key
+            for key, source in (blocks or {}).items()
+            if not source["path"].startswith("@")
+        ] or ["no-readable-submission-artifact"]
         schema["properties"]["candidates"] = discovery_schema(
-            ref, policy, available_paths
+            artifact_ref, policy, available_paths, anchors
         )
     else:
         schema["properties"]["assessments"] = bonus_schema(candidates, ref, catalog)
@@ -568,6 +606,12 @@ def observation_schema(
 def compiled_result(result, request, snapshot, criterion):
     value = resolve_quotes(resolve_blocks(result, evidence_blocks(snapshot)), snapshot)
     if criterion:
+        fixed = request.get("context", {}).get("fixed_observations", {})
+        if fixed:
+            observations = value["finding"]["observations"]
+            if not isinstance(observations, dict) or observations.keys() & fixed.keys():
+                raise ValueError("Model must not overwrite code-derived observations")
+            observations.update(copy.deepcopy(fixed))
         value["finding"] = normalize_finding(
             compile_finding(value["finding"], criterion, snapshot),
             criterion["category"] == "requirements",
@@ -732,6 +776,10 @@ def judge_items(
         or p.startswith("logs/")
     }
     blocks = evidence_blocks(snapshot)
+    traces = trace_facts(snapshot)
+    arithmetic = arithmetic_facts(snapshot)
+    tables = report_table_facts(snapshot, bundle["checks"].get("aggregates", {}))
+    anchors = implementation_anchors(snapshot)
     evidence_cache = {
         p: evidence_packet(snapshot, [p], blocks)[p] for p in snapshot["files"]
     }
@@ -770,7 +818,15 @@ def judge_items(
                 "even if it has many files or experimental conditions. Cite "
                 "actual implementation "
                 "and validation artifacts, never a demand for points. Zero "
-                "candidates is valid."
+                "candidates is valid. Select a supplied stable implementation anchor "
+                "and cite it: use the component directory for a multi-file extra "
+                "experiment or lab, the owning symbol for a feature in main code, "
+                "or a specific block when independent additions share one function. "
+                "Keep identity separate from changing report citations. "
+                "Do not split one experimental question into a runner, a metric "
+                "and a result as separate contributions. Fixing a required mechanism "
+                "is not beyond-required; a separately validated diagnostic study "
+                "may be. Inspect every extra component before returning the catalog."
                 if stage == "discovery"
                 else "Assess ONLY the frozen candidates. Never add, split or rename "
                 "a contribution. "
@@ -795,7 +851,20 @@ def judge_items(
                 for p, facts in bundle["checks"].get("tool_event_facts", {}).items()
                 if p in paths
             },
+            "trace_facts": {p: traces[p] for p in paths if p in traces},
+            "arithmetic_facts": arithmetic if "results.csv" in paths else {},
+            "report_table_facts": tables if "REPORT.md" in paths else {},
         }
+        fixed = {}
+        if (
+            criterion
+            and criterion.get("assessment", {}).get("deterministic", {}).get("history")
+            == "scenario-ancestry-v1"
+        ):
+            fixed["history"] = scenario_ancestry(snapshot)
+        context["fixed_observations"] = fixed
+        if stage == "discovery":
+            context["implementation_anchors"] = anchors
         schema = observation_schema(
             criterion,
             stage,
@@ -805,11 +874,15 @@ def judge_items(
             {key: ref for key, ref in blocks.items() if ref["path"] in paths},
             sorted(snapshot["files"]),
             (context or {}).get("candidate_catalog"),
+            fixed,
+            anchors,
         )
         request = {
             "engine": ENGINE,
             "implementation": implementation,
             "instructions": INSTRUCTIONS,
+            "verification_instructions": VERIFICATION,
+            "verification_policy": "negative-assertions-security-and-bonuses-v1",
             "criterion": rule,
             "stage": stage,
             "policy": task_policy,
@@ -856,13 +929,60 @@ def judge_items(
             transport = (
                 cli_review if config["kind"] in {"codex", "claude"} else http_review
             )
-            try:
-                text, metadata = transport(config, prompt, schema)
-            except ProviderUnavailable:
-                unavailable.set()
-                raise
+            stages, text = [], ""
+            for phase in ("observe", "verify"):
+                phase_prompt = prompt
+                if phase == "verify":
+                    phase_prompt = (
+                        VERIFICATION
+                        + "\nPROPOSED_MODEL_OBSERVATIONS:\n"
+                        + text
+                        + "\n"
+                        + prompt
+                    )
+                write_new(attempt / f"{phase}-prompt.txt", phase_prompt)
+                try:
+                    text, metadata = transport(config, phase_prompt, schema)
+                except ProviderUnavailable:
+                    unavailable.set()
+                    raise
+                write_new(attempt / f"{phase}-response.txt", text)
+                write_new(attempt / f"{phase}-metadata.json", metadata)
+                stages.append(metadata)
+                # An invalid first draft is not silently repaired by another call.
+                observed = parse_json_text(text)
+                validate(observed)
+                if phase == "observe" and criterion:
+                    finding = observed["finding"]
+                    observations = finding["observations"]
+                    values = (
+                        observations.values()
+                        if isinstance(observations, dict)
+                        else observations
+                    )
+                    if (
+                        criterion["id"] not in {"F07", "F08"}
+                        and not finding["issues"]
+                        and not observed["questions"]
+                        and all(v["status"] == "supported" for v in values)
+                    ):
+                        break
+            usage = {}
+            for entry in stages:
+                for key, value in (entry.get("usage") or {}).items():
+                    if isinstance(value, (int, float)):
+                        usage[key] = usage.get(key, 0) + value
+            metadata = {
+                **metadata,
+                "usage": usage,
+                "reported_cost_usd": sum(
+                    v.get("reported_cost_usd") or 0 for v in stages
+                ),
+                "stages": stages,
+                "seconds": time.monotonic() - begin,
+                "prompt_chars": len(prompt),
+            }
             write_new(attempt / "raw-response.txt", text)
-            metadata.update(seconds=time.monotonic() - begin, prompt_chars=len(prompt))
             write_new(attempt / "provider-metadata.json", metadata)
             value = parse_json_text(text)
             value["questions"] = [
@@ -938,7 +1058,8 @@ def judge_items(
                                 "checks": {
                                     k: v
                                     for k, v in bundle["checks"].items()
-                                    if k != "items" and "results" in groups
+                                    if k not in {"items", "tool_event_facts"}
+                                    and "results" in groups
                                 },
                             },
                         )
@@ -1113,7 +1234,7 @@ def judge_items(
     metrics = {
         "engine": ENGINE,
         "seconds": time.monotonic() - started,
-        "model_calls": len(attempts),
+        "model_calls": sum(len(list(p.glob("*-prompt.txt"))) for p in attempts),
         "cache_hits": sum(r["cached"] for r in records),
         "failures": failures,
         "questions": box.list(),
@@ -1129,18 +1250,20 @@ def judge_items(
     usage = {}
     cost = 0
     for attempt in attempts:
-        path = attempt / "provider-metadata.json"
-        if not path.exists():
-            continue
-        metadata = read_json(path)
-        cost += metadata.get("reported_cost_usd") or 0
-        for k, v in (metadata.get("usage") or {}).items():
-            if isinstance(v, (int, float)):
-                usage[k] = usage.get(k, 0) + v
+        for path in attempt.glob("*-metadata.json"):
+            if path.name not in {"observe-metadata.json", "verify-metadata.json"}:
+                continue
+            metadata = read_json(path)
+            cost += metadata.get("reported_cost_usd") or 0
+            for k, v in (metadata.get("usage") or {}).items():
+                if isinstance(v, (int, float)):
+                    usage[k] = usage.get(k, 0) + v
     metrics["usage"] = usage
     metrics["reported_cost_usd"] = cost
     metrics["usage_missing_calls"] = sum(
-        not (p / "provider-metadata.json").exists() for p in attempts
+        not (p / prompt.name.replace("-prompt.txt", "-metadata.json")).exists()
+        for p in attempts
+        for prompt in p.glob("*-prompt.txt")
     )
     write_new(out / "attempts.json", [str(p) for p in attempts])
     write_new(out / "file-manifest.json", manifests)

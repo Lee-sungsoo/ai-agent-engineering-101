@@ -53,6 +53,35 @@ def fixture():
         "scenarios.json": json.dumps(scenarios),
         "REPORT.md": "# Report\nObserved results only.\n",
         "@spec.md": "# Assignment\nSource of truth.\n",
+        "@history.txt": (
+            "commit "
+            + "a" * 40
+            + "\nparents "
+            + "b" * 40
+            + "\nA\tsubmissions/fixture/week-05/results.csv\n"
+            + "commit "
+            + "b" * 40
+            + "\nparents "
+            + "c" * 40
+            + "\nA\tsubmissions/fixture/week-05/scenarios.json\n"
+        ),
+        "@history-index.json": json.dumps(
+            {
+                "head_sha": "a" * 40,
+                "prefix": "submissions/fixture/week-05/",
+                "commits": [
+                    {"sha": "a" * 40, "parents": ["b" * 40], "added": ["results.csv"]},
+                    {
+                        "sha": "b" * 40,
+                        "parents": ["c" * 40],
+                        "added": ["scenarios.json"],
+                    },
+                ],
+                "ancestry_pairs": [
+                    {"earlier": "b" * 40, "later": "a" * 40, "strict_ancestor": True}
+                ],
+            }
+        ),
     }
     for condition in ("prompt_inject", "server_inject"):
         for run in range(1, 4):
@@ -62,7 +91,12 @@ def fixture():
                 if row["condition"] == condition and row["run"] == str(run)
             )
     snapshot = {
-        "metadata": {"source": "local"},
+        "metadata": {
+            "source": "local",
+            "student_id": "fixture",
+            "week": "week-05",
+            "head_sha": "a" * 40,
+        },
         "files": {path: document(text.encode()) for path, text in files.items()},
     }
     set_rows(snapshot, rows)

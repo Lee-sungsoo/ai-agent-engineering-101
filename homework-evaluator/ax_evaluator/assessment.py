@@ -1,5 +1,6 @@
 """Compile bounded semantic observations into deterministic draft decisions."""
 
+import ast
 import copy
 
 from .comments import pending_kind
@@ -9,6 +10,68 @@ OBSERVATIONS = ("supported", "contradicted", "unknown")
 ISSUES = ("factual-error", "unsupported-claim", "implementation-defect", "improvement")
 BONUS_CHECKS = ("beyond_required", "distinct", "implemented", "validated", "meaningful")
 BLOCK_LINES = 40
+
+
+def implementation_anchors(snapshot):
+    """Stable implementation identities, separate from variable praise citations."""
+    anchors = {}
+    for path, doc in sorted(snapshot["files"].items()):
+        if (
+            path.startswith("@")
+            or doc["text"] is None
+            or "/logs/" in path
+            or path.startswith("logs/")
+        ):
+            continue
+        if "/" in path:
+            directory = path.split("/")[0] + "/"
+            anchors[directory] = {"path": directory, "kind": "component"}
+        if not path.endswith(".py"):
+            anchors[path] = {
+                "path": path,
+                "start": 1,
+                "end": max(1, len(doc["text"].splitlines())),
+                "kind": "artifact",
+            }
+            for number, line in enumerate(doc["text"].splitlines(), 1):
+                if path.endswith(".md") and line.startswith("#"):
+                    key = path + "::section-" + digest(line.strip())[:12]
+                    if key not in anchors:
+                        anchors[key] = {
+                            "path": path,
+                            "start": number,
+                            "end": len(doc["text"].splitlines()),
+                            "kind": "section",
+                            "heading": line.strip(),
+                        }
+            continue
+        anchors[path] = {
+            "path": path,
+            "start": 1,
+            "end": max(1, len(doc["text"].splitlines())),
+            "kind": "module",
+        }
+        try:
+            tree = ast.parse(doc["text"])
+        except (SyntaxError, ValueError):
+            continue
+        for node in tree.body:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                anchors[path + "::" + node.name] = {
+                    "path": path,
+                    "start": node.lineno,
+                    "end": node.end_lineno,
+                    "kind": "symbol",
+                }
+        # Distinct additions inside one function need not be collapsed into one point.
+        for start in range(1, len(doc["text"].splitlines()) + 1, BLOCK_LINES):
+            anchors[path + f"#block-{(start - 1) // BLOCK_LINES + 1}"] = {
+                "path": path,
+                "start": start,
+                "end": start + BLOCK_LINES - 1,
+                "kind": "block",
+            }
+    return anchors
 
 
 def evidence_blocks(snapshot):
@@ -58,8 +121,12 @@ def obligations(criterion):
     return [{"id": "core", "rule": criterion["pass_rule"]}]
 
 
-def finding_schema(criterion, ref):
-    ids = [entry["id"] for entry in obligations(criterion)]
+def finding_schema(criterion, ref, fixed=None):
+    ids = [
+        entry["id"]
+        for entry in obligations(criterion)
+        if entry["id"] not in (fixed or {})
+    ]
     return obj(
         {
             "id": {"type": "string", "enum": [criterion["id"]]},
@@ -225,8 +292,8 @@ def compile_finding(raw, criterion, snapshot):
     }
 
 
-def discovery_schema(ref, policy, available_paths=None):
-    return {
+def discovery_schema(ref, policy, available_paths=None, anchors=None):
+    result = {
         "type": "array",
         "items": obj(
             {
@@ -247,17 +314,29 @@ def discovery_schema(ref, policy, available_paths=None):
             }
         ),
     }
+    if anchors is not None:
+        item = result["items"]
+        item["properties"]["anchor"] = {
+            "type": "string",
+            "enum": sorted(anchors) or ["no-implementation-anchor"],
+        }
+        item["required"].append("anchor")
+    return result
 
 
 def catalog_candidates(raw, policy, snapshot):
     """Pin artifact-anchored candidate IDs before assessing any bonus eligibility."""
     explicit = {c["id"]: c for c in policy["explicit_criteria"]}
     candidates = {}
+    anchors = (
+        implementation_anchors(snapshot) if any("anchor" in c for c in raw) else {}
+    )
     for entry in raw:
-        if set(entry) not in (
-            {"title", "contribution", "criterion_id", "evidence"},
-            {"title", "contribution", "criterion_id", "evidence", "supporting_files"},
-        ):
+        required = {"title", "contribution", "criterion_id", "evidence"}
+        if not required <= set(entry) or set(entry) - required - {
+            "supporting_files",
+            "anchor",
+        }:
             raise ValueError("Invalid bonus candidate fields")
         if not entry["title"].strip() or not entry["contribution"].strip():
             raise ValueError("Bonus candidate needs a description")
@@ -272,7 +351,23 @@ def catalog_candidates(raw, policy, snapshot):
         refs = unique_refs(entry["evidence"])
         if any(p not in snapshot["files"] for p in entry.get("supporting_files", [])):
             raise ValueError("Candidate requested an absent artifact")
-        key = "explicit-" + named if named else "extra-" + digest(refs)[:20]
+        anchor = entry.get("anchor")
+        if anchor is not None:
+            definition = anchors.get(anchor)
+            if not definition or not any(
+                r["path"].startswith(definition["path"])
+                if definition["kind"] == "component"
+                else r["path"] == definition["path"]
+                and r["start"] <= definition["end"]
+                and definition["start"] <= r["end"]
+                for r in refs
+            ):
+                raise ValueError("Bonus anchor needs cited implementation evidence")
+        key = (
+            "explicit-" + named
+            if named
+            else "extra-" + digest(anchor if anchor is not None else refs)[:20]
+        )
         if key in candidates:
             raise ValueError("Duplicate bonus artifact or named criterion")
         candidates[key] = {
@@ -392,7 +487,7 @@ def compile_bonuses(raw, candidates, snapshot, catalog=None):
                 **{
                     k: copy.deepcopy(v)
                     for k, v in candidate.items()
-                    if k != "supporting_files"
+                    if k not in {"supporting_files", "anchor"}
                 },
                 "status": status,
                 "contribution_key": candidate["id"],

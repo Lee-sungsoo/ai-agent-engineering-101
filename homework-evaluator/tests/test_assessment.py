@@ -451,7 +451,7 @@ class PolicyAndAuditRegressionTest(unittest.TestCase):
                 max_task_chars=40000,
             )
             self.assertFalse(response["provenance"]["metrics"]["failures"])
-            self.assertEqual(len(seen), 2)
+            self.assertEqual(len(seen), 4)  # Observe and verify each candidate.
             self.assertTrue(
                 all(
                     len([p for p in paths if p.startswith("experiments/")]) == 1
@@ -659,7 +659,8 @@ class PolicyAndAuditRegressionTest(unittest.TestCase):
                 root / "updated",
                 {"kind": "claude", "model": "fixture"},
             )
-            self.assertEqual(model.call_count, 1)
+            # Only the dependent task, observe and verify.
+            self.assertEqual(model.call_count, 2)
             report = read_json(root / "updated/packet-001/final/evaluation.json")
             self.assertEqual(report["items"]["F07"]["status"], "pass")
 

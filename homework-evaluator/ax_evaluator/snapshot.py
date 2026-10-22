@@ -73,6 +73,66 @@ def validate_week(week):
         raise ValueError("Expected week-NN")
 
 
+def history_index(git, head, prefix):
+    """Read typed object metadata without parsing untrusted commit messages."""
+    commits = []
+    shas = command(git + ["log", "--format=%H", head, "--", prefix]).decode().split()
+    for sha in shas:
+        if not re.fullmatch(r"[0-9a-f]{40}", sha):
+            raise ValueError("Invalid Git history object ID")
+        parents = command(git + ["show", "-s", "--format=%P", sha]).decode().split()
+        changes = command(
+            git
+            + [
+                "diff-tree",
+                "--root",
+                "--no-commit-id",
+                "--name-status",
+                "--no-renames",
+                "-z",
+                "-r",
+                sha,
+                "--",
+                prefix,
+            ]
+        ).split(b"\0")
+        if changes[-1] == b"":
+            changes.pop()
+        if len(changes) % 2:
+            raise ValueError("Invalid Git name-status records")
+        added = [
+            path.decode()[len(prefix) :]
+            for status, path in zip(changes[::2], changes[1::2])
+            if status == b"A" and path.decode().startswith(prefix)
+        ]
+        commits.append({"sha": sha, "parents": parents, "added": added})
+    scenarios = [e["sha"] for e in commits if "scenarios.json" in e["added"]]
+    artifacts = sorted(
+        {
+            e["sha"]
+            for e in commits
+            if any(p == "results.csv" or p.startswith("logs/") for p in e["added"])
+        }
+    )
+    pairs = [
+        {
+            "earlier": s,
+            "later": a,
+            "strict_ancestor": s != a
+            and command(git + ["merge-base", s, a]).decode().strip() == s,
+        }
+        for s in scenarios
+        for a in artifacts
+    ]
+    return {
+        "format": 1,
+        "head_sha": head,
+        "prefix": prefix,
+        "commits": commits,
+        "ancestry_pairs": pairs,
+    }
+
+
 def collect_local(source, spec, out, week="week-05"):
     validate_week(week)
     source = Path(source).resolve()
@@ -186,6 +246,9 @@ def collect_pr(repo, number, out, spec_ref="main", week="week-05", head_sha=None
             ]
         )
         files["@history.txt"] = document(history)
+        files["@history-index.json"] = document(
+            json.dumps(history_index(git, head, prefix), indent=2).encode()
+        )
     # GitHub exposes the current PR body, not its historical revision. Avoid
     # leaking post-review corrections into an evaluation of an older commit.
     if not head_sha or head_sha == pr["head"]["sha"]:

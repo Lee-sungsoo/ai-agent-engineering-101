@@ -358,8 +358,13 @@ def compare_log_results(snapshot, rows):
         context = {}
         context_lines = []
         for line_no, line in enumerate(doc["text"].splitlines(), 1):
+            line = line.strip()
             plain = re.match(r"^model=\S+ host=\S+ condition=(\w+) repeat=(\d+)$", line)
             numbered = re.match(r"^##### run (\d+) condition (\w+) ", line)
+            key_header = re.match(r"^# run=(\S+) condition=(\w+) ", line)
+            if key_header:
+                context = {"run": key_header[1], "condition": key_header[2]}
+                context_lines = [line_no]
             if plain or numbered:
                 condition, run = (
                     (plain[1], f"{plain[1]}-r{plain[2]}")
@@ -369,7 +374,7 @@ def compare_log_results(snapshot, rows):
                 context = {"condition": condition, "run": run}
                 context_lines = [line_no]
             scenario_header = re.match(
-                r"^=== (?:scenario (\S+)|(?:prompt|server)(?:_inject)? (\S+)) "
+                r"^(?:=== )?(?:scenario (\S+)|(?:prompt|server)(?:_inject)? (\S+)) "
                 r"\(.*\) reserve=(-?\d+) budget=(-?\d+)",
                 line,
             )

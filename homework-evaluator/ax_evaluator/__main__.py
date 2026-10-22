@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from .batch import run_batch
-from .benchmark import run_benchmark
+from .benchmark import acceptance, run_benchmark
 from .comments import publish
 from .grading import weighted_score
 from .itemwise import judge_items, refresh_policies, replay_items, resolve_policies
@@ -306,18 +306,7 @@ def main(argv=None):
                 not args.no_variants,
             )
             print(f"Benchmark report: {args.out / 'report.md'}")
-            return (
-                1
-                if any(
-                    row.get("incomplete_provider")
-                    or any(
-                        "error" in run or run.get("metrics", {}).get("failures")
-                        for run in row["runs"].values()
-                    )
-                    for row in results
-                )
-                else 0
-            )
+            return 0 if acceptance(results, not args.no_variants)["passed"] else 1
         elif args.command == "answer-policy":
             QuestionBox(args.ledger).answer(args.question, args.value, args.reviewer)
             print(

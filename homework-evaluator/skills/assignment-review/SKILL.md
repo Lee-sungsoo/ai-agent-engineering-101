@@ -27,6 +27,14 @@ Do not invent new grading requirements from style preferences or SDK conventions
    obligation and grounded issues; code derives the criterion decision. Do not
    invent obligations. A local correction can coexist with a supported central
    conclusion. Only a material violation of the assigned obligation is contradicted.
+   Explicit event and arithmetic facts are code-derived within their stated scope.
+   Do not turn a successful reject/refuse into a server refusal or a correctly
+   recorded prompt-only violation into a CSV mismatch. Read report explanations
+   before alleging that a preserved retry was hidden.
+   Itemwise verifies negative/unknown observations, issues/questions, security
+   implementation F07/F08 and bonus stages in a separate model call. The proposed
+   answer is not gold. Keep both responses, validate them and account for every
+   actual call. Do not add a new correction just to differ from the proposal.
 4. Run `finalize` to validate the response and calculate draft points. Keep the
    response, model provenance and input hashes. Human corrections use a new output
    directory and `import-review`, with the reviewer's name; preserve prior results.
