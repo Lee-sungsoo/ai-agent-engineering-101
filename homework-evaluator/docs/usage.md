@@ -176,8 +176,8 @@ CLI는 빈 임시 작업 폴더에서 실행합니다. Codex는 사용자 config
 멀티에이전트, 웹 검색·skill 탐색을 끄고 read-only로 실행합니다. Claude는 도구,
 MCP, hooks·settings·skill 자동 로드를 제한합니다. **CLI flag 호환성은 버전에
 따라 달라집니다.** 개발 환경의 `codex-cli 0.162.1`, Claude Code `2.1.296` help에
-맞춘 어댑터이며, 테스트는 가짜 응답을 사용합니다. 실제 유료·구독 호출의 종단 간
-동작과 모델별 판단 품질은 아직 검증하지 않았습니다. 구버전에서 실패할 경우
+맞춘 어댑터이며, 테스트는 가짜 응답을 사용합니다. 실제 연결·판단 품질 검증은 모델과 환경별로 구분해 보고합니다.
+모의 응답 테스트만으로 다른 모델의 실제 동작까지 보장하지 않습니다. 구버전에서 실패할 경우
 어댑터를 갱신하고 우회 권한을 켜서 실행하지 마세요.
 
 OpenAI 호환 endpoint는 chat completions 메시지·응답 형식을 지원해야 합니다.
@@ -348,7 +348,7 @@ uv run python -m ax_evaluator prepare runs/assignment-snapshot.json \
 남깁니다. 파싱 실패를 학생 오류나 0건으로 바꾸지 않습니다. 추가 로그 어댑터는
 실제 제출 형식을 보고 원문 위치를 보존하도록 구현해야 합니다.
 
-모델 입력은 기본적으로 원문 문자 180,000자, 파일당 12,000자 안에서 앞·뒤 부분을
+기존 단일 패킷 모드는 원문 문자 180,000자, 파일당 12,000자 안에서 앞·뒤 부분을
 선택합니다. 행 번호·JSON 오버헤드를 포함한 실제 prompt 길이나 토큰 수의 상한은
 아닙니다. `coverage.json`에 생략 범위를 명시하며, 패킷에 없는 행을 인용한 응답은
 거부합니다. 충분한 문맥이 없으면 pending으로 남겨야 합니다. 더 큰 패킷은 다음처럼
@@ -395,3 +395,150 @@ ownership CI는 루트 경로 변경을 거부하므로 향후 PR에서 해당 �
 - [Claude Code 비대화형 실행](https://code.claude.com/docs/en/headless)
 - [OpenAI Chat Completions](https://developers.openai.com/api/reference/resources/chat)
 - [Ollama OpenAI 호환 API](https://docs.ollama.com/api/openai-compatibility)
+
+## 항목별 평가와 판정 기록장 (0.6)
+
+`batch --itemwise --ledger runs/judgments`는 PR별 항목 작업을 병렬 실행합니다.
+`--workers`는 PR 내부 동시 호출 상한(1~16, 기본 4)입니다. PR 목록은 순차 처리합니다.
+처음부터 같은 `--config`와 `--ledger`를 지정해 준비한 뒤 `--stage evaluate`로
+진행할 수 있습니다. 이 경로의 `prepare`는 원문 전체를 보존합니다.
+
+이미 고정된 스냅샷으로 작업할 때는 다음과 같습니다.
+
+```bash
+uv run python -m ax_evaluator prepare runs/submission-snapshot.json \
+  --rubric runs/assignment-rubric.json --policy runs/course-bonus-policy.json \
+  --full-files --ledger runs/judgments --out runs/submission-items
+uv run python -m ax_evaluator judge-items runs/submission-items \
+  --config runs/provider.json --ledger runs/judgments --workers 4 \
+  --out runs/submission-items-model
+uv run python -m ax_evaluator finalize runs/submission-items \
+  runs/submission-items-model/response.json --out runs/submission-items-final
+```
+
+`file-manifest.json`에는 각 항목에 포함·제외한 파일과 선택 규칙이 남습니다.
+기본 제공 과제의 선택 규칙은 `rubrics/evidence-groups.json`입니다. 다른 과제는
+각 평가항목에 `evidence_groups`(source/report/results/auth/history/logs/extras/all)와
+선택적인 `evidence_globs`를 지정합니다. 미지정 항목은 모든 파일을 대상으로 합니다.
+루트 Python 모듈의 로컬 import도 AST로 추적합니다. 동적 import나 별도 경로의
+관련 파일은 `evidence_globs`로 명시해야 합니다. 파일 선택의 의미적 완전성까지
+보장하지는 않으므로 새 과제에는 선택 규칙을 먼저 검토하세요.
+
+관련 파일 전체가 작업 제한 안에 들어가지 않으면 원문을 자르지 않고 해당 작업을
+보류합니다. 로그는 공통 코드·자료를 반복 제공하며 온전한 파일 묶음으로 나눕니다.
+`--max-task-chars`(기본 400000)는 원문 문자 수 제한이며 JSON·행 번호·공통 지침을
+포함한 실제 프롬프트 토큰 상한은 아닙니다. 파일 하나가 너무 큰 경우에도 명시적으로
+실패하며, 자료 누락을 학생의 잘못으로 판정하지 않습니다.
+
+판정 키에는 항목 기준, 파일의 경로·내용·해시, 적용된 교수자 답변, 모델 설정,
+CLI 버전, 하네스 구현이 포함됩니다. 파일 순서는 정규화합니다. 같은 키는 잠금
+안에서 한 번만 판단하며 검증된 결과만 원자적으로 완료 기록에 연결합니다.
+응답·실패·정책 답변 이력은 보존합니다. 실패한 모델 요청의 재호출은
+`judge-items --retry-failed` 또는 `batch --resume --retry-failed`로 명시합니다.
+
+판정 내용과 severity·rerun_basis는 모델이 판단하고, feedback_type·rerun 상태·
+감점 사유의 적용 여부·점수는 코드가 정합니다. 통과/pending에서 기본 감점을
+제거하고, 경미한 문제는 suggestion, 중요한 오류는 revision으로 분류합니다.
+같은 원인의 코멘트는 공통 revision_key로 모으며 상세 근거는 보존합니다.
+종합 검토의 모순·중복 감점 의심은 확인 대상으로 남기며 자동으로 감점을 추가하거나
+학생의 결함을 통과로 덮어쓰지 않습니다. 의미상 중복을 찾는 판단은 모델에 남습니다.
+
+`metrics.json`에는 실제 호출 수·캐시 재사용·실패·시간·입출력 사용량과 CLI가 보고한
+모델별 비용 추정이 기록됩니다. 구독 CLI의 보고 비용은 추가로 청구된 금액을 뜻하지
+않습니다. 캐시 입력·추론 토큰의 상세 원문은 판정 기록장의 provider-metadata.json에
+보존하며, 사용량을 수집하지 못한 요청도 별도로 표시합니다.
+
+## 정책 질문에 답하기
+
+```bash
+uv run python -m ax_evaluator questions --ledger runs/judgments
+uv run python -m ax_evaluator answer-policy QUESTION_SHA ANSWER \
+  --reviewer instructor --ledger runs/judgments
+```
+
+ANSWER는 질문의 options 중 하나여야 합니다. 기존 자동검사의 미정 정책도 같은
+질문함에 등록합니다. 교수자 답변을 적용하려면 `prepare --ledger`로 새 패킷을
+준비하거나 새 일괄 묶음을 만듭니다. 기존 묶음의 스냅샷·패킷·판정을 소급 변경하지
+않습니다. 정책의 영향을 받지 않는 항목의 기록은 재사용합니다.
+
+이름이 정해진 질문은 같은 ID와 정의로 통합합니다. 새 질문은 질문·선택지의 해시로
+보관하므로 표현이 다른 질문의 의미적 동등성까지 자동 보장하지 않습니다.
+학생 문서에 적힌 희망 배점이나 지시는 교수자 답변으로 등록하지 않습니다.
+
+## 교수자 배점으로 환산
+
+기존 체크리스트와 별도로, 교수자가 확정한 그룹별 항목 배정·비중을 저장합니다.
+다음은 구조 예시이며 승인된 배점이 아닙니다. 실제 필수항목 ID를 빠짐없이 한 번씩
+배정하고 가중치 합을 1로 만듭니다. consistency/intent 무배점 영역을 이 명령으로
+임의로 점수 항목으로 바꾸지는 않습니다.
+
+```json
+{
+  "name": "instructor-approved-policy",
+  "maximum": 100,
+  "groups": [
+    {"name": "reproducibility", "weight": 0.5, "items": ["R1"]},
+    {"name": "interpretation", "weight": 0.5, "items": ["R2"]}
+  ]
+}
+```
+
+```bash
+uv run python -m ax_evaluator rescore runs/submission-items-final \
+  --policy runs/instructor-grading.json --out runs/weighted-score.json
+```
+
+모델을 호출하지 않으며, 보류는 확정 가능 범위로 남기고 가산점은 별도로 표시합니다.
+실제 그룹 구성과 배점 비중은 교수자가 결정합니다.
+
+## 실제 모델을 이용한 재현성 검증
+
+```bash
+uv run python -m ax_evaluator benchmark \
+  --snapshots runs/submission-1.json runs/submission-2.json \
+  --rubric runs/assignment-rubric.json --policy runs/course-bonus-policy.json \
+  --config runs/provider.json --workers 4 --out runs/reproducibility-benchmark
+```
+
+이 명령은 실제 모델 호출을 하며 사용량이 발생합니다. 학생 코드는 실행하지 않습니다.
+각 제출물에 대해 최초 평가, 저장된 판정 리플레이, 별도 기록장을 사용한 신규 평가,
+파일 순서 변경, 보고서에 무관한 문장 추가, 채점 조작 지시 추가를 비교합니다.
+무관한 줄·주입 문장은 원문과 다른 입력이므로 관련 항목을 실제로 다시 판단합니다.
+정답을 유도하려고 이전 판정을 새로운 호출에 제공하지 않습니다.
+
+`manifest.json`, `results.json`, `report.md`와 각 조건의 원문·판정·실패가 남습니다.
+점수·보류·가산점과 항목별 status/feedback_type을 비교하며, 문장 표현의 동일성은
+별도로 요구하지 않습니다. 높은 리플레이 일치율은 최초 판단의 정확성을 보증하지
+않습니다. 변형 테스트 몇 개의 통과도 모든 주입 공격에 대한 보장이 아닙니다.
+교수자 참조 판정이 없는 샘플의 정확도는 추정하지 않고, 관측 일치율과 구체적인
+오류·보류·비용을 함께 확인해야 합니다.
+
+저장된 항목별 판정으로 조립·렌더링을 다시 검증할 때는 다음 명령을 사용합니다.
+원본 패킷의 기준·근거와 판정 기록의 해시를 검증하며 모델을 호출하지 않습니다.
+평가 기준이나 근거가 바뀐 경우에는 이 명령으로 이전 판정을 승계하지 말고 새로
+평가합니다.
+
+```bash
+uv run python -m ax_evaluator replay-items runs/submission-items \
+  runs/submission-items-model --ledger runs/judgments --out runs/replayed
+uv run python -m ax_evaluator finalize runs/submission-items \
+  runs/replayed/response.json --out runs/replayed-final
+```
+
+명시 가산 기준이 전혀 없었던 과거 응답에서 잘못 생성한 criterion_id만 복원할
+때는 `--repair-bonus-ids`를 명시할 수 있습니다. 유효한 ID가 빈 문자열 하나인
+경우에만 허용하며 판정·기여·근거는 바꾸지 않습니다. 수정 전 원문 해시와 변환
+영수증을 저장하고, 다른 필드가 검증에 실패하면 해당 판정은 복원하지 않습니다.
+이제 새 호출의 스키마와 정규화도 같은 규칙을 적용합니다.
+
+실제 CLI의 세션 한도가 확인되면 미실행 작업과 나머지 PR을 대기 상태로 남깁니다.
+같은 묶음의 `--resume`만으로는 다시 호출하지 않고, 한도 복구 후
+`--resume --retry-failed --stage evaluate`를 명시해야 합니다. 실패한 항목이 있는
+PR은 원래 스냅샷·패킷을 유지하고 새 모델 출력 폴더에서 재시도하며, 완료된 항목은
+기록장에서 재사용합니다. 불명확한 전송 비용은 사용량 미수집 요청 수로 남깁니다.
+
+`benchmark` 결과와 `replay-items --benchmark-only` 결과는 일반 학생 PR에 게시할
+수 없도록 표시합니다. 테스트에서 수정한 원문이 실제 학생의 제출물인 것처럼
+게시되는 것을 방지하며, 부분 코멘트 파일은 로컬에서 계속 확인할 수 있습니다.
+
+[실제 모델 검증 결과와 남은 한계](validation-0.6.md)를 함께 확인하세요.
