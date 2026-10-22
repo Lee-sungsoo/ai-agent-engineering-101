@@ -671,6 +671,13 @@ def render(report, bundle):
         "",
     ]
     lines += ["## 성공 판정 검토 (무배점)", ""]
+    if report.get("integration_conflicts"):
+        lines += ["### 종합 검토 확인 요청", ""]
+        for conflict in report["integration_conflicts"]:
+            lines.append(
+                "- " + ", ".join(conflict["items"]) + ": " + conflict["reason"]
+            )
+        lines.append("")
     labels = {
         "final_answer": "실제 최종 답과 근거",
         "judge_logic": "성공 판정 코드",
@@ -822,6 +829,9 @@ def finalize(run_dir, response, out):
     report = score(bundle, response["review"])
     report["bundle_id"] = bundle["id"]
     report["provenance"] = response.get("provenance", {})
+    report["integration_conflicts"] = (
+        report["provenance"].get("metrics", {}).get("integration_conflicts", [])
+    )
     write_new(out / "review.json", response)
     write_new(out / "evaluation.json", report)
     write_new(out / "feedback.md", render(report, bundle))

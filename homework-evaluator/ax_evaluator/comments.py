@@ -21,7 +21,8 @@ def pending_kind(key, finding):
 
 def comment_complete(report):
     return (
-        report["bonus_review_complete"]
+        not report.get("integration_conflicts")
+        and report["bonus_review_complete"]
         and all(
             pending_kind(key, item) in {"", "policy"}
             for key, item in report["items"].items()
@@ -57,11 +58,7 @@ def source_links(finding, metadata):
 
 
 def render_comment(report, bundle, snapshot):
-    if not comment_complete(report):
-        return (
-            "평가 미완료 — 게시할 수 없습니다. "
-            "미검토·증거 보류·성공 판정 검토를 확인하세요.\n"
-        )
+    incomplete = not comment_complete(report)
     metadata = snapshot["metadata"]
     findings = [report["items"][i["id"]] for i in bundle["rubric"]["items"]]
     findings += report["bonuses"]
@@ -88,6 +85,13 @@ def render_comment(report, bundle, snapshot):
         + (" 다음 내용을 수정해 주세요." if revisions else ""),
         "",
     ]
+    if incomplete:
+        lines[:0] = [
+            "평가 미완료 — 게시할 수 없습니다. "
+            "미검토·증거 보류·성공 판정 검토를 확인하세요.",
+            "확인된 피드백만 담은 부분 초안입니다.",
+            "",
+        ]
     lines += [" ".join(f["feedback"] for f in strengths), ""] if strengths else []
     groups = {}
     for index, finding in enumerate(revisions):
@@ -168,6 +172,10 @@ def write_comment(out, report, bundle, snapshot):
         "bundle_id": bundle["id"],
         "body_id": digest(body),
         "complete": comment_complete(report),
+        "benchmark_only": bool(
+            meta.get("benchmark_only")
+            or report.get("provenance", {}).get("benchmark_only")
+        ),
         "repository": meta.get("repository"),
         "pr": meta.get("pr"),
         "head_sha": meta.get("head_sha"),
@@ -210,6 +218,8 @@ def publish(final_dir, write=False):
         )
     if not manifest["complete"]:
         raise ValueError("Incomplete evaluations cannot be published")
+    if write and manifest.get("benchmark_only"):
+        raise ValueError("Benchmark artifacts cannot be published to student PRs")
     repo, number = manifest["repository"], manifest["pr"]
     if not isinstance(repo, str) or not re.fullmatch(r"[\w.-]+/[\w.-]+", repo):
         raise ValueError("Publishing needs a GitHub PR snapshot")

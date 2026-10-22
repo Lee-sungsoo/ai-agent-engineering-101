@@ -76,6 +76,84 @@ class BatchTest(unittest.TestCase):
     def run_batch(self, **kwargs):
         return run_batch(**(self.args | kwargs))
 
+    def test_itemwise_path_keeps_full_files_and_uses_shared_ledger(self):
+        def itemwise(bundle, snapshot, config, out, **options):
+            self.assertTrue(
+                all(
+                    item["state"] in {"full", "unreadable"}
+                    for item in bundle["coverage"].values()
+                )
+            )
+            self.assertEqual(options["workers"], 2)
+            self.assertEqual(options["ledger"], str(self.out.parent / "ledger"))
+            return self.judge(bundle, snapshot, config, out)
+
+        with patch("ax_evaluator.batch.judge_items", side_effect=itemwise) as call:
+            result = self.run_batch(
+                stage="evaluate",
+                config=self.config,
+                itemwise=dict(
+                    ledger=str(self.out.parent / "ledger"),
+                    workers=2,
+                    max_task_chars=400000,
+                ),
+            )
+        self.assertEqual(result["counts"], {"complete": 3})
+        self.assertEqual(call.call_count, 3)
+        self.judge_mock.assert_not_called()
+
+    def test_provider_limit_waits_and_explicit_retry_reuses_frozen_snapshot(self):
+        options = dict(
+            ledger=str(self.out.parent / "ledger"), workers=1, max_task_chars=400000
+        )
+
+        def limited(bundle, snapshot, config, out, **kwargs):
+            review = copy.deepcopy(self.review)
+            review["items"][0].update(
+                status="pending",
+                pending_reason="not-reviewed",
+                feedback_type="confirmation",
+                deduction_reason="",
+            )
+            response = {
+                "bundle_id": bundle["id"],
+                "review": review,
+                "provenance": {
+                    "metrics": {
+                        "provider_unavailable": True,
+                        "failures": [{"task": "F06"}],
+                    }
+                },
+            }
+            write_new(out / "response.json", response)
+            return response
+
+        with patch("ax_evaluator.batch.judge_items", side_effect=limited) as call:
+            first = self.run_batch(
+                stage="evaluate", config=self.config, itemwise=options
+            )
+            self.assertEqual(call.call_count, 1)
+            self.assertEqual(
+                first["counts"], {"needs-review": 1, "awaiting-provider": 2}
+            )
+            self.run_batch(
+                stage="evaluate", config=self.config, itemwise=options, resume=True
+            )
+            self.assertEqual(call.call_count, 1)
+        with patch(
+            "ax_evaluator.batch.judge_items",
+            side_effect=lambda b, s, c, o, **k: self.judge(b, s, c, o),
+        ):
+            final = self.run_batch(
+                stage="evaluate",
+                config=self.config,
+                itemwise=options,
+                resume=True,
+                retry_failed=True,
+            )
+        self.assertEqual(final["counts"], {"complete": 3})
+        self.assertEqual(self.collect_mock.call_count, 3)
+
     def test_prepare_then_manual_finalize_is_offline_and_independent(self):
         result = self.run_batch()
         self.assertEqual(result["counts"], {"prepared": 3})

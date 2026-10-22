@@ -1,11 +1,15 @@
-"""CLI; only judge and batch --stage evaluate explicitly call a model."""
+"""CLI with explicit model evaluation, offline replay and separate publishing."""
 
 import argparse
 import sys
 from pathlib import Path
 
 from .batch import run_batch
+from .benchmark import run_benchmark
 from .comments import publish
+from .grading import weighted_score
+from .itemwise import judge_items, replay_items, resolve_policies
+from .ledger import QuestionBox
 from .policy import apply_policy, interview
 from .providers import judge
 from .review import ROOT, finalize, prepare, validate_review
@@ -40,6 +44,10 @@ def main(argv=None):
     batch.add_argument("--retry-failed", action="store_true")
     batch.add_argument("--max-chars", type=int, default=180_000)
     batch.add_argument("--per-file-chars", type=int, default=12_000)
+    batch.add_argument("--itemwise", action="store_true")
+    batch.add_argument("--ledger", type=Path)
+    batch.add_argument("--workers", type=int, default=4)
+    batch.add_argument("--max-task-chars", type=int, default=400_000)
     local = commands.add_parser(
         "collect-local", help="Snapshot local files without executing them"
     )
@@ -65,6 +73,8 @@ def main(argv=None):
     prep.add_argument("--out", type=Path, required=True)
     prep.add_argument("--max-chars", type=int, default=180_000)
     prep.add_argument("--per-file-chars", type=int, default=12_000)
+    prep.add_argument("--full-files", action="store_true")
+    prep.add_argument("--ledger", type=Path, help="Apply saved instructor answers")
     prep.add_argument(
         "--policy", type=Path, help="Saved interview policy; otherwise interview now"
     )
@@ -75,6 +85,49 @@ def main(argv=None):
     call.add_argument("run", type=Path)
     call.add_argument("--config", type=Path, required=True)
     call.add_argument("--out", type=Path, required=True)
+    units = commands.add_parser("judge-items", help="Parallel full-file item judgments")
+    units.add_argument("run", type=Path)
+    units.add_argument("--config", type=Path, required=True)
+    units.add_argument("--out", type=Path, required=True)
+    units.add_argument("--ledger", type=Path, required=True)
+    units.add_argument("--workers", type=int, default=4)
+    units.add_argument("--max-task-chars", type=int, default=400_000)
+    units.add_argument("--retry-failed", action="store_true")
+    replay = commands.add_parser(
+        "replay-items", help="Reassemble saved judgments offline"
+    )
+    replay.add_argument("packet", type=Path)
+    replay.add_argument("run", type=Path)
+    replay.add_argument("--ledger", type=Path, required=True)
+    replay.add_argument("--out", type=Path, required=True)
+    replay.add_argument("--benchmark-only", action="store_true")
+    replay.add_argument("--repair-bonus-ids", action="store_true")
+    questions = commands.add_parser(
+        "questions", help="List instructor policy questions"
+    )
+    questions.add_argument("--ledger", type=Path, required=True)
+    answer = commands.add_parser("answer-policy", help="Record an instructor answer")
+    answer.add_argument("question")
+    answer.add_argument("value")
+    answer.add_argument("--reviewer", required=True)
+    answer.add_argument("--ledger", type=Path, required=True)
+    rescore = commands.add_parser(
+        "rescore", help="Apply explicit group weights offline"
+    )
+    rescore.add_argument("run", type=Path)
+    rescore.add_argument("--policy", type=Path, required=True)
+    rescore.add_argument("--out", type=Path, required=True)
+    bench = commands.add_parser(
+        "benchmark", help="Run real-model reproducibility tests"
+    )
+    bench.add_argument("--snapshots", type=Path, nargs="+", required=True)
+    bench.add_argument("--rubric", type=Path, required=True)
+    bench.add_argument("--policy", type=Path, required=True)
+    bench.add_argument("--config", type=Path, required=True)
+    bench.add_argument("--out", type=Path, required=True)
+    bench.add_argument("--workers", type=int, default=4)
+    bench.add_argument("--max-task-chars", type=int, default=400_000)
+    bench.add_argument("--no-variants", action="store_true")
     human = commands.add_parser(
         "import-review", help="Validate a manually completed response template"
     )
@@ -107,6 +160,15 @@ def main(argv=None):
             write_new(args.out, interview())
             print(f"Saved bonus policy: {args.out}")
         elif args.command == "batch":
+            itemwise = None
+            if args.itemwise:
+                if not args.ledger:
+                    raise ValueError("itemwise requires --ledger")
+                itemwise = dict(
+                    ledger=str(args.ledger.resolve()),
+                    workers=args.workers,
+                    max_task_chars=args.max_task_chars,
+                )
             summary = run_batch(
                 args.repo,
                 args.prs,
@@ -121,10 +183,12 @@ def main(argv=None):
                 retry_failed=args.retry_failed,
                 max_chars=args.max_chars,
                 per_file=args.per_file_chars,
+                itemwise=itemwise,
             )
             print(canonical(summary["counts"]))
             print(f"Summary: {args.out / 'summary.md'}")
-            return 1 if summary["counts"].get("failed") else 0
+            unavailable = any(i.get("provider_unavailable") for i in summary["items"])
+            return 1 if summary["counts"].get("failed") or unavailable else 0
         elif args.command == "publish":
             print(canonical(publish(args.run, write=args.write)))
         elif args.command == "collect-local":
@@ -145,17 +209,74 @@ def main(argv=None):
         elif args.command == "prepare":
             if args.max_chars <= 0 or args.per_file_chars <= 0:
                 raise ValueError("Evidence limits must be positive")
+            snapshot = read_json(args.snapshot)
+            rubric = apply_policy(
+                read_json(args.rubric),
+                read_json(args.policy) if args.policy else interview(),
+            )
+            if args.ledger:
+                rubric = resolve_policies(rubric, args.ledger)
+            if args.full_files:
+                sizes = [len(f["text"] or "") for f in snapshot["files"].values()]
+                args.max_chars, args.per_file_chars = sum(sizes) + 1, max(sizes) + 1
             bundle = prepare(
-                read_json(args.snapshot),
-                apply_policy(
-                    read_json(args.rubric),
-                    read_json(args.policy) if args.policy else interview(),
-                ),
+                snapshot,
+                rubric,
                 args.out,
                 args.max_chars,
                 args.per_file_chars,
             )
             print(f"prepared {bundle['id']}; no model called")
+        elif args.command == "judge-items":
+            judge_items(
+                read_json(args.run / "bundle.json"),
+                read_json(args.run / "snapshot.json"),
+                read_json(args.config),
+                args.out,
+                args.ledger,
+                args.workers,
+                args.max_task_chars,
+                args.retry_failed,
+            )
+            print(f"validated response: {args.out / 'response.json'}")
+        elif args.command == "questions":
+            print(canonical(QuestionBox(args.ledger).list()))
+        elif args.command == "replay-items":
+            replay_items(
+                args.packet,
+                args.run,
+                args.ledger,
+                args.out,
+                args.benchmark_only,
+                args.repair_bonus_ids,
+            )
+            print(f"Offline response: {args.out / 'response.json'}")
+        elif args.command == "rescore":
+            write_new(
+                args.out,
+                weighted_score(
+                    read_json(args.run / "evaluation.json"), read_json(args.policy)
+                ),
+            )
+            print(f"Saved weighted score: {args.out}")
+        elif args.command == "benchmark":
+            results = run_benchmark(
+                args.snapshots,
+                read_json(args.rubric),
+                read_json(args.policy),
+                read_json(args.config),
+                args.out,
+                args.workers,
+                args.max_task_chars,
+                not args.no_variants,
+            )
+            print(f"Benchmark report: {args.out / 'report.md'}")
+            return 1 if any(row.get("incomplete_provider") for row in results) else 0
+        elif args.command == "answer-policy":
+            QuestionBox(args.ledger).answer(args.question, args.value, args.reviewer)
+            print(
+                "Policy saved. Prepare a new run; unaffected item records are reused."
+            )
         elif args.command == "judge":
             judge(
                 read_json(args.run / "bundle.json"),

@@ -13,6 +13,14 @@ from .review import prompt_for, validate_review
 from .storage import canonical, digest, write_new
 
 
+class ProviderUnavailable(ValueError):
+    """Safe provider failure category without response bodies or credentials."""
+
+    def __init__(self, category):
+        self.category = category
+        super().__init__(category)
+
+
 def parse_json_text(text):
     text = text.strip()
     if text.startswith("```json\n") and text.endswith("```"):
@@ -34,6 +42,7 @@ def validate_config(config):
         "parameters",
         "timeout",
         "structured_output",
+        "effort",
     }
     if set(config) - allowed:
         raise ValueError(
@@ -62,6 +71,10 @@ def validate_config(config):
         raise ValueError("CLI adapters do not accept API parameters")
     if config.get("timeout", 600) <= 0:
         raise ValueError("timeout must be positive")
+    if "effort" in config and (
+        config["kind"] != "claude" or config["effort"] not in {"low", "medium", "high"}
+    ):
+        raise ValueError("effort is supported only for Claude CLI: low/medium/high")
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -217,6 +230,8 @@ def cli_review(config, prompt, schema):
         version = subprocess.run(
             [kind, "--version"], capture_output=True, text=True, timeout=15, check=True
         ).stdout.strip()
+        if "effort" in config:
+            args += ["--effort", config["effort"]]
         result = subprocess.run(
             args,
             input=prompt,
@@ -227,6 +242,13 @@ def cli_review(config, prompt, schema):
             check=False,
         )
         if result.returncode:
+            try:
+                envelope = json.loads(result.stdout)
+            except ValueError:
+                envelope = {}
+            message = str(envelope.get("result", "")).lower()
+            if "session limit" in message or "usage limit" in message:
+                raise ProviderUnavailable("usage-limit")
             raise ValueError(
                 f"{kind} exited with {result.returncode}; no retry was made"
             )
@@ -246,6 +268,9 @@ def cli_review(config, prompt, schema):
             "cli_version": version,
             "transport": "cli",
             "usage": envelope.get("usage"),
+            "response_models": sorted(envelope.get("modelUsage", {})),
+            "model_usage": envelope.get("modelUsage"),
+            "reported_cost_usd": envelope.get("total_cost_usd"),
         }
 
 

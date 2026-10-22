@@ -111,9 +111,9 @@ def check(snapshot, rubric):
         for item in rubric["items"]
     }
     files = snapshot["files"]
-    sources = [
-        path for path in files if path.endswith(".py") and not path.startswith("@")
-    ]
+    sources = sorted(
+        [path for path in files if path.endswith(".py") and not path.startswith("@")]
+    )
     bad_sources = []
     unreadable_sources = []
     for path in sources:
@@ -187,13 +187,15 @@ def check(snapshot, rubric):
             "크래시도 시도 기록으로 포함.",
             evidence(snapshot, "results.csv"),
         )
-    logs = [
-        path
-        for path in files
-        if path.startswith("logs/")
-        and path.count("/") == 1
-        and (text_of(snapshot, path) or "").strip()
-    ]
+    logs = sorted(
+        [
+            path
+            for path in files
+            if path.startswith("logs/")
+            and path.count("/") == 1
+            and (text_of(snapshot, path) or "").strip()
+        ]
+    )
     need = max(6, len({(row["condition"], row["run"]) for row in rows}))
     findings["F05"] = result(
         "pass" if len(logs) >= need else "fail",
@@ -289,13 +291,36 @@ def check(snapshot, rubric):
 def compare_log_results(snapshot, rows):
     """Read only explicit episode records; never equate log silence with zero."""
     records, unparsed = [], []
-    for path, doc in snapshot["files"].items():
+    for path, doc in sorted(snapshot["files"].items()):
         if not path.startswith("logs/") or doc["text"] is None:
             continue
         found = 0
         context = {}
         context_lines = []
         for line_no, line in enumerate(doc["text"].splitlines(), 1):
+            plain = re.match(r"^model=\S+ host=\S+ condition=(\w+) repeat=(\d+)$", line)
+            numbered = re.match(r"^##### run (\d+) condition (\w+) ", line)
+            if plain or numbered:
+                condition, run = (
+                    (plain[1], f"{plain[1]}-r{plain[2]}")
+                    if plain
+                    else (numbered[2], numbered[1])
+                )
+                context = {"condition": condition, "run": run}
+                context_lines = [line_no]
+            scenario_header = re.match(
+                r"^=== (?:scenario (\S+)|(?:prompt|server)(?:_inject)? (\S+)) "
+                r"\(.*\) reserve=(-?\d+) budget=(-?\d+)",
+                line,
+            )
+            if scenario_header and context:
+                context.update(
+                    scenario=scenario_header[1] or scenario_header[2],
+                    deal_possible=int(
+                        int(scenario_header[3]) <= int(scenario_header[4])
+                    ),
+                )
+                context_lines = context_lines[:1] + [line_no]
             # Explicit header + scenario + key=value result adapter. Never infer
             # run identity solely from a filename or from the CSV under test.
             if line.startswith("# "):
@@ -317,12 +342,14 @@ def compare_log_results(snapshot, rows):
             if scenario and context:
                 context["scenario"] = scenario[1]
                 context_lines = context_lines[:1] + [line_no]
-            candidate = line.strip().removeprefix("[result] ").strip()
+            candidate = line.strip()
+            for prefix in ("[result] ", "[episode result] ", "[RESULT] "):
+                candidate = candidate.removeprefix(prefix)
             try:
                 value = json.loads(candidate)
             except ValueError:
                 value = None
-                if line.startswith("[result] ") and "scenario" in context:
+                if line.startswith(("[result] ", "[RESULT] ")):
                     metrics = dict(
                         re.findall(
                             r"([a-z_]+)=([^ ]*)", candidate.split(" note=", 1)[0]
@@ -330,6 +357,32 @@ def compare_log_results(snapshot, rows):
                     )
                     if all(key in metrics for key in HEADER[3:-1]):
                         value = {**context, **metrics}
+                if line.startswith(("=== outcome=", "=== RESULT ")) and context:
+                    metrics = dict(re.findall(r"([a-z_]+)=([^ ]*)", line))
+                    for old, new in (
+                        ("attempted", "attempted_violations"),
+                        ("refused", "refused_calls"),
+                    ):
+                        if old in metrics:
+                            metrics[new] = metrics[old]
+                    if metrics.get("price") in {"None", "null"}:
+                        metrics["price"] = ""
+                    value = {**context, **metrics}
+            if isinstance(value, dict) and value.get("event") in {"setup", "meta"}:
+                condition = value.get("condition")
+                run = value.get("run")
+                if not run and isinstance(value.get("repeat"), int):
+                    run = str(value["repeat"])
+                context = {"condition": condition, "run": run} if run else {}
+                context_lines = [line_no]
+            if isinstance(value, dict) and value.get("event") == "episode_start":
+                context = {k: v for k, v in context.items() if k != "scenario"}
+                context.update({k: value[k] for k in ("run", "scenario") if k in value})
+                if "reserve" in value and "budget" in value:
+                    context["deal_possible"] = int(value["reserve"] <= value["budget"])
+                context_lines = context_lines[:1] + [line_no]
+            if isinstance(value, dict) and value.get("event") == "episode_result":
+                value = {**context, **value}
             if isinstance(value, dict) and value.get("type") == "episode_result":
                 value = value.get("result")
             if isinstance(value, dict) and all(key in value for key in HEADER[:-1]):
@@ -371,7 +424,7 @@ def compare_log_results(snapshot, rows):
         else:
             mismatches.append({"csv_line": row["_line"], "log": candidates[0]})
     return {
-        "adapter": "explicit-episode-json-and-header-kv-v2",
+        "adapter": "explicit-episode-json-meta-and-header-kv-v3",
         "matched_csv_lines": matched,
         "mismatches": mismatches,
         "ambiguous_csv_lines": ambiguous,

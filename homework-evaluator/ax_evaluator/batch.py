@@ -7,6 +7,7 @@ from pathlib import Path
 
 from . import __version__
 from .comments import comment_complete
+from .itemwise import judge_items, resolve_policies
 from .policy import apply_policy
 from .providers import judge, validate_config
 from .review import ROOT, finalize, prepare, validate_review, validate_rubric
@@ -109,9 +110,13 @@ def process_pr(root, progress, pr, stage):
             return
         packet = next_path(root, pr, "packet")
         checkpoint("prepare")
-        bundle = prepare(
-            snapshot, inputs["rubric"], packet, inputs["max_chars"], inputs["per_file"]
-        )
+        rubric = inputs["rubric"]
+        max_chars, per_file = inputs["max_chars"], inputs["per_file"]
+        if inputs.get("itemwise"):
+            rubric = resolve_policies(rubric, inputs["itemwise"]["ledger"])
+            sizes = [len(f["text"] or "") for f in snapshot["files"].values()]
+            max_chars, per_file = sum(sizes) + 1, max(sizes) + 1
+        bundle = prepare(snapshot, rubric, packet, max_chars, per_file)
         item["packet"] = str(packet.relative_to(root))
         save_progress(root, progress)
     if stage == "prepare":
@@ -134,13 +139,24 @@ def process_pr(root, progress, pr, stage):
         checkpoint(
             "judge", response=str((model_out / "response.json").relative_to(root))
         )
-        response = judge(bundle, snapshot, inputs["config"], model_out)
+        if inputs.get("itemwise"):
+            response = judge_items(
+                bundle,
+                snapshot,
+                inputs["config"],
+                model_out,
+                **inputs["itemwise"],
+                retry_failed=progress.get("retry_failed", False),
+            )
+        else:
+            response = judge(bundle, snapshot, inputs["config"], model_out)
     checkpoint("finalize")
     if response.get("bundle_id") != bundle["id"]:
         raise ValueError("Response belongs to another evidence packet")
     validate_review(response["review"], bundle, snapshot)
     final_out = next_path(root, pr, "final")
     report = finalize(packet, response, final_out)
+    metrics = response.get("provenance", {}).get("metrics", {})
     item.update(
         status="complete" if comment_complete(report) else "needs-review",
         final=str(final_out.relative_to(root)),
@@ -150,6 +166,8 @@ def process_pr(root, progress, pr, stage):
         bonus_earned=report["bonus_earned"],
         qualitative_pending=report["qualitative_pending"],
         comment_ready=comment_complete(report),
+        failed_units=bool(metrics.get("failures")),
+        provider_unavailable=bool(metrics.get("provider_unavailable")),
     )
 
 
@@ -215,6 +233,7 @@ def run_batch(
     max_chars=180_000,
     per_file=12_000,
     notify=print,
+    itemwise=None,
 ):
     """No discovery, scheduling, publishing, or implicit model retries."""
     if stage not in {"prepare", "evaluate", "finalize"}:
@@ -226,6 +245,10 @@ def run_batch(
     inputs = batch_inputs(
         repo, prs, week, spec_ref, rubric, policy, config, max_chars, per_file
     )
+    if itemwise is not None:
+        if not 1 <= itemwise["workers"] <= 16 or itemwise["max_task_chars"] <= 0:
+            raise ValueError("Invalid itemwise concurrency or task limit")
+        inputs["itemwise"] = itemwise
     root = Path(out)
     if resume:
         if not (root / "progress.json").is_file():
@@ -253,8 +276,36 @@ def run_batch(
             write_new(root / "batch.json", {"id": progress["id"], "inputs": inputs})
             save_progress(root, progress)
         try:
+            progress["retry_failed"] = retry_failed
+            if (
+                stage == "evaluate"
+                and not retry_failed
+                and any(
+                    i.get("provider_unavailable") for i in progress["items"].values()
+                )
+            ):
+                notify(
+                    "Provider failure recorded; "
+                    "use explicit retry-failed after recovery."
+                )
+                return summarize(root, progress)
             for index, pr in enumerate(prs, 1):
                 item = progress["items"][str(pr)]
+                if (
+                    stage == "evaluate"
+                    and retry_failed
+                    and item["status"] == "needs-review"
+                    and item.get("failed_units")
+                ):
+                    item.setdefault("prior_attempts", []).append(
+                        {
+                            "response": item.get("response"),
+                            "final": item.get("final"),
+                        }
+                    )
+                    item.pop("response", None)
+                    item.pop("final", None)
+                    item["status"] = "prepared"
                 # An interrupted request may have been charged. Require explicit retry.
                 if item["status"] == "running" and item.get("stage") == "judge":
                     response = root / item["response"]
@@ -282,6 +333,13 @@ def run_batch(
                     )
                 save_progress(root, progress)
                 notify(f"[{index}/{len(prs)}] PR #{pr}: {item['status']}")
+                if stage == "evaluate" and item.get("provider_unavailable"):
+                    for waiting in prs[index:]:
+                        target = progress["items"][str(waiting)]
+                        if target["status"] not in {"complete", "needs-review"}:
+                            target["status"] = "awaiting-provider"
+                    notify("Provider unavailable; remaining PRs await explicit retry.")
+                    break
         finally:
             save_progress(root, progress)
             summary = summarize(root, progress)
