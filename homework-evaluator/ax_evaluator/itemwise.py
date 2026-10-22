@@ -121,6 +121,11 @@ test exercises recovery. For eligibility, mandatory market/host/runner implement
 required auth checks and required report sections alone never earn a bonus. Concrete
 retained negative experiments can validate a meaningful extra attempt, but a counter
 that never fired and has no exercise/test does not demonstrate that feature works.
+Discovery proposals may contain overlapping hypotheses. The final catalog must have
+one candidate per UNIQUE supplied anchor. Preserve independent study questions using
+the most specific component directory (e.g. experiment subdirectories), or symbols/
+blocks when multiple additions share one source file. Do not reuse a broad parent
+anchor for several independent studies, and do not merge them merely to satisfy IDs.
 """
 
 
@@ -819,7 +824,8 @@ def judge_items(
                 "actual implementation "
                 "and validation artifacts, never a demand for points. Zero "
                 "candidates is valid. Select a supplied stable implementation anchor "
-                "and cite it: use the component directory for a multi-file extra "
+                "and cite it: use the MOST SPECIFIC component directory for a "
+                "multi-file extra "
                 "experiment or lab, the owning symbol for a feature in main code, "
                 "or a specific block when independent additions share one function. "
                 "Keep identity separate from changing report citations. "
@@ -854,7 +860,25 @@ def judge_items(
             "trace_facts": {p: traces[p] for p in paths if p in traces},
             "arithmetic_facts": arithmetic if "results.csv" in paths else {},
             "report_table_facts": tables if "REPORT.md" in paths else {},
+            "code_owned_criteria": {
+                i["id"]: i["rule"]
+                for i in bundle["rubric"]["items"]
+                if i["mode"] == "auto"
+            },
         }
+        if bundle["rubric"]["checker"] == "week05":
+            context["scoring_boundary"] = (
+                "C01 owns numeric invariants and C02 owns correct-flag interpretation, "
+                "including the open/no_deal policy question. Do NOT regrade "
+                "that policy "
+                "under C03/C04 or invent a second deduction. C03 compares recorded "
+                "values/attempts between logs and CSV; C04 compares report claims with "
+                "records. Their equality does not depend on resolving C02. A report "
+                "and CSV both reporting 6/12 is not a report-record mismatch merely "
+                "because you prefer another open/no_deal rule. If needed, use the "
+                "known question below; it affects C02 only."
+            )
+            context["known_question"] = OPEN_QUESTION
         fixed = {}
         if (
             criterion
@@ -951,7 +975,17 @@ def judge_items(
                 stages.append(metadata)
                 # An invalid first draft is not silently repaired by another call.
                 observed = parse_json_text(text)
-                validate(observed)
+                if (
+                    phase == "observe"
+                    and stage == "discovery"
+                    and observed.get("candidates")
+                ):
+                    # Nominations are unscored hypotheses. Validate each artifact
+                    # before selection; the final verifier must resolve overlaps.
+                    for nominee in observed["candidates"]:
+                        validate({**observed, "candidates": [nominee]})
+                else:
+                    validate(observed)
                 if phase == "observe" and criterion:
                     finding = observed["finding"]
                     observations = finding["observations"]

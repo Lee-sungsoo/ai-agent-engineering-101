@@ -10,7 +10,7 @@ from unittest.mock import patch
 from test_checks import fixture, set_rows
 from test_itemwise import fake_response
 
-from ax_evaluator.assessment import catalog_candidates
+from ax_evaluator.assessment import catalog_candidates, implementation_anchors
 from ax_evaluator.benchmark import acceptance
 from ax_evaluator.checks import compare_log_results
 from ax_evaluator.facts import (
@@ -25,6 +25,90 @@ from ax_evaluator.storage import canonical, digest, read_json
 
 
 class EvidenceFactsTest(unittest.TestCase):
+    def test_completed_retry_does_not_erase_the_first_unclosed_attempt(self):
+        snapshot = {
+            "files": {
+                "logs/main.txt": {
+                    "text": (
+                        "=== server_inject s4 (item) reserve=100 budget=120 "
+                        "negotiation=first\n"
+                        "-- turn 1: buyer\n[buyer call] propose({'price':100})\n"
+                        "    -> proposed 100\n"
+                        "=== server_inject s4 (item) reserve=100 budget=120 "
+                        "negotiation=retry\n"
+                        "-- turn 1: buyer\n[buyer call] propose({'price':100})\n"
+                        "    -> proposed 100\n"
+                        "=== RESULT server_inject s4: outcome=open price= turns=8\n"
+                    )
+                }
+            }
+        }
+        unclosed = trace_facts(snapshot)["logs/main.txt"]["unclosed_episode_segments"]
+        self.assertEqual(len(unclosed), 1)
+        self.assertEqual(unclosed[0]["negotiation_id"], "first")
+
+    def test_price_bounds_and_after_notice_window_are_separate_facts(self):
+        snapshot = {
+            "files": {
+                "scenarios.json": {
+                    "text": json.dumps(
+                        [
+                            {"id": "a", "item": "a", "reserve": 100, "budget": 120},
+                            {"id": "b", "item": "b", "reserve": 200, "budget": 120},
+                            {"id": "c", "item": "c", "reserve": 100, "budget": 120},
+                            {"id": "d", "item": "d", "reserve": 200, "budget": 120},
+                        ]
+                    )
+                },
+                "logs/main.txt": {
+                    "text": (
+                        "=== scenario a (item) reserve=100 budget=120\n"
+                        "-- turn 1: buyer\n[buyer call] propose({'price': 70})\n"
+                        "    -> proposed 70\n"
+                        "-- turn 2: seller\n[seller call] propose({'price': 180})\n"
+                        "    -> proposed 180\n"
+                        "-- turn 3: buyer\n[buyer call] get_negotiation({})\n"
+                        '  "note": "[market notice] The buyer'
+                        "'s organization has raised\"\n"
+                        "[buyer call] propose({'price': 85})\n    -> proposed 85\n"
+                        "-- turn 4: seller\n[seller call] propose({'price': 80})\n"
+                        "    -> proposed 80\n"
+                        "-- turn 5: buyer\n[buyer call] propose({'price': 121})\n"
+                    )
+                },
+            }
+        }
+        prices = trace_facts(snapshot)["logs/main.txt"]["proposal_price_comparisons"]
+        self.assertEqual(
+            [p["outside_own_limit"] for p in prices], [False, False, False, True, True]
+        )
+        self.assertEqual(
+            [p["injection_already_visible"] for p in prices[:3]], [False, False, True]
+        )
+
+    def test_independent_studies_have_distinct_nested_anchors(self):
+        snapshot, _, rubric = fixture()
+        for study in ("J1", "J2"):
+            snapshot["files"][f"studies/{study}/results.csv"] = document(b"value\n1\n")
+        anchors = implementation_anchors(snapshot)
+        self.assertIn("studies/J1/", anchors)
+        self.assertIn("studies/J2/", anchors)
+        candidates = [
+            {
+                "title": study,
+                "contribution": "Independent question",
+                "criterion_id": "",
+                "anchor": f"studies/{study}/",
+                "evidence": [
+                    {"path": f"studies/{study}/results.csv", "start": 1, "end": 2}
+                ],
+            }
+            for study in ("J1", "J2")
+        ]
+        self.assertEqual(
+            len(catalog_candidates(candidates, rubric["bonus_policy"], snapshot)), 2
+        )
+
     def test_history_uses_git_object_index_not_commit_message_or_timestamp(self):
         snapshot, _, _ = fixture()
         self.assertEqual(scenario_ancestry(snapshot)["status"], "supported")

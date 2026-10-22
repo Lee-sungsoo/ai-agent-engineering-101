@@ -24,8 +24,12 @@ def implementation_anchors(snapshot):
         ):
             continue
         if "/" in path:
-            directory = path.split("/")[0] + "/"
-            anchors[directory] = {"path": directory, "kind": "component"}
+            parts = path.split("/")[:-1]
+            for end in range(1, len(parts) + 1):
+                if "logs" in parts[:end]:
+                    break
+                directory = "/".join(parts[:end]) + "/"
+                anchors[directory] = {"path": directory, "kind": "component"}
         if not path.endswith(".py"):
             anchors[path] = {
                 "path": path,

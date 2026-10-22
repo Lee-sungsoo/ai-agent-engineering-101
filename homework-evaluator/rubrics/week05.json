@@ -1,5 +1,5 @@
 {
-  "version": "week05-required-5",
+  "version": "week05-required-6",
   "week": "week-05",
   "status": "unofficial-review-draft",
   "base_point_per_item": 1,
@@ -112,7 +112,20 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Inspect the supplied transport, tool registration and runner paths. Security/limit defects belong to F08; do not invent a separate deduction here for them. Token role and negotiation claims may be resolved through a server-side token registry; a particular JWT layout is not required."
+        "procedure": "Inspect the supplied transport, tool registration and runner paths. Security/limit defects belong to F08; do not invent a separate deduction here for them. Token role and negotiation claims may be resolved through a server-side token registry; a particular JWT layout is not required. Protocol fact: the pinned MCP 2026-07-28 removed initialize/notifications-initialized and protocol sessions. A client pinned to that version need not run a discovery/legacy handshake before tools/list or tools/call. Do not fail a modern implementation for missing initialize. Evaluate the specified version, not older SDK conventions.",
+        "reference_facts": {
+          "protocol": "MCP 2026-07-28",
+          "checked_at": "2026-10-22",
+          "sources": [
+            "https://py.sdk.modelcontextprotocol.io/protocol-versions/",
+            "https://go.sdk.modelcontextprotocol.io/protocol/"
+          ],
+          "facts": [
+            "The initialize handshake is removed for 2026-07-28.",
+            "A client pinned to 2026-07-28 may skip version negotiation.",
+            "Older initialize-based conventions must not be added as assignment requirements."
+          ]
+        }
       }
     },
     {
@@ -124,7 +137,7 @@
       "source_section": "The market server",
       "pass_rule": "Code and available logs support negotiation binding, turn enforcement, and both propose/accept own-limit checks in server conditions. Do not claim runtime verification.",
       "fail_rule": "The core requirement above is materially unmet, with specific supporting evidence. Minor wording/style issues are not failures. State how the defect affects the required outcome.",
-      "source_requirement": "The market server / Conditions: negotiation binding, turn enforcement, own-limit enforcement on propose and accept.",
+      "source_requirement": "The market server / Conditions: negotiation binding, turn enforcement, own-limit enforcement on propose and accept. accept_proposal tool: agree to the other party's last price.",
       "assessment": {
         "obligations": [
           {
@@ -134,10 +147,14 @@
           {
             "id": "limits",
             "rule": "In server conditions, both propose and accept enforce the caller own limit; prompt conditions do not silently inherit token-limit enforcement."
+          },
+          {
+            "id": "counterparty",
+            "rule": "accept_proposal agrees to the OTHER party's last price, as specified by the tool contract. Trace actual offer ownership, including reject-then-accept paths; accepting one's own earlier offer must not bypass the counterparty price/limit protocol."
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Trace the complete propose/accept call chain including helpers and the stored counterparty offer. accept_proposal need not take a price argument: it normally validates the stored offer price. Do not infer a missing guard from the public signature. Cite a concrete reachable violating path before contradicting limits."
+        "procedure": "Trace the complete propose/accept call chain including helpers and the stored counterparty offer. accept_proposal need not take a price argument: it normally validates the stored offer price. Do not infer a missing guard from the public signature. Cite a concrete reachable violating path before contradicting limits. A token may authorize role/negotiation and resolve the caller limit through server-held state. That is not automatically missing enforcement; trace the resolved constraint, not whether a numeric limit is literally inside a token payload. A corrected optional experimental server does not repair the submitted main server. Diagnose real main-path bugs even when the report openly acknowledges them; preserve that transparency as process evidence."
       }
     },
     {
@@ -209,7 +226,7 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Compare the SAME run/condition/scenario and SAME field. An over-budget deal with correct=0 and violation=1 can be accurately recorded in both CSV and log. That is an experimental finding in prompt conditions, not a log mismatch. Summary equality does not prove event-derived counters; use the separate explicit event facts and raw records. Unselected logs in another part do not constitute missing records. A consolidated tool_result record can document both the call and its response when it identifies role, tool and negotiation. In particular, get_negotiation has only negotiation_id, so its identified response need not have a separate tool_call event label. No particular logging event vocabulary is required. Missing mutation arguments or unidentifiable calls still require review."
+        "procedure": "Compare the SAME run/condition/scenario and SAME field. An over-budget deal with correct=0 and violation=1 can be accurately recorded in both CSV and log. That is an experimental finding in prompt conditions, not a log mismatch. Summary equality does not prove event-derived counters; use the separate explicit event facts and raw records. Unselected logs in another part do not constitute missing records. A consolidated tool_result record can document both the call and its response when it identifies role, tool and negotiation. In particular, get_negotiation has only negotiation_id, so its identified response need not have a separate tool_call event label. No particular logging event vocabulary is required. Missing mutation arguments or unidentifiable calls still require review. Read the temporal scope of report claims. An opening price before the injection does not contradict a price described after the notice. Do not compare different event windows. Genuine missing episode results or call arguments remain defects. Compare complete attempts, including observed interrupted segments. If a new negotiation replaces an unfinished attempt, a successful retry row does not substitute for the required blank/error row for the abandoned attempt. A continuation in the same negotiation can be legitimate; inspect its later completion. Correct-flag policy belongs ONLY to C02: log/CSV agreement is not a failure because you prefer no_deal over open."
       }
     },
     {
@@ -229,7 +246,7 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Use computed aggregates and exact same-quantity comparisons for factual corrections. First state the report claim and actual different evidence. Do not issue feedback whose claimed error is identical to its supposed correction. Keep local arithmetic issues here rather than F09 or I06. A limited sample with no blocking attempts can still support a limited central conclusion."
+        "procedure": "Use computed aggregates and exact same-quantity comparisons for factual corrections. First state the report claim and actual different evidence. Do not issue feedback whose claimed error is identical to its supposed correction. Keep local arithmetic issues here rather than F09 or I06. A limited sample with no blocking attempts can still support a limited central conclusion. Check paragraph-level conditions and temporal scope before alleging a mismatch: after-injection is not all actions in the episode, most episodes is not every episode, and token-mediated authority is not numeric storage in a token. Seller reserve is a MINIMUM; higher seller asks are valid. C02 alone owns the open/no_deal correctness policy. Do not declare report/CSV aggregates inconsistent when they agree, based on your own alternative scoring convention."
       }
     },
     {
@@ -279,7 +296,7 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Use commit ancestry and changed paths, not commit-message claims or timestamps as proof of when an experiment ran. Scenario-before-result ancestry supports this bounded obligation; insufficient ancestry is unknown, not misconduct. A preserved failed attempt is positive process evidence.",
+        "procedure": "Use commit ancestry and changed paths, not commit-message claims or timestamps as proof of when an experiment ran. Scenario-before-result ancestry supports this bounded obligation; insufficient ancestry is unknown, not misconduct. A preserved failed attempt is positive process evidence. C03 owns missing attempt-result rows. Do not double-deduct that same defect here. A clearly disclosed retry with retained raw traces is not evidence of silent failure replacement.",
         "deterministic": {
           "history": "scenario-ancestry-v1"
         }
@@ -306,7 +323,8 @@
             "rule": "Submitted results notes identify host and model as required."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": " Distinguish storage from authorization. A bearer token mapped to role/negotiation can be the only authority channel for resolving a caller limit even when the numeric reserve/budget lives in server state. This is not a contradiction unless the report specifically claims a numeric token payload that the implementation lacks. A particular JWT layout is not required. A declared virtual environment is legitimate setup; do not impose one specific activation/launcher spelling. Missing file paths or incompatible settings remain actionable defects."
       }
     },
     {
@@ -325,7 +343,8 @@
             "rule": "The central interpretation addresses prompt versus server enforcement using observed outcomes. No attempts is a valid negative finding; it does not establish an observed blocking effect. Do not grade experiment success rate."
           }
         ],
-        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record."
+        "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
+        "procedure": " Differentiate attempted violations, violating deals and episodes with no deal. Saying that only one attempt became a violating deal because other episodes did not close is compatible with one observed violating deal; do not reinterpret it as zero deals."
       }
     },
     {
@@ -366,7 +385,7 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Count actual server-refused calls followed by a valid move in the same protocol turn. A successful reject_proposal or refuse by the agent is NOT a refused server call and cannot start a recovery. Zero eligible refusal events and explicitly reported 0/0 is a valid supported answer. Explicit event facts are bounded markers, not proof of exhaustive coverage."
+        "procedure": "Count actual server-refused calls followed by a valid move in the same protocol turn. A successful reject_proposal or refuse by the agent is NOT a refused server call and cannot start a recovery. Zero eligible refusal events and explicitly reported 0/0 is a valid supported answer. Explicit event facts are bounded markers, not proof of exhaustive coverage. A valid recovery move may be reject_proposal/refuse as well as a price proposal or acceptance. The assignment asks for a valid move, not necessarily a new price. Successful agent rejection is still distinct from a server-refused call."
       }
     },
     {
@@ -387,7 +406,7 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Inspect whether named log evidence supports the interpretation. A supported cited explanation is not itself a revision request. Do not demand new attacks just because the model stayed within its limit. Distinguish main runs from retained probes and auth checks."
+        "procedure": "Inspect whether named log evidence supports the interpretation. A supported cited explanation is not itself a revision request. Do not demand new attacks just because the model stayed within its limit. Distinguish main runs from retained probes and auth checks. A statement that the agent moved validly after refusal can include a successful reject_proposal; do not demand a new price unless the report explicitly claims a price proposal. Compare actions after the cited notice, not an earlier opening action."
       }
     },
     {
@@ -407,7 +426,7 @@
           }
         ],
         "boundary": "Contradicted means an observed material violation of this obligation, not uncertainty, optional improvement or failure to prove universal behavior. Unknown means missing/ambiguous required evidence. Report local factual corrections separately as issues. Cite evidence for supported and contradicted. Do not request CI output or a new runtime experiment unless the pinned assignment requires that record.",
-        "procedure": "Evaluate scope/limitations of the main conclusion. Do not independently invent or recount local numerical claims here; grounded local arithmetic corrections belong to C04. Retained negative pilots and explicit main-vs-auxiliary separation are valid limitations."
+        "procedure": "Evaluate scope/limitations of the main conclusion. Do not independently invent or recount local numerical claims here; grounded local arithmetic corrections belong to C04. Retained negative pilots and explicit main-vs-auxiliary separation are valid limitations. Evaluate the complete paragraph and its explicit limitations, not isolated qualitative wording. Do not convert most into all or an observation of attempted violations into a claim about final violating deals. A seller asking above its reserve obeys its MINIMUM constraint. Do not demand a hedge in every sentence when the sample/causal limits are explicitly stated."
       }
     }
   ],
