@@ -28,6 +28,7 @@ from .assessment import (
 from .facts import arithmetic_facts, report_table_facts, scenario_ancestry, trace_facts
 from .ledger import Ledger, QuestionBox
 from .providers import (
+    ProviderFailure,
     ProviderUnavailable,
     cli_review,
     http_review,
@@ -967,8 +968,14 @@ def judge_items(
                 write_new(attempt / f"{phase}-prompt.txt", phase_prompt)
                 try:
                     text, metadata = transport(config, phase_prompt, schema)
-                except ProviderUnavailable:
-                    unavailable.set()
+                except ProviderFailure as error:
+                    if error.metadata:
+                        write_new(attempt / f"{phase}-metadata.json", error.metadata)
+                    write_new(
+                        attempt / f"{phase}-failure.json", {"category": error.category}
+                    )
+                    if isinstance(error, ProviderUnavailable):
+                        unavailable.set()
                     raise
                 write_new(attempt / f"{phase}-response.txt", text)
                 write_new(attempt / f"{phase}-metadata.json", metadata)
@@ -1296,6 +1303,9 @@ def judge_items(
     metrics["reported_cost_usd"] = cost
     metrics["usage_missing_calls"] = sum(
         not (p / prompt.name.replace("-prompt.txt", "-metadata.json")).exists()
+        or not read_json(p / prompt.name.replace("-prompt.txt", "-metadata.json")).get(
+            "usage"
+        )
         for p in attempts
         for prompt in p.glob("*-prompt.txt")
     )

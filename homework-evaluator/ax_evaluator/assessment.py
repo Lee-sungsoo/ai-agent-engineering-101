@@ -358,14 +358,21 @@ def catalog_candidates(raw, policy, snapshot):
         anchor = entry.get("anchor")
         if anchor is not None:
             definition = anchors.get(anchor)
-            if not definition or not any(
+            cited = definition and any(
                 r["path"].startswith(definition["path"])
                 if definition["kind"] == "component"
                 else r["path"] == definition["path"]
                 and r["start"] <= definition["end"]
                 and definition["start"] <= r["end"]
                 for r in refs
-            ):
+            )
+            requested = definition and any(
+                p.startswith(definition["path"])
+                if definition["kind"] == "component"
+                else p == definition["path"]
+                for p in entry.get("supporting_files", [])
+            )
+            if not definition or not (cited or requested):
                 raise ValueError("Bonus anchor needs cited implementation evidence")
         key = (
             "explicit-" + named

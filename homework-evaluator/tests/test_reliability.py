@@ -142,6 +142,24 @@ class EvidenceFactsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "anchor"):
             catalog_candidates([candidate], rubric["bonus_policy"], snapshot)
 
+    def test_summary_can_nominate_an_existing_validation_component(self):
+        snapshot, _, rubric = fixture()
+        snapshot["files"]["studies/J1/results.csv"] = document(b"value\n1\n")
+        candidate = {
+            "title": "Study",
+            "contribution": "A study described by the summary",
+            "criterion_id": "",
+            "anchor": "studies/J1/",
+            "evidence": [{"path": "REPORT.md", "start": 1, "end": 2}],
+            "supporting_files": ["studies/J1/results.csv"],
+        }
+        self.assertTrue(
+            catalog_candidates([candidate], rubric["bonus_policy"], snapshot)
+        )
+        candidate["supporting_files"] = ["missing/results.csv"]
+        with self.assertRaises(ValueError):
+            catalog_candidates([candidate], rubric["bonus_policy"], snapshot)
+
     def test_analysis_in_report_can_anchor_an_extra_without_new_python(self):
         snapshot, _, rubric = fixture()
         candidate = {

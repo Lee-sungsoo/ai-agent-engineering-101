@@ -13,12 +13,61 @@ from .review import prompt_for, validate_review
 from .storage import canonical, digest, write_new
 
 
-class ProviderUnavailable(ValueError):
+class ProviderFailure(ValueError):
+    """A safe transport category and metadata, never a provider error body."""
+
+    def __init__(self, category, metadata=None):
+        self.category = category
+        self.metadata = metadata or {}
+        super().__init__(category)
+
+
+class ProviderUnavailable(ProviderFailure):
     """Safe provider failure category without response bodies or credentials."""
 
-    def __init__(self, category):
-        self.category = category
-        super().__init__(category)
+
+CODEX_ISOLATION = (
+    "unified_exec",
+    "apps",
+    "plugins",
+    "remote_plugin",
+    "memories",
+    "hooks",
+    "browser_use",
+    "computer_use",
+    "image_generation",
+    "view_image",
+    "goals",
+    "sleep_tool",
+)
+
+
+def codex_failure(events, metadata):
+    errors = [e for e in events if e.get("type") in {"error", "turn.failed"}]
+    messages = " ".join(
+        str(e.get("error", e.get("message", ""))) for e in errors
+    ).lower()
+    for terms, category, unavailable in (
+        (("usage limit", "session limit", "usagelimitexceeded"), "usage-limit", True),
+        (("rate limit", "too many requests"), "rate-limit", True),
+        (("unauthorized", "authentication"), "authentication", True),
+        (
+            ("contextwindowexceeded", "context length", "context window"),
+            "context-limit",
+            False,
+        ),
+        (
+            ("invalid schema", "json_schema", "response_format"),
+            "schema-rejected",
+            False,
+        ),
+        (("connection", "stream disconnected", "overloaded"), "connection", False),
+    ):
+        if any(term in messages for term in terms):
+            return (ProviderUnavailable if unavailable else ProviderFailure)(
+                category, metadata
+            )
+    return ProviderFailure("cli-error", metadata)
 
 
 def parse_json_text(text):
@@ -193,6 +242,8 @@ def cli_review(config, prompt, schema):
                 'web_search="disabled"',
                 "-c",
                 'approval_policy="never"',
+                "-c",
+                "project_doc_max_bytes=0",
                 "--model",
                 config["model"],
                 "--output-schema",
@@ -201,6 +252,8 @@ def cli_review(config, prompt, schema):
                 str(output),
                 "-",
             ]
+            for feature in CODEX_ISOLATION:
+                args.extend(["--disable", feature])
         else:
             args = [
                 "claude",
@@ -215,7 +268,7 @@ def cli_review(config, prompt, schema):
                 "--setting-sources",
                 "",
                 "--settings",
-                '{"disableAllHooks":true}',
+                '{"disableAllHooks":true,"claudeMdExcludes":["**"],"autoMemoryEnabled":false}',
                 "--strict-mcp-config",
                 "--mcp-config",
                 '{"mcpServers":{}}',
@@ -247,6 +300,77 @@ def cli_review(config, prompt, schema):
             timeout=config.get("timeout", 600),
             check=False,
         )
+        if kind == "codex":
+            try:
+                events = [
+                    json.loads(line)
+                    for line in result.stdout.splitlines()
+                    if line.strip()
+                ]
+                if any(not isinstance(e, dict) for e in events):
+                    raise ValueError("Non-object CLI event")
+            except ValueError:
+                raise ProviderFailure("invalid-cli-events") from None
+            totals = {}
+            for event in events:
+                if event.get("type") == "turn.completed":
+                    for key, value in event.get("usage", {}).items():
+                        if isinstance(value, (int, float)):
+                            totals[key] = totals.get(key, 0) + value
+            metadata = {
+                "cli_version": version,
+                "transport": "cli",
+                "usage": totals or None,
+                "requested_model": config["model"],
+                "response_models": sorted(
+                    {e["model"] for e in events if isinstance(e.get("model"), str)}
+                ),
+                "event_types": sorted({e["type"] for e in events if "type" in e}),
+                "item_types": sorted(
+                    {
+                        e["item"]["type"]
+                        for e in events
+                        if isinstance(e.get("item"), dict) and "type" in e["item"]
+                    }
+                ),
+                "returncode": result.returncode,
+                "project_doc_max_bytes": 0,
+                "disabled_features": sorted(
+                    {
+                        "shell_tool",
+                        "code_mode",
+                        "code_mode_host",
+                        "multi_agent",
+                        "skill_search",
+                        *CODEX_ISOLATION,
+                    }
+                ),
+            }
+            if set(metadata["item_types"]) - {"agent_message", "reasoning", "error"}:
+                raise ProviderFailure("prohibited-tool-action", metadata)
+            if result.returncode or any(e.get("type") == "turn.failed" for e in events):
+                raise codex_failure(events, metadata)
+            notices = [
+                e["item"]
+                for e in events
+                if isinstance(e.get("item"), dict) and e["item"].get("type") == "error"
+            ]
+            if any(
+                not str(i.get("message", "")).startswith(
+                    (
+                        "Under-development features enabled:",
+                        "Code Mode is unavailable because code-mode host is disabled.",
+                    )
+                )
+                for i in notices
+            ):
+                raise ProviderFailure("cli-notice-error", metadata)
+            metadata["nonfatal_notice_count"] = len(notices)
+            if not output.is_file() or not any(
+                e.get("type") == "turn.completed" for e in events
+            ):
+                raise ProviderFailure("missing-completed-response", metadata)
+            return output.read_text(), metadata
         if result.returncode:
             try:
                 envelope = json.loads(result.stdout)
@@ -258,40 +382,6 @@ def cli_review(config, prompt, schema):
             raise ValueError(
                 f"{kind} exited with {result.returncode}; no retry was made"
             )
-        if kind == "codex":
-            if not output.is_file():
-                raise ValueError("Codex did not produce a final response file")
-            events = [
-                json.loads(line) for line in result.stdout.splitlines() if line.strip()
-            ]
-            totals = {}
-            for event in events:
-                if event.get("type") == "turn.completed":
-                    for key, value in event.get("usage", {}).items():
-                        if isinstance(value, (int, float)):
-                            totals[key] = totals.get(key, 0) + value
-                if event.get("item", {}).get("type") in {
-                    "command_execution",
-                    "mcp_tool_call",
-                    "web_search",
-                    "file_change",
-                    "dynamic_tool_call",
-                }:
-                    raise ValueError("Reviewer attempted a prohibited tool action")
-            return output.read_text(), {
-                "cli_version": version,
-                "transport": "cli",
-                "usage": totals or None,
-                "requested_model": config["model"],
-                "response_models": sorted(
-                    {
-                        event["model"]
-                        for event in events
-                        if isinstance(event.get("model"), str)
-                    }
-                ),
-                "event_types": sorted({e["type"] for e in events if "type" in e}),
-            }
         envelope = json.loads(result.stdout)
         if envelope.get("is_error"):
             raise ValueError("Claude returned an error result; no retry was made")

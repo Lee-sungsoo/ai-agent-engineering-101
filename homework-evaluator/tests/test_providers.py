@@ -11,6 +11,9 @@ from unittest.mock import Mock, patch
 from test_review import review_fixture
 
 from ax_evaluator.providers import (
+    CODEX_ISOLATION,
+    ProviderFailure,
+    ProviderUnavailable,
     cli_review,
     http_review,
     judge,
@@ -83,7 +86,9 @@ class ProviderTest(unittest.TestCase):
                 Path(args[args.index("--output-last-message") + 1]).write_text(
                     canonical(review)
                 )
-                return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+                return subprocess.CompletedProcess(
+                    args, 0, stdout='{"type":"turn.completed"}', stderr=""
+                )
             return subprocess.CompletedProcess(
                 args, 0, stdout=json.dumps({"structured_output": review}), stderr=""
             )
@@ -99,10 +104,114 @@ class ProviderTest(unittest.TestCase):
                 self.assertEqual(meta["cli_version"], "fixture-cli")
         codex_args = calls[1][0]
         self.assertIn("--ignore-user-config", codex_args)
+        self.assertIn("project_doc_max_bytes=0", codex_args)
         self.assertNotIn("--dangerously-bypass-approvals-and-sandbox", codex_args)
+        for feature in CODEX_ISOLATION:
+            self.assertIn(feature, codex_args)
         claude_args = calls[3][0]
         self.assertEqual(claude_args[claude_args.index("--tools") + 1], "")
         self.assertIn("--strict-mcp-config", claude_args)
+        settings = json.loads(claude_args[claude_args.index("--settings") + 1])
+        self.assertEqual(settings["claudeMdExcludes"], ["**"])
+        self.assertFalse(settings["autoMemoryEnabled"])
+
+    def test_codex_jsonl_failure_is_classified_without_echoing_error_body(self):
+        secret = "private-text-that-must-not-appear-in-errors"
+
+        def run(args, **kwargs):
+            if "--version" in args:
+                return subprocess.CompletedProcess(args, 0, "fixture", "")
+            return subprocess.CompletedProcess(
+                args,
+                1,
+                json.dumps(
+                    {
+                        "type": "turn.failed",
+                        "error": {
+                            "message": "Usage limit exceeded " + secret,
+                            "codexErrorInfo": "UsageLimitExceeded",
+                        },
+                    }
+                ),
+                "",
+            )
+
+        with patch("subprocess.run", side_effect=run):
+            with self.assertRaises(ProviderUnavailable) as caught:
+                cli_review({"kind": "codex", "model": "fixture"}, "evidence", {})
+        self.assertEqual(caught.exception.category, "usage-limit")
+        self.assertNotIn(secret, str(caught.exception))
+        self.assertNotIn(secret, json.dumps(caught.exception.metadata))
+
+    def test_failed_turn_cannot_pass_even_with_a_final_file_and_zero_exit(self):
+        def run(args, **kwargs):
+            if "--version" in args:
+                return subprocess.CompletedProcess(args, 0, "fixture", "")
+            Path(args[args.index("--output-last-message") + 1]).write_text(
+                '{"ok":true}'
+            )
+            return subprocess.CompletedProcess(
+                args,
+                0,
+                '{"type":"turn.failed","error":{"message":"connection failed"}}',
+                "",
+            )
+
+        with patch("subprocess.run", side_effect=run):
+            with self.assertRaises(ProviderFailure) as caught:
+                cli_review({"kind": "codex", "model": "fixture"}, "evidence", {})
+        self.assertEqual(caught.exception.category, "connection")
+
+    def test_action_events_cannot_be_accepted_as_a_text_only_review(self):
+        for action in ("command_execution", "mcp_tool_call", "future_action"):
+
+            def run(args, **kwargs):
+                if "--version" in args:
+                    return subprocess.CompletedProcess(args, 0, "fixture", "")
+                Path(args[args.index("--output-last-message") + 1]).write_text(
+                    '{"ok":true}'
+                )
+                events = [
+                    {"type": "item.completed", "item": {"type": action}},
+                    {"type": "turn.completed"},
+                ]
+                return subprocess.CompletedProcess(
+                    args, 0, "\n".join(map(json.dumps, events)), ""
+                )
+
+            with patch("subprocess.run", side_effect=run):
+                with self.assertRaises(ProviderFailure) as caught:
+                    cli_review({"kind": "codex", "model": "fixture"}, "evidence", {})
+            self.assertEqual(caught.exception.category, "prohibited-tool-action")
+
+    def test_known_disabled_feature_notice_is_not_an_executed_action(self):
+        def run(args, **kwargs):
+            if "--version" in args:
+                return subprocess.CompletedProcess(args, 0, "fixture", "")
+            Path(args[args.index("--output-last-message") + 1]).write_text(
+                '{"ok":true}'
+            )
+            events = [
+                {
+                    "type": "item.completed",
+                    "item": {
+                        "type": "error",
+                        "message": "Code Mode is unavailable because "
+                        "code-mode host is disabled.",
+                    },
+                },
+                {"type": "turn.completed"},
+            ]
+            return subprocess.CompletedProcess(
+                args, 0, "\n".join(map(json.dumps, events)), ""
+            )
+
+        with patch("subprocess.run", side_effect=run):
+            text, metadata = cli_review(
+                {"kind": "codex", "model": "fixture"}, "evidence", {}
+            )
+        self.assertEqual(json.loads(text), {"ok": True})
+        self.assertEqual(metadata["nonfatal_notice_count"], 1)
 
     def test_malformed_response_saved_but_not_scored(self):
         snapshot, bundle, _ = review_fixture()
