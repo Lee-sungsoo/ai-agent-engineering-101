@@ -287,7 +287,10 @@ def check(snapshot, rubric):
                     if group
                     else None,
                 }
+    from .facts import json_log_structure
+
     return {
+        "json_log_structure": json_log_structure(snapshot),
         "items": findings,
         "aggregates": aggregates,
         "log_comparison": compare_log_results(snapshot, rows),

@@ -61,7 +61,19 @@ def compare(left, right):
     model_ids = [
         key for key, value in left["items"].items() if value.get("origin") == "review"
     ]
+    leaf_a = left.get("provenance", {}).get("metrics", {}).get("atomic_decisions", {})
+    leaf_b = right.get("provenance", {}).get("metrics", {}).get("atomic_decisions", {})
+    leaf_ids = sorted(leaf_a.keys() | leaf_b.keys())
     return {
+        "atomic_total": len(leaf_ids),
+        "atomic_matched": sum(
+            k in leaf_a and k in leaf_b and leaf_a[k] == leaf_b[k] for k in leaf_ids
+        ),
+        "atomic_changed": [
+            k
+            for k in leaf_ids
+            if k not in leaf_a or k not in leaf_b or leaf_a[k] != leaf_b[k]
+        ],
         "matched": len(a) - len(changed),
         "total": len(a),
         "changed": changed,
@@ -124,6 +136,15 @@ def acceptance(rows, variants=True):
                         "condition": condition,
                         "reason": "item-drift",
                         "changed": comparison.get("changed", []),
+                    }
+                )
+            if comparison.get("atomic_total", 0) != comparison.get("atomic_matched", 0):
+                failures.append(
+                    {
+                        "case": case,
+                        "condition": condition,
+                        "reason": "atomic-fact-drift",
+                        "changed": comparison.get("atomic_changed", []),
                     }
                 )
             for field in (
@@ -192,7 +213,8 @@ def run_benchmark(
             "max_task_chars": max_task_chars,
             "provider_retries": provider_retries,
             "design": (
-                "Two fresh calls per criterion plus saved-result replay. "
+                "Two independent end-to-end assessments, including fresh extraction "
+                "and contribution discovery, plus saved-result replay. "
                 "Diagnostic convenience sample; no population accuracy claim."
             ),
         },
@@ -339,6 +361,15 @@ def render_benchmark(rows, path):
                 f"/{sum(c['total'] for c in comparisons)} "
                 f"| {sum(c['score_equal'] for c in comparisons)}/{len(comparisons)} |"
             )
+    if any(c.get("atomic_total", 0) for row in rows for c in row["checks"].values()):
+        lines += ["", "| 조건 | 원자적 사실 값 동일 |", "|---|---:|"]
+        for kind in ["replay", "fresh", "order", "unrelated", "injection"]:
+            values = [row["checks"][kind] for row in rows if kind in row["checks"]]
+            if values:
+                lines.append(
+                    f"| {kind} | {sum(v.get('atomic_matched', 0) for v in values)}"
+                    f"/{sum(v.get('atomic_total', 0) for v in values)} |"
+                )
     lines += [
         "",
         "replay/order는 정규화된 입력의 저장 판정 재사용입니다.",

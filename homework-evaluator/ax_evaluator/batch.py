@@ -1,8 +1,11 @@
-"""Explicit, sequential PR batches with saved inputs and resumable results."""
+"""Explicit PR batches with a bounded shared task pool and resumable results."""
 
+import copy
 import fcntl
 import re
+import threading
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from . import __version__
@@ -73,13 +76,16 @@ def batch_inputs(
     }
 
 
-def process_pr(root, progress, pr, stage):
+def process_pr(root, progress, pr, stage, writer=None, executor=None, stop_event=None):
     item = progress["items"][str(pr)]
     inputs = progress["inputs"]
 
+    def save():
+        writer() if writer is not None else save_progress(root, progress)
+
     def checkpoint(step, **fields):
         item.update(status="running", stage=step, **fields)
-        save_progress(root, progress)
+        save()
 
     snapshot = None
     if item.get("snapshot"):
@@ -99,7 +105,7 @@ def process_pr(root, progress, pr, stage):
             student_id=snapshot["metadata"]["student_id"],
             head_sha=snapshot["metadata"]["head_sha"],
         )
-        save_progress(root, progress)
+        save()
 
     if item.get("packet"):
         packet = root / item["packet"]
@@ -115,10 +121,10 @@ def process_pr(root, progress, pr, stage):
         if inputs.get("itemwise"):
             rubric = resolve_policies(rubric, inputs["itemwise"]["ledger"])
             sizes = [len(f["text"] or "") for f in snapshot["files"].values()]
-            max_chars, per_file = sum(sizes) + 1, max(sizes) + 1
+            max_chars, per_file = sum(n + 1 for n in sizes), max(sizes, default=0) + 1
         bundle = prepare(snapshot, rubric, packet, max_chars, per_file)
         item["packet"] = str(packet.relative_to(root))
-        save_progress(root, progress)
+        save()
     if stage == "prepare":
         item["status"] = "prepared"
         return
@@ -147,6 +153,11 @@ def process_pr(root, progress, pr, stage):
                 model_out,
                 **inputs["itemwise"],
                 retry_failed=progress.get("retry_failed", False),
+                **(
+                    {"executor": executor, "stop_event": stop_event}
+                    if executor is not None
+                    else {}
+                ),
             )
         else:
             response = judge(bundle, snapshot, inputs["config"], model_out)
@@ -289,6 +300,9 @@ def run_batch(
                     "use explicit retry-failed after recovery."
                 )
                 return summarize(root, progress)
+            if stage == "evaluate" and itemwise and itemwise["workers"] > 1:
+                run_shared_queue(root, progress, prs, notify)
+                return summarize(root, progress)
             for index, pr in enumerate(prs, 1):
                 item = progress["items"][str(pr)]
                 if (
@@ -344,3 +358,75 @@ def run_batch(
             save_progress(root, progress)
             summary = summarize(root, progress)
         return summary
+
+
+def run_shared_queue(root, progress, prs, notify):
+    """PR orchestration never occupies a model worker; no nested pool deadlock.
+
+    Each PR owns its mutable item. Checkpoints merge under one lock. All item,
+    discovery and bonus tasks share the same bounded model pool and stop event.
+    """
+    workers = progress["inputs"]["itemwise"]["workers"]
+    mutex, stop = threading.Lock(), threading.Event()
+
+    def work(pr, pool):
+        with mutex:
+            item = copy.deepcopy(progress["items"][str(pr)])
+        if (
+            progress.get("retry_failed")
+            and item["status"] == "needs-review"
+            and item.get("failed_units")
+        ):
+            item.setdefault("prior_attempts", []).append(
+                {"response": item.get("response"), "final": item.get("final")}
+            )
+            item.pop("response", None)
+            item.pop("final", None)
+            item["status"] = "prepared"
+        if (
+            item["status"] == "running"
+            and item.get("stage") == "judge"
+            and not (root / item["response"]).exists()
+        ):
+            item.update(status="failed", error_type="InterruptedModelCall")
+        if (
+            item["status"] in {"complete", "needs-review"}
+            or item["status"] == "failed"
+            and not progress.get("retry_failed")
+        ):
+            return
+        local = {
+            "inputs": progress["inputs"],
+            "items": {str(pr): item},
+            "retry_failed": progress.get("retry_failed", False),
+        }
+
+        def checkpoint():
+            with mutex:
+                progress["items"][str(pr)] = copy.deepcopy(item)
+                save_progress(root, progress)
+
+        if stop.is_set():
+            item["status"] = "awaiting-provider"
+            checkpoint()
+            return
+        try:
+            item.pop("error_type", None)
+            process_pr(root, local, pr, "evaluate", checkpoint, pool, stop)
+            if item.get("provider_unavailable"):
+                stop.set()
+        except Exception as error:
+            item.update(status="failed", error_type=type(error).__name__)
+            write_new(
+                next_path(root, pr, "failure", ".json"),
+                {"stage": item.get("stage"), "error_type": type(error).__name__},
+            )
+        finally:
+            checkpoint()
+            notify(f"PR #{pr}: {item['status']}")
+
+    with ThreadPoolExecutor(max_workers=workers) as model_pool:
+        with ThreadPoolExecutor(max_workers=min(workers, len(prs))) as orchestrators:
+            futures = [orchestrators.submit(work, pr, model_pool) for pr in prs]
+            for future in as_completed(futures):
+                future.result()

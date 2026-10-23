@@ -27,7 +27,7 @@ def main(argv=None):
     )
     setup.add_argument("--out", type=Path, required=True)
     batch = commands.add_parser(
-        "batch", help="Process an explicit PR list sequentially"
+        "batch", help="Process an explicit PR list with bounded itemwise concurrency"
     )
     batch.add_argument("--prs", type=int, nargs="+", required=True)
     batch.add_argument("--repo", default="Q00/ai-agent-engineering-101")
@@ -44,9 +44,11 @@ def main(argv=None):
     batch.add_argument("--retry-failed", action="store_true")
     batch.add_argument("--max-chars", type=int, default=180_000)
     batch.add_argument("--per-file-chars", type=int, default=12_000)
-    batch.add_argument("--itemwise", action="store_true")
+    batch.add_argument("--itemwise", action="store_true", default=True)
+    batch.add_argument("--legacy-review", dest="itemwise", action="store_false")
     batch.add_argument("--ledger", type=Path)
     batch.add_argument("--workers", type=int, default=4)
+    batch.add_argument("--provider-retries", type=int, choices=[0, 1], default=0)
     batch.add_argument("--max-task-chars", type=int, default=400_000)
     local = commands.add_parser(
         "collect-local", help="Snapshot local files without executing them"
@@ -73,7 +75,9 @@ def main(argv=None):
     prep.add_argument("--out", type=Path, required=True)
     prep.add_argument("--max-chars", type=int, default=180_000)
     prep.add_argument("--per-file-chars", type=int, default=12_000)
-    prep.add_argument("--full-files", action="store_true")
+    evidence_mode = prep.add_mutually_exclusive_group()
+    evidence_mode.add_argument("--full-files", action="store_true", default=True)
+    evidence_mode.add_argument("--excerpt", dest="full_files", action="store_false")
     prep.add_argument("--ledger", type=Path, help="Apply saved instructor answers")
     prep.add_argument(
         "--policy", type=Path, help="Saved interview policy; otherwise interview now"
@@ -85,6 +89,12 @@ def main(argv=None):
     call.add_argument("run", type=Path)
     call.add_argument("--config", type=Path, required=True)
     call.add_argument("--out", type=Path, required=True)
+    call.add_argument("--ledger", type=Path)
+    call.add_argument("--workers", type=int, default=4)
+    call.add_argument("--max-task-chars", type=int, default=400000)
+    call.add_argument("--retry-failed", action="store_true")
+    call.add_argument("--provider-retries", type=int, choices=[0, 1], default=0)
+    call.add_argument("--legacy-review", action="store_true")
     units = commands.add_parser("judge-items", help="Parallel full-file item judgments")
     units.add_argument("run", type=Path)
     units.add_argument("--config", type=Path, required=True)
@@ -184,12 +194,13 @@ def main(argv=None):
         elif args.command == "batch":
             itemwise = None
             if args.itemwise:
-                if not args.ledger:
-                    raise ValueError("itemwise requires --ledger")
+                if args.ledger is None:
+                    args.ledger = args.out / "judgments"
                 itemwise = dict(
                     ledger=str(args.ledger.resolve()),
                     workers=args.workers,
                     max_task_chars=args.max_task_chars,
+                    provider_retries=args.provider_retries,
                 )
             summary = run_batch(
                 args.repo,
@@ -240,7 +251,10 @@ def main(argv=None):
                 rubric = resolve_policies(rubric, args.ledger)
             if args.full_files:
                 sizes = [len(f["text"] or "") for f in snapshot["files"].values()]
-                args.max_chars, args.per_file_chars = sum(sizes) + 1, max(sizes) + 1
+                args.max_chars, args.per_file_chars = (
+                    sum(n + 1 for n in sizes),
+                    max(sizes, default=0) + 1,
+                )
             bundle = prepare(
                 snapshot,
                 rubric,
@@ -318,12 +332,25 @@ def main(argv=None):
                 "it; unaffected item records are reused."
             )
         elif args.command == "judge":
-            judge(
+            inputs = (
                 read_json(args.run / "bundle.json"),
                 read_json(args.run / "snapshot.json"),
                 read_json(args.config),
                 args.out,
             )
+            if args.legacy_review:
+                judge(*inputs)
+            else:
+                response = judge_items(
+                    *inputs,
+                    args.ledger or args.out.parent / "judgments",
+                    args.workers,
+                    args.max_task_chars,
+                    args.retry_failed,
+                    args.provider_retries,
+                )
+                print(f"validated response: {args.out / 'response.json'}")
+                return 1 if response["provenance"]["metrics"]["failures"] else 0
             print(f"validated response: {args.out / 'response.json'}")
         elif args.command == "import-review":
             bundle, snapshot, review = (

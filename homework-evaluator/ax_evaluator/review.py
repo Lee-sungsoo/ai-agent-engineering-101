@@ -43,6 +43,9 @@ def validate_rubric(rubric):
             if not isinstance(item.get(key), str) or not item[key].strip():
                 raise ValueError(f"Criterion needs {key}")
         if "assessment" in item:
+            from .atomic import validate_atoms
+
+            validate_atoms(item)
             obligations = item["assessment"]["obligations"]
             if (
                 not obligations

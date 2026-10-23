@@ -1,6 +1,6 @@
 [project]
 name = "ax-homework-evaluator"
-version = "0.8.0"
+version = "0.9.0"
 description = "Evidence-based, offline-first review of AX course submissions"
 requires-python = ">=3.11"
 dependencies = []

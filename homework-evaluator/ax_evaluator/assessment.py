@@ -126,6 +126,10 @@ def obligations(criterion):
 
 
 def finding_schema(criterion, ref, fixed=None):
+    if criterion.get("assessment", {}).get("atoms"):
+        from .atomic import schema
+
+        return schema(criterion, ref, fixed or {})
     ids = [
         entry["id"]
         for entry in obligations(criterion)
@@ -217,6 +221,10 @@ def decision(statuses):
 
 def compile_finding(raw, criterion, snapshot):
     """No free model status, severity, point count or revision grouping labels."""
+    if "facts" in raw:
+        from .atomic import compile_facts
+
+        return compile_facts(raw, criterion, snapshot)
     if set(raw) != {"id", "observations", "issues"} or raw["id"] != criterion["id"]:
         raise ValueError("Invalid observation finding")
     expected = {entry["id"] for entry in obligations(criterion)}

@@ -35,6 +35,25 @@ def fake_response(*args):
     result = {"questions": []}
     if "finding" in schema["properties"]:
         finding = schema["properties"]["finding"]["properties"]
+        if "facts" in finding:
+            result["finding"] = {
+                "id": finding["id"]["enum"][0],
+                "facts": {
+                    key: {
+                        "value": True,
+                        "note": "원문에서 확인",
+                        "evidence": [ref],
+                        **(
+                            {"claim_quote": "", "counter_quote": ""}
+                            if "claim_quote"
+                            in finding["facts"]["properties"][key]["properties"]
+                            else {}
+                        ),
+                    }
+                    for key in finding["facts"]["properties"]
+                },
+            }
+            return canonical(result), {"usage": {"output_tokens": 10}}
         result["finding"] = {
             "id": finding["id"]["enum"][0],
             "observations": {

@@ -14,7 +14,7 @@ from ax_evaluator.storage import read_json
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def fixture():
+def fixture(atomic=False):
     scenarios = [
         {"id": "a", "item": "a", "reserve": 10, "budget": 20},
         {"id": "b", "item": "b", "reserve": 20, "budget": 20},
@@ -100,7 +100,16 @@ def fixture():
         "files": {path: document(text.encode()) for path, text in files.items()},
     }
     set_rows(snapshot, rows)
-    return snapshot, rows, read_json(ROOT / "rubrics/week05.json")
+    rubric = read_json(ROOT / "rubrics/week05.json")
+    if not atomic:
+        # Legacy fixtures exercise backward-compatible saved observation contracts.
+        for item in rubric["items"]:
+            item.get("assessment", {}).pop("atoms", None)
+            if item["id"] == "C06":
+                item["assessment"]["deterministic"] = {
+                    "history": "scenario-ancestry-v1"
+                }
+    return snapshot, rows, rubric
 
 
 def set_rows(snapshot, rows):

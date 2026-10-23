@@ -32,6 +32,14 @@ def publication_blockers(report):
             blockers.append(
                 {"task": key, "kind": "evaluation-failure" if key in failed else kind}
             )
+    blockers += [
+        {"task": key, "kind": "unresolved-atomic-fact"}
+        for key, value in report.get("provenance", {})
+        .get("metrics", {})
+        .get("atomic_decisions", {})
+        .items()
+        if value is None
+    ]
     if not report["bonus_review_complete"]:
         blockers.append(
             {

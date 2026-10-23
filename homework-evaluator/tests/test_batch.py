@@ -2,18 +2,96 @@
 
 import copy
 import fcntl
+import json
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from test_itemwise import fake_response
 from test_policy_comments import complete_fixture
 
 from ax_evaluator.batch import run_batch
+from ax_evaluator.snapshot import document
 from ax_evaluator.storage import digest, read_json, write_new
 
 
 class BatchTest(unittest.TestCase):
+    def test_all_prs_share_one_bounded_model_pool_and_isolated_cache_keys(self):
+        active, peak, calls = 0, 0, 0
+        mutex = threading.Lock()
+
+        def transport(config, prompt, schema):
+            nonlocal active, peak, calls
+            with mutex:
+                active += 1
+                peak = max(peak, active)
+                calls += 1
+            try:
+                time.sleep(0.005)
+                return fake_response(prompt, schema)
+            finally:
+                with mutex:
+                    active -= 1
+
+        ledger = self.out.parent / "shared-ledger"
+        with patch("ax_evaluator.itemwise.http_review", side_effect=transport):
+            first = self.run_batch(
+                stage="evaluate",
+                config=self.config,
+                itemwise={
+                    "ledger": str(ledger),
+                    "workers": 2,
+                    "max_task_chars": 400000,
+                },
+            )
+            self.assertEqual(first["counts"], {"complete": 3})
+            self.assertEqual(peak, 2)
+            before = calls
+            self.run_batch(
+                stage="evaluate",
+                config=self.config,
+                resume=True,
+                itemwise={
+                    "ledger": str(ledger),
+                    "workers": 2,
+                    "max_task_chars": 400000,
+                },
+            )
+            self.assertEqual(calls, before)
+        students = {
+            read_json(p)["request"]["submission"]["student_id"]
+            for p in ledger.glob("judgments/*/result.json")
+        }
+        self.assertEqual(students, {"101", "102", "103"})
+        self.assertEqual(len(read_json(self.out / "progress.json")["items"]), 3)
+        self.github_write.assert_not_called()
+
+    def test_global_provider_stop_does_not_dispatch_queued_model_calls(self):
+        from ax_evaluator.providers import ProviderUnavailable
+
+        calls = []
+
+        def transport(*args):
+            calls.append(1)
+            raise ProviderUnavailable("usage-limit")
+
+        with patch("ax_evaluator.itemwise.http_review", side_effect=transport):
+            result = self.run_batch(
+                stage="evaluate",
+                config=self.config,
+                itemwise={
+                    "ledger": str(self.out.parent / "ledger"),
+                    "workers": 2,
+                    "max_task_chars": 400000,
+                },
+            )
+        self.assertLessEqual(len(calls), 2)
+        self.assertTrue(any(i.get("provider_unavailable") for i in result["items"]))
+        self.assertEqual(len(result["items"]), 3)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -60,6 +138,9 @@ class BatchTest(unittest.TestCase):
             spec_sha=spec,
             week=week,
         )
+        index = json.loads(snapshot["files"]["@history-index.json"]["text"])
+        index.update(head_sha=str(pr) * 40, prefix=f"submissions/{100 + pr}/{week}/")
+        snapshot["files"]["@history-index.json"] = document(json.dumps(index).encode())
         snapshot["id"] = digest({k: v for k, v in snapshot.items() if k != "id"})
         write_new(out, snapshot)
         return snapshot

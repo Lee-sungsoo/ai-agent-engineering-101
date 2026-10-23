@@ -11,6 +11,172 @@ from .checks import parse_rows, parse_scenarios
 MOVES = {"propose", "accept_proposal", "reject_proposal", "refuse"}
 
 
+def json_log_structure(snapshot):
+    """Prove only syntax/pairing in explicit JSONL logs, never runtime correctness."""
+    files, episodes = {}, []
+    for path, doc in sorted(snapshot["files"].items()):
+        if not path.startswith("logs/") or doc["text"] is None:
+            continue
+        role, pending, starts, ends = None, None, 0, 0
+        calls, results, bad_arguments, unmatched, outside = 0, 0, [], [], 0
+        supported = True
+        metadata, active = {}, None
+        for number, line in enumerate(doc["text"].splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except ValueError:
+                supported = False
+                break
+            if not isinstance(event, dict) or not isinstance(event.get("event"), str):
+                supported = False
+                break
+            kind = event["event"]
+            if kind in {"meta", "setup"}:
+                metadata = event
+            if kind == "host_turn":
+                role = event.get("role")
+            if kind == "episode_start":
+                starts += 1
+                if active is not None:
+                    supported = False
+                active = {
+                    "identity": [
+                        str(
+                            event.get(
+                                "run", metadata.get("run", metadata.get("repeat", ""))
+                            )
+                        ),
+                        event.get("condition", metadata.get("condition")),
+                        str(event.get("scenario", "")),
+                    ],
+                    "tool_calls": 0,
+                    "turns": 0,
+                    "refused_calls": 0,
+                    "move_flags_known": True,
+                }
+            if kind == "episode_result":
+                ends += 1
+                if active is not None:
+                    episodes.append(active)
+                    active = None
+            if kind == "tool_call":
+                if pending:
+                    unmatched.append(pending[1])
+                tool, args = event.get("tool"), event.get("arguments")
+                actor = event.get("role", role)
+                if actor not in {"buyer", "seller"} or tool not in MOVES | {
+                    "get_negotiation"
+                }:
+                    supported = False
+                    break
+                calls += 1
+                if active is not None:
+                    active["tool_calls"] += 1
+                else:
+                    outside += 1
+                if (
+                    not isinstance(args, dict)
+                    or not args.get("negotiation_id")
+                    or tool == "propose"
+                    and type(args.get("price")) is not int
+                ):
+                    bad_arguments.append(number)
+                pending = (tool, number)
+            elif kind == "tool_result":
+                if (
+                    pending is None
+                    or event.get("tool") != pending[0]
+                    or "result" not in event
+                ):
+                    # A consolidated response format can be legitimate, but is
+                    # outside this explicit paired-call adapter. Never fail it.
+                    supported = False
+                    break
+                results += 1
+                if active is not None and pending[0] in MOVES:
+                    response = event["result"]
+                    error = event.get(
+                        "error",
+                        response.get("isError") if isinstance(response, dict) else None,
+                    )
+                    if type(error) is bool:
+                        active["refused_calls"] += int(error)
+                        active["turns"] += int(not error)
+                    else:
+                        active["move_flags_known"] = False
+                pending = None
+        if pending:
+            unmatched.append(pending[1])
+        files[path] = {
+            "supported": supported,
+            "calls": calls,
+            "results": results,
+            "argument_lines_needing_review": bad_arguments,
+            "calls_without_paired_result": unmatched,
+            "episode_starts": starts,
+            "episode_results": ends,
+            "outside_episode_calls": outside,
+            "unclosed_episode": active is not None,
+            "evidence": {
+                "path": path,
+                "start": 1,
+                "end": max(1, len(doc["text"].splitlines())),
+            },
+        }
+    complete = bool(files) and all(
+        f["supported"] and f["calls"] for f in files.values()
+    )
+    matched_counts = {k: False for k in ("tool_calls", "turns", "refused_calls")}
+    try:
+        scenarios = parse_scenarios(snapshot["files"]["scenarios.json"]["text"])
+        rows = parse_rows(snapshot["files"]["results.csv"]["text"], scenarios)
+        identities = {tuple(e["identity"]) for e in episodes}
+        unique = len(identities) == len(episodes)
+        for metric in matched_counts:
+            scope_complete = not any(
+                f["outside_episode_calls"] or f["unclosed_episode"]
+                for f in files.values()
+            )
+            matched_counts[metric] = bool(
+                complete and unique and rows and scope_complete
+            ) and all(
+                len(
+                    candidates := [
+                        e
+                        for e in episodes
+                        if e["identity"]
+                        == [row["run"], row["condition"], row["scenario"]]
+                    ]
+                )
+                == 1
+                and (metric == "tool_calls" or candidates[0]["move_flags_known"])
+                and str(candidates[0][metric]) == row[metric]
+                for row in rows
+            )
+    except (KeyError, TypeError, ValueError):
+        pass
+    return {
+        "files": files,
+        "matched_counts": matched_counts,
+        "arguments_present": complete
+        and not any(f["argument_lines_needing_review"] for f in files.values()),
+        "results_paired": complete
+        and not any(f["calls_without_paired_result"] for f in files.values()),
+        "episodes_closed": complete
+        and all(
+            f["episode_starts"] == f["episode_results"] and f["episode_starts"]
+            for f in files.values()
+        ),
+        "scope": (
+            "Positive facts for explicit paired JSON events only. "
+            "Unsupported/incomplete records need review, not automatic failure. "
+            "Pairing does not prove counts, authenticity or execution."
+        ),
+    }
+
+
 def trace_facts(snapshot):
     """Bounded marker facts, not a claim of exhaustive runtime verification."""
     facts = {}
