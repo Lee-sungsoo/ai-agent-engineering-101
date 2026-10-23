@@ -147,8 +147,9 @@ Compare the same run/condition/scenario, field and event window. Count actual ev
 not repeated negotiation state or agent reasoning. A successful reject/refuse is not
 server refusal; it can be a valid recovery. Buyer budget is a maximum, seller reserve
 a minimum. Correctly recorded experimental violations are not log mismatches.
-Use null when a supported answer is impossible. Ask only genuine unsettled grader
-policies; do not turn missing evidence into a policy or invent assignment conditions.
+Use null when a supported answer is impossible. Questions may ONLY select a frozen
+assessment.policy_questions entry, verbatim. With no declared entries return
+questions=[]. Do not create policies from factual questions or missing evidence.
 """
 VERIFICATION = """Independently check the PROPOSED_MODEL_OBSERVATIONS against
 the original
@@ -633,6 +634,16 @@ def observation_schema(
     )
     if criterion:
         schema["properties"]["finding"] = finding_schema(criterion, ref, fixed)
+        if criterion.get("assessment", {}).get("atoms"):
+            policies = criterion["assessment"].get("policy_questions", [])
+            questions = schema["properties"]["questions"] = copy.deepcopy(
+                schema["properties"]["questions"]
+            )
+            questions["maxItems"] = len(policies)
+            if policies:
+                questions["items"]["properties"]["policy"]["enum"] = [
+                    q["policy"] for q in policies
+                ]
     elif stage == "discovery":
         artifact_ref = copy.deepcopy(ref)
         artifact_ref["properties"]["block"]["enum"] = [
@@ -708,6 +719,16 @@ def validate_task(result, request, bundle, snapshot, criterion):
     for q in result["questions"]:
         if set(q) != {"policy", "question", "options"} or len(set(q["options"])) < 2:
             raise ValueError("Invalid instructor policy question")
+    if request.get("verification_policy") == "atomic-facts-declared-policies-v2":
+        allowed = normalize_questions(
+            criterion["assessment"].get("policy_questions", []),
+            bundle["rubric"]["week"],
+        )
+        actual = normalize_questions(result["questions"], bundle["rubric"]["week"])
+        if any(q not in allowed for q in actual) or len(
+            {canonical(q) for q in actual}
+        ) != len(actual):
+            raise ValueError("Atomic extraction may only select declared policies")
     if request["engine"] == ENGINE:
 
         def check_refs(value):
@@ -1035,7 +1056,7 @@ def judge_items(
             if active and active.get("assessment", {}).get("atoms")
             else INSTRUCTIONS,
             "verification_instructions": VERIFICATION,
-            "verification_policy": "atomic-single-extraction-v1"
+            "verification_policy": "atomic-facts-declared-policies-v2"
             if active and active.get("assessment", {}).get("atoms")
             else "negative-assertions-security-and-bonuses-v1",
             "bonus_resolution": "declared-equivalence-v1",

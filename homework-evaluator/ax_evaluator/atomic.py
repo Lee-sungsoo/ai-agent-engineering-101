@@ -6,6 +6,7 @@ Only facts computed here can bypass the model, within their documented scope.
 
 import ast
 import copy
+import re
 
 from .storage import digest, validate_refs
 
@@ -43,6 +44,23 @@ def validate_atoms(criterion):
             raise ValueError("Invalid atomic question contract")
     if {a["parent"] for a in atoms if a["effect"] == "core"} != parents:
         raise ValueError("Every obligation needs a core atomic question")
+    policies = criterion["assessment"].get("policy_questions", [])
+    if not isinstance(policies, list) or any(
+        not isinstance(q, dict)
+        or set(q) != {"policy", "question", "options"}
+        or not isinstance(q["policy"], str)
+        or not re.fullmatch(r"[a-zA-Z0-9_.-]+", q["policy"])
+        or not isinstance(q["question"], str)
+        or not q["question"].strip()
+        or not isinstance(q["options"], list)
+        or len(q["options"]) < 2
+        or any(not isinstance(o, str) or not o.strip() for o in q["options"])
+        or len(set(q["options"])) != len(q["options"])
+        for q in policies
+    ):
+        raise ValueError("Invalid frozen atomic policy questions")
+    if len({q["policy"] for q in policies}) != len(policies):
+        raise ValueError("Atomic policy questions need unique policy IDs")
 
 
 def subset(criterion, ids):

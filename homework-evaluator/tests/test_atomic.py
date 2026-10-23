@@ -16,10 +16,90 @@ from ax_evaluator.facts import json_log_structure
 from ax_evaluator.itemwise import full_bundle, judge_items, replay_items, validate_task
 from ax_evaluator.review import finalize
 from ax_evaluator.snapshot import document
-from ax_evaluator.storage import canonical, digest
+from ax_evaluator.storage import canonical, digest, read_json
 
 
 class AtomicTest(unittest.TestCase):
+    def test_factual_question_cannot_create_an_undeclared_grader_policy(self):
+        criterion = next(i for i in self.rubric["items"] if i["id"] == "C04")
+        request = {
+            "engine": "itemwise-v3",
+            "verification_policy": "atomic-facts-declared-policies-v2",
+            "schema": {"properties": {"questions": {}, "finding": {}}},
+        }
+        raw = {
+            "questions": [
+                {
+                    "policy": "invented.fact",
+                    "question": "서버가 상태를 저장하는가?",
+                    "options": ["yes", "no"],
+                }
+            ],
+            "finding": {},
+        }
+        with self.assertRaisesRegex(ValueError, "only select declared policies"):
+            validate_task(
+                raw,
+                request,
+                full_bundle(self.snapshot, self.rubric),
+                self.snapshot,
+                criterion,
+            )
+
+    def test_only_declared_atomic_policy_waits_and_answer_reuses_other_facts(self):
+        from ax_evaluator.ledger import QuestionBox
+
+        criterion = next(i for i in self.rubric["items"] if i["id"] == "I02")
+        question = {
+            "policy": "intent.scope",
+            "question": "명시한 표본 범위의 관측 해석을 인정하나요?",
+            "options": ["allow", "disallow"],
+        }
+        criterion["assessment"]["policy_questions"] = [question]
+
+        def transport(config, prompt, schema):
+            text, meta = fake_response(prompt, schema)
+            raw = json.loads(text)
+            if raw["finding"]["id"] == "I02":
+                raw["questions"] = [question]
+            return canonical(raw), meta
+
+        self.model.side_effect = transport
+        first = self.run_grade()
+        finding = next(i for i in first["review"]["items"] if i["id"] == "I02")
+        self.assertEqual(
+            (finding["status"], finding["pending_reason"]), ("pending", "policy")
+        )
+        self.assertFalse(first["provenance"]["metrics"]["failures"])
+        box = QuestionBox(self.root / "ledger")
+        entry = next(
+            q for q in box.list() if q["question"]["question"] == question["question"]
+        )
+        box.answer(entry["id"], "allow", "instructor")
+        self.model.reset_mock()
+        updated = self.run_grade("answered")
+        self.assertEqual(self.model.call_count, 1)
+        self.assertEqual(
+            next(i for i in updated["review"]["items"] if i["id"] == "I02")["status"],
+            "pass",
+        )
+
+    def test_generic_atomic_template_keeps_one_scored_requirement(self):
+        from ax_evaluator.review import ROOT, score
+
+        self.rubric = read_json(ROOT / "rubrics/review-only.example.json")
+        self.snapshot["metadata"]["week"] = self.rubric["week"]
+        self.snapshot["id"] = digest(
+            {k: v for k, v in self.snapshot.items() if k != "id"}
+        )
+        response = self.run_grade()
+        bundle = full_bundle(self.snapshot, self.rubric)
+        self.assertNotIn("json_log_structure", bundle["checks"])
+        self.assertFalse(response["provenance"]["metrics"]["failures"])
+        result = score(bundle, response["review"])
+        self.assertEqual((result["base_earned"], result["base_max"]), (1, 1))
+        self.assertEqual(set(result["qualitative_ids"]), {"C1", "I1"})
+
     def test_global_code_proofs_do_not_expand_the_models_visible_evidence(self):
         self.snapshot["files"]["logs/other.jsonl"] = document(b"code-inspected log\n")
         self.snapshot["id"] = digest(
@@ -290,6 +370,7 @@ class AtomicTest(unittest.TestCase):
             sum(i["category"] == "requirements" for i in bundle["rubric"]["items"]), 18
         )
         for call in self.model.call_args_list:
+            self.assertEqual(call.args[-1]["properties"]["questions"]["maxItems"], 0)
             schema = call.args[-1]["properties"]["finding"]["properties"]
             self.assertLessEqual(len(schema["facts"]["properties"]), 4)
             self.assertNotIn("status", schema)
