@@ -13,8 +13,9 @@ Do not invent new grading requirements from style preferences or SDK conventions
 ## Review workflow
 
 1. Collect a PR with `uv run python -m ax_evaluator collect-pr`, or use `collect-local`.
-2. Run `prepare` to generate deterministic checks, a bounded evidence packet,
-   coverage inventory and a response template. Inspect omissions before judging.
+2. Run `prepare` to generate deterministic checks, a complete evidence packet,
+   coverage inventory and a response template. Full files are the default;
+   `--excerpt` is an explicitly bounded human packet, not input for itemwise judging.
    At the start, interview the grader for optional explicit bonus criteria using
    `interview`; reuse its saved policy across a cohort with `prepare --policy`.
    Without a saved policy, `prepare` asks the interview itself. Do not infer
@@ -23,30 +24,45 @@ Do not invent new grading requirements from style preferences or SDK conventions
 3. Review every review-mode criterion, with `pass`, `fail` or `pending` and exact
    source line references. Consult full snapshot evidence when preparing a larger
    packet; never cite a line the current packet does not contain.
-   In itemwise-v3, return supported/contradicted/unknown for each frozen rubric
-   obligation and grounded issues; code derives the criterion decision. Do not
-   invent obligations. A local correction can coexist with a supported central
-   conclusion. Only a material violation of the assigned obligation is contradicted.
-   Explicit event and arithmetic facts are code-derived within their stated scope.
+   With `assessment.atoms`, return only the selected frozen facts as
+   true/false/null, notes and supplied evidence block IDs. False requires a concrete
+   counterexample; uncertainty is null, never an invented violation. Code compiles
+   the facts into points and feedback. Internal questions add no scored items.
+   A correction-only defect does not negate a supported central requirement.
+   Atomic questions may select only declared `assessment.policy_questions`.
+   With no declarations return `questions=[]`. Factual uncertainty belongs in
+   a null fact and its note; never invent instructor policies from code questions.
+   Code-owned policy questions remain managed by the question box.
+   Semantic-claim contradictions require exact claim/counterexample quotes from
+   the cited spans. Never invent a claim or silently repair an invalid citation.
+   Code owns proven arithmetic, history and supported event structure facts;
+   an unsupported log format falls back to review, not zero or automatic failure.
+   Without atoms, the legacy itemwise-v3 contract returns
+   supported/contradicted/unknown observations and grounded issues.
    Do not turn a successful reject/refuse into a server refusal or a correctly
    recorded prompt-only violation into a CSV mismatch. Read report explanations
    before alleging that a preserved retry was hidden.
-   Itemwise verifies negative/unknown observations, issues/questions, security
-   implementation F07/F08 and bonus stages in a separate model call. The proposed
-   answer is not gold. Keep both responses, validate them and account for every
-   actual call. Do not add a new correction just to differ from the proposal.
+   Atomic facts are extracted once, validated and saved independently. Invalid
+   answers remain incomplete while other valid answers survive. Explicit retry
+   asks only invalid questions; a valid negative is not resampled to get a pass.
+   Legacy negative/unknown observations, security criteria and bonus stages retain
+   the separate verification call. The proposed answer is not gold. Keep every
+   response and account for every actual call.
 4. Run `finalize` to validate the response and calculate draft points. Keep the
    response, model provenance and input hashes. Human corrections use a new output
    directory and `import-review`, with the reviewer's name; preserve prior results.
 
 For an explicit PR list, `batch --prs ...` prepares all packets with one saved
 policy and a pinned specification SHA. It does not discover PRs or publish.
-`--stage evaluate` explicitly invokes the configured model for each PR;
+`--stage evaluate` explicitly invokes the configured model. All PRs and bonus
+stages share one bounded item worker pool; `--workers` is the global bound;
 `--stage finalize` only consumes saved responses. Current-session reviews use
 `import-review --kind current-session --out BATCH/pr-N/review.json` and then
 batch resume/finalize. Inspect each packet independently; never reuse one PR's
 judgments for another. `--resume` reuses saved work; failed model calls require
-explicit `--retry-failed`. Use a new batch if criteria/settings change.
+explicit `--retry-failed`. Atomic partial receipts preserve valid leaf answers
+even on cached incomplete runs. Replaying an old partial run must not incorporate
+a later retry. Use a new batch if criteria/settings change.
 
 The four axes are mandatory requirements, consistency between report and evidence,
 assignment intent, and the value/validity of optional additional work. Revisions
@@ -164,6 +180,10 @@ can arise anywhere, including mandatory code, calculations and interpretation.
   meaningful. The eligibility worker cannot add/split candidates or choose points.
   Merely adding optional conditions or more text is not sufficient. A substantial
   optional experiment with an observed, relevant contribution can qualify.
+  Declared duplicate relations are assembled as connected equivalence groups,
+  including cycles; only an eligible representative earns a point. Do not equate
+  contributions merely because their files share a directory. Never promote
+  unvalidated work just because a related contribution passed.
   Candidate discovery and semantic eligibility remain model judgments and must
   be included in fresh-call and injection tests, not hidden by replay caching.
 - `bonus_policy.explicit_criteria` supplies optional named rules, each worth 1 point.
