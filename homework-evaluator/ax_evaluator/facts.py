@@ -83,11 +83,12 @@ def json_log_structure(snapshot):
                     and type(args.get("price")) is not int
                 ):
                     bad_arguments.append(number)
-                pending = (tool, number)
+                pending = (tool, number, actor)
             elif kind == "tool_result":
                 if (
                     pending is None
                     or event.get("tool") != pending[0]
+                    or event.get("role", pending[2]) != pending[2]
                     or "result" not in event
                 ):
                     # A consolidated response format can be legitimate, but is

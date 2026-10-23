@@ -20,6 +20,14 @@ def locked(path):
             fcntl.flock(stream, fcntl.LOCK_UN)
 
 
+class UnfinishedJudgment(ValueError):
+    """An earlier attempt is incomplete and must not trigger an implicit call."""
+
+    def __init__(self, attempt):
+        self.attempt = attempt
+        super().__init__("Unfinished judgment; use explicit retry-failed")
+
+
 class Ledger:
     """Cache successful validated results; failed attempts require explicit retry."""
 
@@ -41,7 +49,7 @@ class Ledger:
                 return record, True
             attempts = sorted(root.glob("attempt-*"))
             if attempts and not retry_failed:
-                raise ValueError("Unfinished judgment; use explicit retry-failed")
+                raise UnfinishedJudgment(attempts[-1])
             attempt = root / f"attempt-{len(attempts) + 1:03d}"
             write_new(attempt / "request.json", request)
             try:

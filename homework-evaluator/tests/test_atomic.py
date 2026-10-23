@@ -13,13 +13,136 @@ from test_itemwise import fake_response
 from ax_evaluator.assessment import compile_finding, evidence_blocks
 from ax_evaluator.atomic import fixed_facts, source_index, validate_atoms
 from ax_evaluator.facts import json_log_structure
-from ax_evaluator.itemwise import full_bundle, judge_items, replay_items
+from ax_evaluator.itemwise import full_bundle, judge_items, replay_items, validate_task
 from ax_evaluator.review import finalize
 from ax_evaluator.snapshot import document
 from ax_evaluator.storage import canonical, digest
 
 
 class AtomicTest(unittest.TestCase):
+    def test_global_code_proofs_do_not_expand_the_models_visible_evidence(self):
+        self.snapshot["files"]["logs/other.jsonl"] = document(b"code-inspected log\n")
+        self.snapshot["id"] = digest(
+            {k: v for k, v in self.snapshot.items() if k != "id"}
+        )
+        criterion = next(i for i in self.rubric["items"] if i["id"] == "C03")
+        block = {v["path"]: k for k, v in evidence_blocks(self.snapshot).items()}
+        request = {
+            "engine": "itemwise-v3",
+            "schema": {"properties": {"questions": {}, "finding": {}}},
+            "files": {"REPORT.md": {}},
+            "context": {
+                "atomic_ids": ["count_tool_calls", "interrupted_attempts"],
+                "fixed_observations": {
+                    "count_tool_calls": {
+                        "value": True,
+                        "note": "Code inspected all logs.",
+                        "evidence": [
+                            {"path": "logs/other.jsonl", "start": 1, "end": 1}
+                        ],
+                    }
+                },
+            },
+        }
+        raw = {
+            "questions": [],
+            "finding": {
+                "id": "C03",
+                "facts": {
+                    "interrupted_attempts": {
+                        "value": True,
+                        "note": "Inspected supplied report.",
+                        "evidence": [{"block": block["REPORT.md"]}],
+                    }
+                },
+            },
+        }
+        bundle = full_bundle(self.snapshot, self.rubric)
+        validate_task(raw, request, bundle, self.snapshot, criterion)
+        raw["finding"]["facts"]["interrupted_attempts"]["evidence"] = [
+            {"block": block["logs/other.jsonl"]}
+        ]
+        with self.assertRaisesRegex(ValueError, "not included"):
+            validate_task(raw, request, bundle, self.snapshot, criterion)
+
+    def test_cached_partial_keeps_valid_facts_without_implicitly_retrying(self):
+        def transport(config, prompt, schema):
+            text, meta = fake_response(prompt, schema)
+            raw = json.loads(text)
+            if "implementation_claims" in raw["finding"]["facts"]:
+                raw["finding"]["facts"]["implementation_claims"].update(
+                    value=False,
+                    claim_quote="Invented claim",
+                    counter_quote="Invented counterexample",
+                )
+            return canonical(raw), meta
+
+        self.model.side_effect = transport
+        first = self.run_grade()
+        self.model.reset_mock()
+        cached = self.run_grade("cached")
+        self.assertEqual(self.model.call_count, 0)
+        self.assertEqual(cached["review"], first["review"])
+        self.assertEqual(
+            cached["provenance"]["metrics"]["atomic_decisions"],
+            first["provenance"]["metrics"]["atomic_decisions"],
+        )
+        self.assertTrue(cached["provenance"]["metrics"]["failures"])
+
+    def test_invalid_claim_preserves_valid_leaves_and_retry_only_asks_invalid_leaf(
+        self,
+    ):
+        def transport(config, prompt, schema):
+            text, meta = fake_response(prompt, schema)
+            raw = json.loads(text)
+            if "implementation_claims" in raw["finding"]["facts"]:
+                raw["finding"]["facts"]["implementation_claims"].update(
+                    value=False,
+                    claim_quote="Invented claim",
+                    counter_quote="Invented counterexample",
+                )
+            return canonical(raw), meta
+
+        self.model.side_effect = transport
+        first = self.run_grade()
+        facts = first["provenance"]["metrics"]["atomic_decisions"]
+        self.assertIs(facts["C04.central_agreement"], True)
+        self.assertIs(facts["C04.numeric_claims"], True)
+        self.assertIsNone(facts["C04.implementation_claims"])
+        self.model.side_effect = lambda c, p, s: fake_response(p, s)
+        self.model.reset_mock()
+        retried = self.run_grade("retry", True)
+        self.assertEqual(self.model.call_count, 1)
+        fields = self.model.call_args.args[-1]["properties"]["finding"]["properties"][
+            "facts"
+        ]["properties"]
+        self.assertEqual(set(fields), {"implementation_claims"})
+        self.assertFalse(retried["provenance"]["metrics"]["failures"])
+        from ax_evaluator.review import prepare
+
+        texts = [v["text"] or "" for v in self.snapshot["files"].values()]
+        prepare(
+            self.snapshot,
+            self.rubric,
+            self.root / "packet",
+            sum(len(t) + 1 for t in texts),
+            max(map(len, texts)) + 1,
+        )
+        # Later successful work must not change replay of the earlier incomplete run.
+        old = replay_items(
+            self.root / "packet",
+            self.root / "first",
+            self.root / "ledger",
+            self.root / "old-replay",
+        )
+        self.assertEqual(old["review"], first["review"])
+        self.assertIsNone(
+            old["provenance"]["metrics"]["atomic_decisions"][
+                "C04.implementation_claims"
+            ]
+        )
+        self.assertTrue(old["provenance"]["metrics"]["failures"])
+
     def test_fabricated_report_claim_cannot_create_a_revision(self):
         criterion = next(i for i in self.rubric["items"] if i["id"] == "C04")
         ref = {"path": "REPORT.md", "start": 1, "end": 2}
@@ -99,6 +222,32 @@ class AtomicTest(unittest.TestCase):
             ("\n".join(json.dumps(e) for e in events) + "\n").encode()
         )
         self.assertFalse(any(json_log_structure(snapshot)["matched_counts"].values()))
+
+    def test_json_pairing_cannot_certify_a_different_roles_response(self):
+        snapshot = copy.deepcopy(self.snapshot)
+        snapshot["files"] = {
+            k: v for k, v in snapshot["files"].items() if not k.startswith("logs/")
+        }
+        events = [
+            {
+                "event": "tool_call",
+                "role": "buyer",
+                "tool": "get_negotiation",
+                "arguments": {"negotiation_id": "one"},
+            },
+            {
+                "event": "tool_result",
+                "role": "seller",
+                "tool": "get_negotiation",
+                "result": {},
+            },
+        ]
+        snapshot["files"]["logs/roles.jsonl"] = document(
+            ("\n".join(json.dumps(e) for e in events) + "\n").encode()
+        )
+        facts = json_log_structure(snapshot)
+        self.assertFalse(facts["results_paired"])
+        self.assertFalse(any(facts["matched_counts"].values()))
 
     def setUp(self):
         self.snapshot, _, self.rubric = fixture(atomic=True)

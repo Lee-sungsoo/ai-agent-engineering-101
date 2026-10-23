@@ -162,6 +162,12 @@ def compile_raw(raw, criterion, snapshot):
             a for a in atoms if a["parent"] == parent["id"] and a["effect"] == "core"
         ]
         facts = [raw["facts"][a["id"]] for a in selected]
+        if not selected:
+            # A correction-only leaf is validated independently; its parent is
+            # scored only after the original core leaves are assembled.
+            facts = [
+                raw["facts"][a["id"]] for a in atoms if a["parent"] == parent["id"]
+            ]
         states = [
             "supported"
             if f["value"] is True
@@ -170,6 +176,10 @@ def compile_raw(raw, criterion, snapshot):
             else "unknown"
             for f in facts
         ]
+        if not selected:
+            states = [
+                "unknown" if all(f["value"] is None for f in facts) else "supported"
+            ]
         status = decision(states) if states else "pass"
         notes = []
         for atom, fact in zip(selected, facts):
